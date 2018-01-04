@@ -1,0 +1,55 @@
+############################
+##        Chapter 4       ##
+##    Workflow: basics    ## 
+############################
+
+# Working through Hadley Wickham's R for Data Science 
+# Section 1, Chapter 4
+# Fisher Ankney 
+
+## 4.1. Coding Basics 
+
+# R the calculator: 
+1 / 200 * 30
+(59 + 73 + 2) / 3
+sin(pi / 2)
+
+# Assigning values
+x <- 3 * 4
+x
+
+## 4.2. Naming values
+i_use_snake_case <- 1
+otherPeopleUseCamelCase <- 2 
+some.people.use.periods <- 3
+And_aFew.People_RENOUNCEconvention <- 4
+
+## 4.3. Calling functions
+
+#functions are called by: function_name(arg1 = val1, arg2 = val2, ...)
+seq(1,10)
+seq(1, 10, length.out = 5)
+
+
+## 4.4. Practice 
+
+# corrected code: 
+library('tidyverse')
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+filter(mpg, cyl = 8)
+
+filter(diamonds, carat > 3)
+
+
+
+
+
+
+
+

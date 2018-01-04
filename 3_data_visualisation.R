@@ -1,5 +1,5 @@
 ############################
-##        EXPLORE         ##
+##       Chapter 3        ##
 ##   Data Visualisation   ## 
 ############################
 
@@ -7,17 +7,18 @@
 # Section 1, Chapter 3 
 # Fisher Ankney 
 
+
 ## 3.1. Introduction
-## Install and load tidyverse for the ggplot2 package
+# Install and load tidyverse for the ggplot2 package
 # install.packages("tidyverse")
 # library(tidyverse)
 
 ## 3.2. First Steps
 
-## View mpg dataframe
+# View mpg dataframe
 ggplot2::mpg
 
-## Plot Engine Size (displ) vs fuel efficiency (hwy)
+# Plot Engine Size (displ) vs fuel efficiency (hwy)
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy))
 
