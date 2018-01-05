@@ -288,6 +288,9 @@ not_cancelled %>%
   group_by(year, month, day) %>%   # group by day
   summarise(hour_perc = mean(arr_delay > 60))  # summarize 
 
+# ungrouping use ungroup()
+
+
 
 
 ## 5.7. Group Summary
