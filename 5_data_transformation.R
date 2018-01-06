@@ -290,23 +290,106 @@ not_cancelled %>%
 
 # ungrouping use ungroup()
 
+# 1. Brainstorm at least 5 different ways to probe this dataset and conduct them:
+
+# 1. which carrier has the most delays? 
+num_delays <- not_cancelled %>%     
+  group_by(carrier) %>%  
+  summarise(num_delay = sum(arr_delay > 0)) %>%  
+  arrange(desc(num_delay))
+num_delays[1,]
+
+# How fast was the fastest flight to denver? Really don't know why pipes arnt working on this one
+den_delay <- not_cancelled
+den_delay <- filter(den_delay, dest == "DEN") 
+den_delay <- arrange(den_delay, desc(arr_delay))
+den_delay <- select(den_delay, year:distance, -sched_arr_time)
+den_delay <- mutate(den_delay, speed = distance / (air_time / 60))
+den_delay <- arrange(den_delay, desc(speed))
+den_delay
+
+# 3. Where do the flights go most often?
+num_flights <- flights %>%
+  group_by(dest) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+num_flights
+  
+# 4. How long, in total, were flights delayed on christmas day?
+xmas_delay <- flights 
+xmas_delay <- filter(xmas_delay, month == 12 & day == 25)
+xmas_delay <- cumsum(xmas_delay$dep_delay)
+max(xmas_delay, na.rm=TRUE)
+
+# 5. how many flights were cancelled in november?
+nov_cancel <- flights %>%
+  filter(is.na(dep_delay) & month == 11)
+count(nov_cancel)
+
+
+# 2. Come up with another approach that will give you the same output as 
+not_cancelled %>% count(dest) #without using count() # how many planes went to each destination
+
+not_cancelled %>% 
+  group_by(dest) %>%
+  summarise(count = n())
+
+# 4. Look at the number of cancelled flights per day. Is there a pattern? Is the proportion of cancelled flights related to the average delay?
+cancel <- flights %>% 
+  group_by(year, month, day) %>%
+  filter(is.na(dep_delay))
+cancel <- count(cancel)
+cancel  
+
+  
+# 5. Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? 
+#    Why/why not? (Hint: think about flights %>% group_by(carrier, dest) %>% summarise(n()))
+carrier_delay <- not_cancelled %>%
+  group_by(carrier) %>%
+  summarise(num_delay = sum(arr_delay > 0)) %>%
+  arrange(desc(num_delay))
+carrier_delay
+ 
+abc <- flights %>% 
+  group_by(carrier, dest) %>% 
+  summarise(n()))
+
+# 6. What does the sort argument to count() do. When might you use it?
+# order a vector or factor into ascending or descending order
 
 
 
-## 5.7. Group Summary
+# Group mutate & filter
+flights_sml %>% 
+  group_by(year, month, day) %>%
+  filter(rank(desc(arr_delay)) < 10)
 
+# find groups bigger than a threshold 
+popular_dests <- flights %>% 
+  group_by(dest) %>% 
+  filter(n() > 365)
+popular_dests
 
+# standardize to produce per group metrics
+popular_dests %>% 
+  filter(arr_delay > 0) %>% 
+  mutate(prop_delay = arr_delay / sum(arr_delay)) %>% 
+  select(year:day, dest, arr_delay, prop_delay)
 
+#5.7.1 Exercises
+#Refer back to the lists of useful mutate and filtering functions. Describe how each operation changes when you combine it with grouping.
 
+#Which plane (tailnum) has the worst on-time record?
 
+#What time of day should you fly if you want to avoid delays as much as possible?
 
+#For each destination, compute the total minutes of delay. For each, flight, compute the proportion of the total delay for its destination.
 
+#Delays are typically temporally correlated: even once the problem that caused the initial delay has been resolved, later flights are delayed to allow earlier flights to leave. Using lag() explore how the delay of a flight is related to the delay of the immediately preceding flight.
 
+#Look at each destination. Can you find flights that are suspiciously fast? (i.e. flights that represent a potential data entry error). Compute the air time a flight relative to the shortest flight to that destination. Which flights were most delayed in the air?
 
+#Find all destinations that are flown by at least two carriers. Use that information to rank the carriers.
 
-
-
-
-
-
+#For each plane, count the number of flights before the first delay of greater than 1 hour.
 
