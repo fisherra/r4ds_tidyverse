@@ -1,0 +1,141 @@
+############################
+##       Chapter 11       ##
+##       Data Import      ## 
+############################
+
+# Working through Hadley Wickham's R for Data Science 
+# Section 1, Chapter 11
+# Fisher Ankney 
+
+# There are many functions to read in data, but we focus on read_csv()
+
+# first and most important arguement is the path to the file
+fake_data <- read_csv("data/data.csv")
+
+# you can create comma delim files inline too: 
+read_csv("a,b,c
+          1,2,3
+          4,5,6")
+
+# Use comment = "#" to drop all lines that start with (e.g.) #.
+read_csv("# A comment I want to skip
+         x,y,z
+         1,2,3", comment = "#")
+
+# You can use skip = n to skip the first n lines; 
+read_csv("The first line of metadata
+         The second line of metadata
+         x,y,z
+         1,2,3", skip = 2)
+
+# use col_names = FALSE to tell it the csv has no heading
+read_csv("1,2,3\n4,5,6", col_names = FALSE)
+
+# you can alternatively add column names if you'd like
+read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z"))
+
+# denote missing values with na = 
+read_csv("a,b,c\n1,2,.", na = ".")
+
+# read tab seperated files and fixed width files with the same rules:
+read_tsv() 
+read_fwf()
+
+
+## Parsing a vector 
+
+# parse_*(list of things to parse, declare na =)
+str(parse_logical(c("TRUE", "FALSE", "NA")))
+str(parse_integer(c("1", "2", "3")))
+str(parse_date(c("2010-01-01", "1979-10-14")))
+
+# 8 important parsers 
+
+# parse_logical() and parse_integer() parse logicals and integers
+# respectively. There’s basically nothing that can go wrong with 
+# these parsers so I won’t describe them here further.
+
+# parse_double() is a strict numeric parser, and parse_number() is 
+# a flexible numeric parser. These are more complicated than you 
+# might expect because different parts of the world write numbers
+# in different ways.
+
+# parse_character() seems so simple that it shouldn’t be necessary.
+# But one complication makes it quite important: character encodings.
+
+# parse_factor() create factors, the data structure that R uses to 
+# represent categorical variables with fixed and known values.
+
+# parse_datetime(), parse_date(), and parse_time() allow you to
+# parse various date & time specifications. These are the most 
+# complicated because there are so many different ways of writing dates.
+
+## details on number parsing - - - 
+
+# some examples of useful cases for parse_number()
+
+
+parse_double("1.23")
+parse_double("1,23", locale = locale(decimal_mark = ","))
+
+parse_number("$100")
+parse_number("20%")
+parse_number("It cost $123.45")
+
+parse_number("$123,456,789")
+parse_number("123.456.789", locale = locale(grouping_mark = "."))
+parse_number("123'456'789", locale = locale(grouping_mark = "'"))
+
+
+
+# parsing date-times
+
+parse_datetime("2010-10-01T2010")
+# If time is omitted, it will be set to midnight
+parse_datetime("20101010")
+#> [1] "2010-10-10 UTC"
+
+parse_date("01/02/15", "%m/%d/%y")
+#> [1] "2015-01-02"
+parse_date("01/02/15", "%d/%m/%y")
+#> [1] "2015-02-01"
+parse_date("01/02/15", "%y/%m/%d")
+#> [1] "2001-02-15"
+
+## really just come here if you're having trouble reading in a file 
+
+## writing a file out 
+
+# export a csv to excel spreadsheet - 
+write_excel_csv()
+
+# write out data as a csv - write_csv(data_frame, "saved_name.csv")
+write_csv(challenge, "challenge.csv")
+
+# write_rds() and read_rds() are uniform wrappers around the base
+# functions readRDS() and saveRDS(). These store data in R’s 
+# custom binary format called RDS
+
+
+# 11.6 Other types of data
+# To get other types of data into R, we recommend starting 
+# with the tidyverse packages listed below. They’re certainly
+# not perfect, but they are a good place to start. For rectangular data:
+  
+# haven: reads SPSS, Stata, and SAS files.
+
+# readxl: reads excel files (both .xls and .xlsx).
+
+# DBI:  along with a database specific backend (e.g. RMySQL, 
+#       RSQLite, RPostgreSQL etc) allows you to run SQL queries 
+#       against a database and return a data frame.
+
+# For hierarchical data: use jsonlite (by Jeroen Ooms) for json, 
+# and xml2 for XML. Jenny Bryan has some excellent worked examples 
+# at https://jennybc.github.io/purrr-tutorial/.
+
+# For other file types, try the R data import/export manual 
+# and the rio package.
+  
+  
+
