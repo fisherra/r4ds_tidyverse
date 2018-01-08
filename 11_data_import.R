@@ -4,7 +4,7 @@
 ############################
 
 # Working through Hadley Wickham's R for Data Science 
-# Section 1, Chapter 11
+# Section 2, Chapter 11
 # Fisher Ankney 
 
 # There are many functions to read in data, but we focus on read_csv()
@@ -137,5 +137,6 @@ write_csv(challenge, "challenge.csv")
 # For other file types, try the R data import/export manual 
 # and the rio package.
   
+
   
 

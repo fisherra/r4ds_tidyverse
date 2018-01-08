@@ -4,7 +4,7 @@
 ############################
 
 # Working through Hadley Wickham's R for Data Science 
-# Section 1, Chapter 10
+# Section 2, Chapter 10
 # Fisher Ankney 
 
 # Coerse a dataframe to become a special tidyverse dataframe 'tibble'
