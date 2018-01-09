@@ -1,92 +1,55 @@
-# R Snippets 
+############################
+##        How to R        ##
+##    guide & snippets    ##
+############################
 
-# Base Data Types 
-numeric <- 1
+# Fisher Ankney
+# January 2018
+
+install.packages('package_name')   # install packages
+library('package_name')            # add package to working library
+setwd()                            # set working directory  
+getwd()                            # get working directory
+dev.off()                          # clear old plot
+class()                            # check data type
+str()                              # display data structure
+head()                             # display the first 10 lines
+tail()                             # display the last 10 lines
+View()                             # display the data
+
+
+# data types 
+numeric <- 1 
 character <- "one"
-logical <- TRUE
+logical <- TRUE 
 
-# Checking Class 
-class(numeric)
-class(character)
-class(logical)
+# creating and accessing vectors
+vector <- c(1,2,3)
+vector[1]
 
-# Vectors 
-vector_alpha <- c(1,2,3)
-names(vector_alpha) <- c("one", "two", "three")
-sum_vector <- sum(vector_alpha)
-sum_vector > 0 
+# creating and accessing matrices
+matrix_a <- matrix(1:9, byrow = TRUE, nrow = 3)
+matrix_a[2,3]
 
-alpha_middle <- vector_alpha[2]
-alpha_middle
+# creating and accessing dataframes
+#coming soon
 
-# Matrices
-matrix(1:9, byrow=TRUE, nrow=3)
-vector_beta <- c(4,5,6)
-vector_charle <- c(7,8,9)
-vector_delta <- c(vector_beta, vector_charle)
-matrix_echo <- matrix(vector_delta, byrow=TRUE, nrow=2)
-matrix_echo
+# naming data
+names(vector) <- c("one", "two", "three")
+colnames(matrix_a) <- c("col_1", "col_2", "col_3")
+rownames(matrix_a) <- c("row_1", "row_2", "row_3")
 
-columns <- c("col 1", "col 2", "col 3")
-rows <- c("row 1", "row 2")
+# binding
+cbind()   # concat by column
+rbind()   # concat by row
 
-colnames(matrix_echo) <- columns
-rownames(matrix_echo) <- rows
-
-matrix_echo
-
-rowSums(matrix_echo) 
-colSums(matrix_echo)
-
-# column / row bind
-cbind()
-rbind()
-
-
-# Factors levels and summaries 
-# Create speed_vector
+# ordered factors
 speed_vector <- c("fast", "slow", "slow", "fast", "insane")
-
-# Convert speed_vector to ordered factor vector
-factor_speed_vector <- factor(speed_vector, ordered=TRUE, levels=c("slow", "fast", "insane"))
-
-# Print factor_speed_vector
+factor_speed_vector <- factor(speed_vector,
+                              ordered=TRUE,
+                              levels=c("slow", "fast", "insane")
+                              )
 factor_speed_vector
-summary
-
-
-# data types
-head(mtcars)
-tail(mtcars)
-str(mtcars) #structure
-
-
-# Definition of vectors
-name <- c("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune")
-type <- c("Terrestrial planet", "Terrestrial planet", "Terrestrial planet", 
-          "Terrestrial planet", "Gas giant", "Gas giant", "Gas giant", "Gas giant")
-diameter <- c(0.382, 0.949, 1, 0.532, 11.209, 9.449, 4.007, 3.883)
-rotation <- c(58.64, -243.02, 1, 1.03, 0.41, 0.43, -0.72, 0.67)
-rings <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
-
-# Create a data frame from the vectors
-planets_df <- data.frame(name, type, diameter, rotation, rings)
-
-subset(planets_df, subset = diameter < 1)
-
-# data frame best frame
 
 
 
-
-# Vector with numerics from 1 up to 10
-my_vector <- 1:10 
-
-# Matrix with numerics from 1 up to 9
-my_matrix <- matrix(1:9, ncol = 3)
-
-# First 10 elements of the built-in data frame mtcars
-my_df <- mtcars[1:10,]
-
-# Construct list with these different elements:
-my_list <- list(my_vector, my_matrix, my_df)

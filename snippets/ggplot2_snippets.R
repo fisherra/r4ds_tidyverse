@@ -26,6 +26,11 @@ library('RColorBrewer') # beautiful color pallets
 #  coord_* +             # the coordinate system
 #  facet_*               # the type of faceting
   
+
+# for more helpful tips go to the following websites: 
+http://www.cookbook-r.com/Graphs/
+http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+
 ######################################################################
 ## RColorBrewer pallets ##############################################
 ######################################################################
