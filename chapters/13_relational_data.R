@@ -135,10 +135,60 @@ avg_delay_by_dest <- airports2 %>%
   coord_quickmap()
 avg_delay_by_dest
 
-# Add the location of the origin and destination (i.e. the lat and lon) to flights.
+# 2. Add the location of the origin and destination (i.e. the lat and lon) to flights.
+flights_2 <- flights %>% 
+  select(year:day, origin:dest)
+airports_2 <- airports %>%
+  select(faa, lat, lon)
+
+origin_dest_location <- flights_2 %>%
+  left_join(airports_2, c("dest" = "faa")) %>% 
+  rename(dest_lat = lat, 
+         dest_lon = lon
+            ) %>% 
+  left_join(airports_2, c("origin" = "faa")) %>%
+  rename(origin_lat = lat, 
+         origin_lon = lon) %>%
+  select(year:origin, origin_lat, origin_lon, dest:dest_lon)
+View(origin_dest_location)
+
+# 3. Is there a relationship between the age of a plane and its delays?
+age_delay <- flights %>%
+  select(-year) %>%
+  left_join(planes, key = tailnum) %>% 
+  select(tailnum, arr_delay, dep_delay, year) %>%
+  filter(dep_delay < 250)
+
+age_delay <- head(age_delay, 500)
+
+ggplot(age_delay) + 
+  geom_point(aes(x =year,
+                 y=arr_delay
+                 ))
+
+# not that I can see. could do a cor.test() to make sure though
 
 
 
+## Filtering Joins
+
+semi_join(x,y)  # keeps all observations in x that have a match in y
+anti_join(x,y)  # drops all observations in x that have a match in y
 
 
+# find top 10 destinations
+top_dest <- flights %>%
+  count(dest, sort = TRUE) %>%
+  head(10)
+top_dest
 
+# find flights that went to these top 10
+flights %>% 
+  filter(dest %in% top_dest$dest)
+
+# but thats difficult, use semi_join instead, basically drops non-top destinations
+flights %>% 
+  semi_join(top_dest)
+
+
+  
