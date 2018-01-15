@@ -9,3 +9,146 @@
 
 # load necissary libraries
 library('tidyverse')
+
+# # # # # # 
+# Atomic Vectors (homogeneous)
+# logical, integer, double, character, complex, raw
+# Lists (heterogeneous)
+
+# NUll = absence of a vector 
+# NA = absence of a value in a vector 
+
+# determine vector type with 
+typeof()
+
+
+# four type of augmented vectors - 
+# factors, dates, date-time, dataframe / tibble 
+
+# Logical vectors 
+1:10 %% 3 == 0
+c(TRUE, TRUE, FALSE, NA)
+
+# Numeric vectors 
+typeof(1)
+typeof(1L)
+
+# doubles are approximations
+x <- sqrt(2) ^ 2
+x - 2 
+
+# instead of comparing floating point numbers using == you should use
+near()
+
+# integers have one special value, 
+# NA
+# while doubles have four,
+# NA, NaN, Inf, -Inf
+
+# dont use == to check for the special values, use the functions
+is.finite()
+is.infinite()
+is.nan()
+is.na()
+
+
+# Using atomic vectors 
+
+# explicit coercion 
+as.logical()
+as.integer()
+as.double()
+as.character()
+# whenever you use these you should see if you could have fixed the
+# problem somewhere upstream
+
+# implicit coercion
+if (length(x)) { 
+  # do something
+}
+# but its still best to be explicit 
+if (length(x) > 0) {
+  # do something
+}
+
+# atomic vectors cannot mix their types, the most complex wins
+
+# PURRR is_* functions
+     #          lgl   int   dbl  chr   list 
+# is_logical()    x 
+# is_integer()          x
+# is_double()                 x 
+# is_numeric()          x     x  
+# is_character()                   x 
+# is_atomic()     x     x     x    x  
+# is_list()                               x   
+# is_vector()     x     x     x    x      x  
+
+
+# R will implicitly coerce the length of vectors (recycling)
+1:10 + 1:2
+# 1:2 turns into [1,2,1,2,1,2,1,2] to match 1:10 vector length
+
+# tidyverse will give you an error if you do this though so instead
+# use the rep() 
+
+tibble(x = 1:4, y = 1:2)
+tibble(x = 1:4, y = rep(1:2, 2))
+
+
+# naming vectors 
+c(x = 1, y = 2, z = 3)
+set_names(1:3, c("a", "b", "c"))
+# named vectors are useful for subsetting
+
+# subsetting []
+# subset a numeric vector containing only integers 
+# - all positive, negative, or zero 
+x <- c("one", "two", "three", "four", "five")
+x[c(3, 2, 5)]
+x[c(1, 1, 5, 5, 5, 2)]
+
+# negative values drop the element specified
+x[c(-1, -3, -5)]
+
+# error to mix 
+x[c(-1, 2)]
+
+
+
+
+# Recursive vectors (lists)
+list(1,2,3)
+str(x)
+y <- list("a", 1L, 1.5, TRUE)
+str(y)
+z <- list(list(1,2), list(3,4))
+str(z)
+
+## Three ways to subset a list 
+a <- list(a = 1:3, b = "a string", c = pi, d = list(-1, -5))
+# [ extracts a sub-list, always resulting in a list
+str(a[1:2])
+str(a[4])
+# [[ extracts a single component, removes a level of heirarchy
+str(a[[1]])
+str(a[["d"]])
+# $ shorthand for extracting name (similiar to [[]])
+a$a
+
+
+# Attributes 
+# attaching arbitrary metadata to any value
+# get and set with 
+attr() 
+# view all existing with 
+attributes()
+
+# three important attributes are names, dimensions, class
+
+
+# Augmented vectors - - - 
+# factors, date times, dates, tibbles
+
+
+
