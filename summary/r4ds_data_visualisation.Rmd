@@ -1,0 +1,48 @@
+---
+title: "R for Data Science Summary Series"
+author: "Fisher Ankney"
+date: "January 17, 2018"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data visualisation with ggplot2
+
+This is the first of a five part series summarsing what I've learned while working through Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>. 
+
+I'd recommend Hadley's book as an excellent and most comprehensive introduction to R programming. Data visualisation is the first data science concept introduced in the text. It is incorporated throughout the entirety of R4DS, however it's most heavily covered in chapters 3, 7, and 28. The goal of this write up is to create a consise data visualisation reference guide based on these chapters. 
+
+<br  />
+
+##### Further ggplot2 references include:     
+R Graphics Cookbook - <http://www.cookbook-r.com/Graphs/>     
+Top 50 Visualizations - <http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html>    
+R Studio's ggplot2 Cheat Sheet - <https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf>    
+
+<br  />
+
+##### Useful libraries 
+```{r message=FALSE}
+library('tidyverse')
+library('ggplot2')
+library('RColorBrewer')
+library('maps')
+```
+Be sure to install the packages on your computer using "install.packages('library_name')" before calling them with the library function. Tidyverse is an umbrella package that includes associated Hadley Wickham data science packages such as dplyr, tidyr, readr, etc. If you call for the tidyverse package, it is unnecessary to call again for the ggplot2 package. RColorBrewer provides easy access to an assortment of excellent color palettes. The maps package allows for simple geospatial plots of a select number of countries, including the continental United States. 
+
+<br  />
+
+##### The ggplot template
+```{r eval=FALSE}
+ggplot( < enter data here > ) +            
+geom_< enter geometry here >(              
+  mapping = aes( < enter variables here > ),    
+  stat = < enter statistical transformations here >,          
+  position = < enter position adjustments here >        
+) + 
+coord_< enter coordinate system here >() +          
+facet_< enter facet system here >()              
+```
+The basic idea here is that you can create and describe any possible graph with these seven parameters. I'll go through the most useful options
