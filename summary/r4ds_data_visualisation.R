@@ -86,8 +86,6 @@ dat1 <- data.frame(
 
 # A line graph
 ggplot(data=dat1,
-       aes(x=time,               # x value
-           y=total_bill,         # y value
            group=sex,            # group variable
            shape=sex,            # shape variable
            colour=sex            # color variable
