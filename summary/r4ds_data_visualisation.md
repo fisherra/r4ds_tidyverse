@@ -1,20 +1,18 @@
-Data visualisation with ggplot2
--------------------------------
-
-This is the first of a five part series summarsing what I've learned
-while working through Hadley Wickham's R for Data Science:
-<http://r4ds.had.co.nz/>.
+This is the first of a five part series summarsing the core concepts of
+Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>.
 
 I'd recommend Hadley's book as an excellent and most comprehensive
-introduction to R programming. Data visualisation is the first concept
-he introduces in the text. Data visualisation is incorporated throughout
-the entirety of R4DS, however it's most heavily covered in chapters 3,
-7, and 28. The goal of this write up is to create a consise data
-visualisation reference guide based the concepts in these chapters.
+introduction to R programming. Hadley immediately introduces data
+visualisation concepts in R4DS, giving students a fun and highly
+functional introduction to R. While data visualisation is continously
+referenced throughout the text, it is heavily emphasized in chapters 3,
+7, and 28. This write up is an attempt to synthesis this information in
+a valueable and concise manner. Of course, this isn't a conprehensive
+guide to ggplot2, rather it's a small collection of code snippets and
+ideas that I find solve 80% of my ggplot2 problems.
 
-<br  />
-
-#### Other Useful References
+For more useful resources, including advanced ggplot2 techniques, check
+out these links:
 
 R Graphics ggplot2 Cookbook - <http://www.cookbook-r.com/Graphs/>  
 Top 50 Visualizations -
@@ -26,26 +24,26 @@ Hadley's ggplot2 book (amazon) -
 
 <br  />
 
-#### Associated Libraries
+### Associated Libraries
 
-    library('tidyverse')
-    library('ggplot2')
-    library('RColorBrewer')
-    library('maps')
+    # install.packages('tidyverse', 'RColorBrewer', 'maps')
 
-Be sure to install the packages on your computer using
-"install.packages('library\_name')" before calling them with the library
-function. Tidyverse is an umbrella package that includes associated
-Hadley Wickham data science packages such as dplyr, tidyr, readr, etc.
-If you call for the tidyverse package, it is unnecessary to call again
-for the ggplot2 package. RColorBrewer provides easy access to an
-assortment of excellent color palettes. The maps package allows for
-simple geospatial plots of a select number of countries, including the
-continental United States.
+    library('tidyverse')     # install ggplot2 and associated tidyverse packages
+    library('ggplot2')       # install only ggplot2
+    library('RColorBrewer')  # install for excellent color palettes
+    library('maps')          # install for geospatial visualisations
+
+I recommend installing the entire tidyverse package collection whenever
+you're working with and graphing data. If you don't want access to the
+other useful tidyverse tools, it's fine to just call the ggplot2 package
+by itself. RColorBrewer is my favorite way to quickly create visualy
+pleasing color schemes, but there are many other packages out there to
+choose from. The maps package integrates with ggplot2 really well, but
+there are probably better geospatial packages out there too.
 
 <br  />
 
-#### Basic Template
+### Graphing Template
 
     ggplot( < enter data here > ) +            
     geom_< enter geometry here >(              
@@ -56,39 +54,41 @@ continental United States.
     coord_< enter coordinate system here >() +          
     facet_< enter facet system here >()              
 
-The basic idea here is that you can create and describe any possible
-graph with these seven parameters. I'll go through the most useful
-options for each of the necessary parameters, as well as the optional
-parameters that alter other aestetics like the legend and axes.
+With these seven parameters you can create and describe almost any
+graph. This is the underlying tidyverse philosophy, giving a 'grammer to
+graphics' as it were. Now let's go through these parameters
+individually, and toss in a few additional aestetic parameters for good
+measure.
 
 <br  />
 
-#### ggplot
+### Base Graph
 
     ggplot(mpg)
 
 ![](r4ds_data_visualisation_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
-As you can see, entering a dataset into the ggplot function isn't enough
-to produce a graph. ggplot() simply produces the base layer of the plot,
-you must specify geometry, mapping, aestetics, and so on to actually
-produce a plot. use 'ggplot() +' to link the base layer to these
-necissary specifications.
+Just calling ggplot( ) with an assoicated dataset will create a canvas
+for your graphic, but it won't do much else. We really need to add a
+geometry to the ggplot recipe.
 
 <br  />
 
-#### Geometry
+### Geometry
 
     ggplot(mpg) +
       geom_point(mapping = aes(x = displ, y = hwy))
 
 ![](r4ds_data_visualisation_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
-the geom\_( ) function does the majority of the grunt work in ggplot2.
-There are two necissary choices to be made with this function, choosing
-a geometry, and choosing the mappable variables. Additional commands are
-included within the geom( ) call, including aestetic specifications,
-statistical transformations, and position adjustments.
+Declaring a plot geometry is perhaps the most important part of a ggplot
+recipe; when you're doing exploratory data analysis I find you typically
+don't have to go any further than calling the geom function and
+declaring it's mappable variables. I've listed the handful of
+geometries, mappings, and aestetics that I use most often. There are
+hundreds of geometries if you include the extensions that the ggplot
+community has created. If you can imagine it, there's probably a ggplot
+geometry that can create it.
 
 ##### Geometries
 
@@ -109,7 +109,7 @@ statistical transformations, and position adjustments.
 
 ##### Aestetics
 
--   **size =** double (in millimeters)
+-   **size =** size of a point, declared by a double
 -   **linetype =** 0 (blank), 1 (solid), 1 (dashed), 3 (dotted), 4
     (dot-dash), 5 (long-dash), 6 (two-dash)
 -   **weight =** (line thickness) double
@@ -119,12 +119,12 @@ statistical transformations, and position adjustments.
 
 <br  />
 
-#### Statistical Transformations
+### Statistical Transformations
 
 Sometimes you want to visualize a transformed version of the original
-data. My most commonly used statistcal transformation is identity, use
-this transformation with geom\_bar to visualize a variable instead of a
-count.
+data. The statistical transformation I use most often is the identity
+trasformation with geom\_bar. There are, however, several other useful
+transformations.
 
 -   **geom\_(aes(...), stat = "count")** - visualise the number of
     entires in a variable, n()  
@@ -135,10 +135,12 @@ count.
 
 <br  />
 
-#### Position Adjustments
+### Position Adjustments
 
 When geometric data occupies the same space, it is useful to use a
-position adjustment to better understand the visualisation.
+position adjustment to better understand the visualisation. I really
+only find adjusting the positioning of data useful when I'm working with
+bar charts and scatterplots.
 
 -   **geom\_point(aes(...), position = "jitter")** - adds a small amount
     of noise to better view overlapping points  
@@ -149,7 +151,7 @@ position adjustment to better understand the visualisation.
 
 <br  />
 
-#### Coordinate Systems
+### Coordinates
 
     ggplot(mpg) +
       geom_point(mapping = aes(x = displ, y = hwy)) + 
@@ -157,11 +159,12 @@ position adjustment to better understand the visualisation.
 
 ![](r4ds_data_visualisation_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 <br  />  
-Sometimes it's useful to change the coordinate system in a particular
-plot. This will affect the axes and how the data is plotted. I find the
-most useful coordinate transformations to be coord\_flip (typically with
-bar plots) and coord\_trans (typically with exponential or logarithmic
-trends).
+Cartesian coordinates are the go-to for 95% of my visualisations, but
+the coord\_ function does more than call different coordinate systems.
+Often it's useful to fix the x-y ratio, or flip the axis of bar charts.
+When your working with exponential data, you may want to transform an
+axis to a logarithmic system. These useful functions and many more can
+be done by the coord\_ function.
 
 -   **coord\_fixed(ratio, xlim, ylim)** - fixing the aspect ratio
     between x and y
@@ -169,11 +172,13 @@ trends).
 -   **coord\_polar(theta, start, direction)** - coverting cartesian to
     polar coordinates
 -   **coord\_trans(xtrans, ytrans, limx, limy)** - transform cartesian
-    coordiantes, use with log / exponent functions  
+    coordiantes, use with log functions  
 -   **coord\_map(projection, orientation, xlim, ylim)** - mapproj
     package projections
 
-#### Facets
+<br  />
+
+### Facets
 
     ggplot(data = mpg) + 
       geom_point(mapping = aes(x = displ, y = hwy)) + 
@@ -181,21 +186,19 @@ trends).
 
 ![](r4ds_data_visualisation_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
-Dividing a plot into subplots can be helpful when you want to evaluate a
-dataset based on the values of one or more discrete variables.
+I don't use facets that much; to be honest I find them pretty
+distracting. If you're a fan of contrasting minerature plots, you might
+find these faceting options useful.
 
--   **facet\_grid(x ~ ., labeller, scales)** - facets the display into
-    columns based on the given variable and placeholder "."  
--   **facet\_grad(. ~ x, labeller, scales)** - facets the display into
-    rows based on the given variable and plcaeholder "."  
 -   **facet\_grid(x ~ y, labeller, scales)** - facets the display into
-    rows and columns based on the two given variables.  
+    rows and columns based on the two given variables (".""
+    placeholder)  
 -   **facet\_wrap(~ x, labeller, scales, nrow, ncol)** - wraps facets
     into a rectangular layout
 
 <br  />
 
-#### Labels
+### Labels
 
     ggplot(mpg) + 
       labs(
@@ -208,20 +211,21 @@ dataset based on the values of one or more discrete variables.
 
 ![](r4ds_data_visualisation_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-Labels are very important for effectively communication within your
-visualisation. Any label can contain mathematical formulas by using the
-quote( ) function. for more information on this, type ?plotmath into the
-R console.
+Labels are helpful for properly communicating your visualisation.
+Including these five labels with your plots can help clarify your topic,
+variables, and sources.
 
 <br  />
 
-#### Annotations
+### Annotations
 
-It can be useful to label major compnents and interesting observations
-within your visualisation. To add annotations to your plot, call the
-geom\_text( ) function and assigne the aes( label = ) to a variable of
-interest. I don't particularly care for annotating individual
-observations, as I find it clutters the graphic.
+Annotations are another feature I don't use too often, but I'll include
+them anyways. I think annotating individual observations is a mistake,
+it clutters the graphic and takes away from the effectiveness of the
+visualisation. Packages like plotly and shiny do a better job of
+creating interactive graphics if you want individual labels. If you,
+however, insist on creating a ggplot with annotations, these might be
+useful.
 
 -   **geom\_text(aes(label = "text here"), vjust = , hjust = )** -
     places a summary annotation within the graphic, according to vjust
@@ -239,12 +243,12 @@ observations, as I find it clutters the graphic.
 
 <br  />
 
-#### Scales
+### Scales
 
-Scales are automatically set when creating a ggplot, but sometimes it's
-useful to alter the color scheme, legend, or axes to better communicate
-your visulisation. The naming sceme for scales is scale\_ followed by
-the name of the aesthetic then \_, and the name of the scale.
+Scales are automatically set when you create a ggplot, but sometimes
+it's useful to alter the color scheme, legend, or axes. The naming sceme
+for these functions is scale\_ followed by the name of the aesthetic
+then another \_, and then the name of the scale.
 
 ##### Aestetic Names
 
@@ -270,12 +274,12 @@ the name of the aesthetic then \_, and the name of the scale.
 -   **\_gray** -creates a gradient in gray
 -   **\_brewer** - brewer( palette = " "), calls RColorBrewer palettes
 
-##### Axes
+<br  />
 
-It's pretty easy to alter axes in ggplot2. Here are some commented
-examples for common problems:
+### Axes
 
-    scale_x_continuous(breaks = seq(0, 10, by = 1), labels = c(1:9, "ten"))  # define breaks by sequence, define labels of breaks
+    scale_x_continuous(breaks = seq(0, 10, by = 1), labels = c(1:9, "ten")) 
+    # define breaks by sequence, define labels of breaks
 
     scale_x_discrete(breaks=c("ctrl", "trt1", "trt2"),            # defined tick marks
                      labels=c("Control", "Treat 1", "Treat 2"))   # new names
@@ -296,42 +300,42 @@ examples for common problems:
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x)))
 
-##### Legends
+Scales can be used to alter axes in ggplot2, it's a fairly straight
+forward process. These are some commented examples for fixing common
+behavioral issues you may have with your axes.
 
-Legends can be a bit harder to wrangle. Here are examples to several
-common problems I have with legends.
+<br  />
 
-Controlling the position, or existance of the legend
+### Legends
 
-    theme(legend.position = "left")
-    theme(legend.position = "top")
-    theme(legend.position = "bottom")
-    theme(legend.position = "right") # the default
-
-    theme(legend.position = "none") # no legend will be generated
+    theme(legend.position = "left")    # legend to the left of plot
+    theme(legend.position = "top")     # legend above plot
+    theme(legend.position = "bottom")  # legend below plot
+    theme(legend.position = "right")   # the default
+    theme(legend.position = "none")    # no legend will be generated
 
     geom_point(aes(...), show.legend=FALSE) # don't include this geom in the legend    
 
-Hiding the legend's title
+    theme(legend.title = element_blank()) # hides the legends title
 
-    theme(legend.title = element_blank())
-
-Changing the order of items in your legend. Declare the scale\_ function
-based on your plot, use guides = for a simple reverse
-
+    # changing the order of items in your legend, scale_ function is dependent upon the type of plot
     scale_fill_discrete(breaks=(c("item1", "item2", "item3")))
 
+    # simply reverse the current item display in thelegend
     scale_fill_discrete(guide = guide_legend(reverse=TRUE))
 
-Manually alter the color, breaks, labels, and names of your legend,
-again the scale\_ function is based on your plot
-
+    # manually alter color, break, label, and name of legend items.
     scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"), 
                       name="Experimental\nCondition",
                       breaks=c("ctrl", "trt1", "trt2"),
                       labels=c("Control", "Treatment 1", "Treatment 2"))
 
-##### Colors
+Legends can be a bit harder to wrangle than axes. Heere are examples to
+several common problems I have with legends.
+
+<br  />
+
+### Colors
 
 Some of my favorite preset colors include
 
@@ -342,22 +346,35 @@ Some of my favorite preset colors include
 -   deepskyblue
 -   lightslateblue
 
-The RColorBrewer package also has pleasing palettes
+The RColorBrewer package also has pleasing color palettes.
 
     RColorBrewer::display.brewer.all()
 
-![](r4ds_data_visualisation_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+<br  />
 
-#### Themes
+### Themes
 
 Sometimes you don't want to go through the effort of creating your own
-theme, so ggplot2 has built in themes to change it up a little bit.
-There are many expansions created for ggplot2 themes, but heres four of
-the most popular base ggplot2 themes.
+theme, so ggplot2 has some built in. Here are four basic themes that are
+excellent for exploratory analysis or creating a solid foundation to
+build off.
 
 -   **theme\_bw()** - A while background with gridlines
 -   **theme\_grey()** - the default theme
 -   **theme\_classic()** - A white background with no gridlines
 -   **theme\_minimal()** - mystery theme, check it out!
 
-#### Summary
+<br  />
+
+### Summary
+
+This is just a fraction of what ggplot2 can do, but with this
+infromation I think you should be able to solve 80% of your graphing
+needs. Again, the references listed at the beginning of this write up
+are excellent and worth checking out. If you want to learn more about R
+for Data Science written by Hadley Wickham, it's free to read at
+<http://r4ds.had.co.nz/>. If you're too lazy to read the entire book,
+check out the other posts in my R for Data Science Summary Series.
+
+Thanks for reading,  
+- Fisher

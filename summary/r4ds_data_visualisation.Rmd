@@ -3,7 +3,7 @@ title: "R for Data Science Summary Series I"
 subtitle: "Data Visualisation with ggplot2"
 author: "Fisher Ankney"
 date: "January 19, 2018"
-output: html_document
+output: md_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This is the first of a five part series summarsing the core concepts of Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>. 
 
-I'd recommend Hadley's book as an excellent and most comprehensive introduction to R programming. Hadley immediately introduces data visualisation concepts in R4DS, giving students a fun and highly functional introduction to R. While the data visualisation is continously referenced throughout the text, it is heavily emphasized in chapters 3, 7, and 28. This write up is an attempt to synthesis this information in a valueable and concise manner. Of course, this isn't a conprehensive guide to ggplot2, rather it's a small collection of code snippets and ideas that I find solve 80% of my ggplot2 problems.     
+I'd recommend Hadley's book as an excellent and most comprehensive introduction to R programming. Hadley immediately introduces data visualisation concepts in R4DS, giving students a fun and highly functional introduction to R. While data visualisation is continously referenced throughout the text, it is heavily emphasized in chapters 3, 7, and 28. This write up is an attempt to synthesis this information in a valueable and concise manner. Of course, this isn't a conprehensive guide to ggplot2, rather it's a small collection of code snippets and ideas that I find solve 80% of my ggplot2 problems.     
 
 For more useful resources, including advanced ggplot2 techniques, check out these links:       
 
@@ -31,7 +31,7 @@ library('ggplot2')       # install only ggplot2
 library('RColorBrewer')  # install for excellent color palettes
 library('maps')          # install for geospatial visualisations
 ```
-I recommend installing the entirity of the tidyverse whenever you're looking to work with and graph data. If you don't want access to the other useful tidyverse tools, it's fine to just call the ggplot2 package by itself. RColorBrewer is my favorite way to quickly create visualy pleasing color schemes, but there are many other packages out there to choose from. The maps package integrates with ggplot2 really well, but there are probably better geospatial packages out there.    
+I recommend installing the entire tidyverse package collection whenever you're working with and graphing data. If you don't want access to the other useful tidyverse tools, it's fine to just call the ggplot2 package by itself. RColorBrewer is my favorite way to quickly create visualy pleasing color schemes, but there are many other packages out there to choose from. The maps package integrates with ggplot2 really well, but there are probably better geospatial packages out there too. 
 
 <br  />
 
@@ -46,7 +46,7 @@ geom_< enter geometry here >(
 coord_< enter coordinate system here >() +          
 facet_< enter facet system here >()              
 ```
-With these seven parameters you can create and describe any possible plot. This is the underlying tidyverse philosophy, giving a 'grammer to graphics' as it were. Now let's go through these parameters individually, and toss in a few additional aestetic parameters for good measure.    
+With these seven parameters you can create and describe almost any graph. This is the underlying tidyverse philosophy, giving a 'grammer to graphics' as it were. Now let's go through these parameters individually, and toss in a few additional aestetic parameters for good measure.    
 
 <br  /> 
 
@@ -65,7 +65,7 @@ ggplot(mpg) +
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
      
-Declaring a plot geometry is perhaps the most important part of a ggplot recipe; when you're doing exploratory data analysis I find  you typically don't have to go any further than calling the geom function and declaring it's mappable variables. I've listed the handful of geometries, mappings, and aestetics that I use most often. There are hundreds of geometries if you include the extensions that the ggplot community has created; if you can imagine it, there's probably a ggplot geometry that can do it.  
+Declaring a plot geometry is perhaps the most important part of a ggplot recipe; when you're doing exploratory data analysis I find  you typically don't have to go any further than calling the geom function and declaring it's mappable variables. I've listed the handful of geometries, mappings, and aestetics that I use most often. There are hundreds of geometries if you include the extensions that the ggplot community has created. If you can imagine it, there's probably a ggplot geometry that can create it.   
 
 ##### Geometries    
 * **geom_density( )** - 1 variable gaussian distribution
@@ -118,7 +118,7 @@ ggplot(mpg) +
   coord_flip()  
 ```
 <br  />     
-A cartesian coordinates are the go-to for 95% of my visualisations, but the coord_ function does more than call different coordinate systems. Often it's useful to fix the x-y ratio, or flip the axis of bar charts. When your working with exponential data, you may want to transform an axis to a logarithmic system. These useful functions and many more can be done by the coord_ function.    
+Cartesian coordinates are the go-to for 95% of my visualisations, but the coord_ function does more than call different coordinate systems. Often it's useful to fix the x-y ratio, or flip the axis of bar charts. When your working with exponential data, you may want to transform an axis to a logarithmic system. These useful functions and many more can be done by the coord_ function.    
     
 * **coord_fixed(ratio, xlim, ylim)** - fixing the aspect ratio between x and y
 * **coord_flip(xlim, wlim)** - flipping the axes 
@@ -126,7 +126,8 @@ A cartesian coordinates are the go-to for 95% of my visualisations, but the coor
 * **coord_trans(xtrans, ytrans, limx, limy)** - transform cartesian coordiantes, use with log functions    
 * **coord_map(projection, orientation, xlim, ylim)** - mapproj package projections 
    
-   
+<br  />   
+
 ### Facets
 
 ```{r}
@@ -171,7 +172,7 @@ Annotations are another feature I don't use too often, but I'll include them any
  
 ### Scales    
  
-Scales are automatically set when you create a ggplot, but sometimes it's useful to alter the color scheme, legend, or axes to better communicate your visulisation. The naming sceme for these functions  is scale_ followed by the name of the aesthetic then another _, and then the name of the scale.
+Scales are automatically set when you create a ggplot, but sometimes it's useful to alter the color scheme, legend, or axes. The naming sceme for these functions is scale_ followed by the name of the aesthetic then another _, and then the name of the scale.
 
 ##### Aestetic Names
      
@@ -197,7 +198,7 @@ Scales are automatically set when you create a ggplot, but sometimes it's useful
      
 <br  />
 
-#### Axes      
+### Axes      
 ```{r eval=FALSE}
 scale_x_continuous(breaks = seq(0, 10, by = 1), labels = c(1:9, "ten")) 
 # define breaks by sequence, define labels of breaks
@@ -225,8 +226,7 @@ Scales can be used to alter axes in ggplot2, it's a fairly straight forward proc
 
 <br  />     
 
-#### Legends    
-Legends can be a bit harder to wrangle than axes. Heere are examples to several common problems I have with legends.      
+### Legends      
 ```{r eval=FALSE}
 
 theme(legend.position = "left")    # legend to the left of plot
@@ -251,10 +251,12 @@ scale_fill_manual(values=c("#999999", "#E69F00", "#56B4E9"),
                   breaks=c("ctrl", "trt1", "trt2"),
                   labels=c("Control", "Treatment 1", "Treatment 2"))
 ```
+     
+Legends can be a bit harder to wrangle than axes. Heere are examples to several common problems I have with legends.      
 
 <br  />
 
-#### Colors    
+### Colors    
 
 Some of my favorite preset colors include 
 
@@ -265,16 +267,16 @@ Some of my favorite preset colors include
 * deepskyblue
 * lightslateblue    
 
-The RColorBrewer package also has pleasing color palettes
+The RColorBrewer package also has pleasing color palettes.
 ```{r eval=FALSE}
 RColorBrewer::display.brewer.all()
 ```
   
 <br  />   
 
-#### Themes      
+### Themes      
 
-Sometimes you don't want to go through the effort of creating your own theme, so ggplot2 has built in themes built in. here are four basic themes that are excellent for exploratory analysis or creating a base to build off.   
+Sometimes you don't want to go through the effort of creating your own theme, so ggplot2 has some built in. Here are four basic themes that are excellent for exploratory analysis or creating a solid foundation to build off.   
 
 * **theme_bw()** - A while background with gridlines
 * **theme_grey()** - the default theme 
@@ -284,7 +286,7 @@ Sometimes you don't want to go through the effort of creating your own theme, so
 <br  />    
 
 ### Summary    
-This is just a fraction of what ggplot2 can do, but with this infromation I think you should be able to solve 80% of your graphing needs. Again, the references listed at the beginning of this write up are excellent, and you should take a look at them. If you want to learn more about R for Data Science written by Hadley Wickham, it's free to read at <http://r4ds.had.co.nz/>. If you're too lazy to read the entire book, check out the other posts in my R for Data Science Summary Series.    
+This is just a fraction of what ggplot2 can do, but with this infromation I think you should be able to solve 80% of your graphing needs. Again, the references listed at the beginning of this write up are excellent and worth checking out. If you want to learn more about R for Data Science written by Hadley Wickham, it's free to read at <http://r4ds.had.co.nz/>. If you're too lazy to read the entire book, check out the other posts in my R for Data Science Summary Series.    
 
 
 Thanks for reading,     
