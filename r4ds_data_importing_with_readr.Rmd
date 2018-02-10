@@ -1,0 +1,56 @@
+---
+title: "R4DS - Data Import with readr"
+author: "Fisher Ankney"
+date: "February 10, 2018"
+output: html_document
+---
+This is the second of a six part series summarsing the core concepts of Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>.
+
+I've previously written about the R4DS chapters covering data visualization using ggplot2 [here](site.baseurl/). In this post, I'll cover the topics in R4DS concerning importing data into R. Covered in chapter 11. 
+more introduction more introduction
+
+
+##important libraries for reading data 
+- readr
+- readxl
+### ones I won't cover
+- haven (strata, SAS)
+- DBl (Database)
+- RMySQL (Specific Database)
+
+
+
+## setting up a project
+input
+script
+output
+github
+
+
+
+## setting directories 
+setwd()
+getwd()
+
+
+
+
+## reading functions 
+local paths
+local data types
+online paths
+
+
+
+
+## parsing data
+- columns
+- date-times
+- all that nonsense
+
+
+
+
+## writing data 
+- goes to outputs
+-scripts save in scripts
