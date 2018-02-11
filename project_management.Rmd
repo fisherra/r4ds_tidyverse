@@ -1,29 +1,16 @@
 ---
-title: "R4DS - File Management and readr"
+title: "Untitled"
 author: "Fisher Ankney"
-date: "February 10, 2018"
+date: "2/11/2018"
 output: html_document
 ---
+
 This is the second of a six part series summarsing the core concepts of Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>. In the previous post, I've written about the R4DS chapters covering data visualization using ggplot2, you can find that post [here](site.baseurl/).
 
 Today I'll summarize importing and exporting data with the readr library as covered in R4DS. I'll also add my own two cents on how to keep an R project tidy and easily replicable. While these topics may sound trivial, they can become a huge headache later on if you don't tend to them. An unorganized project can causing important scripts to go missing, original data to be overwritten, and reproducability to be thrown out the window. 
 
 For more useful resources, check out these links:    
 
-#### Load Libraries
-```{r, message=FALSE}
-library('tidyverse') # used for many amazing things, includes readr library
-library('readr')     # used to read in a variety of file types
-library('readxl')    # used for reading in microsoft excel files
-```
-
-You may also be interested in the following libraries, however I won't cover them in this blog post - 
-
-```{r, eval=FALSE}
-library('haven')   # used for SPSS, SAS, and Strata input files
-library('DBl')     # used for database files, must combine with specific backend
-library('RMySQL')  # used for MySQL backend (with DBl)
-```
 
 <br  />
 
@@ -54,30 +41,21 @@ Once you've followed intiated a git repository inside your project folder you're
 |- final_analysis.html <br  />
 |- README.md <br  /> 
 
-explain input output script
+I always keep these three main folders within a project folder: input, scripts, and output. the input folder is where I store all of the project's data sources, usually .csv, .txt, and .xlsx files. The scripts folder is where the .R scripts go, and the output folder is where I save the products of those .R scripts.
 
-explain how each script should load libraries in data in the script, linking the data to the script to the output for easy reproducability
+Your output should always be easily traced back to an input dataset. Each output should have it's own R script in the script folder, the script should have analogous name to the output. Each individual script should explicitily load the dataset and libraries that it requires. Always keeping the link between these three elements of analysis is the key to easy reproducability. 
 
-explain final_analysis.Rmd and generated .html
+Summarizing files such as final_analysis.Rmd / .html and README.md (for github) are placed in the project folder directly. Sometimes I make .txt to-do lists and keep them in the project folder as I'm working on the project as well. Summary compile the inputs, scripts, and outputs into one coherent analysis. Not all of the files you generate have to be included in the final analysis, just the ones that you think are important. 
 
-explain readme.md (for github if you're into that)
+keep commiting to github often, I refer to previous commits in every project ive done. 
+
+i do exploratory data analysis in .Rmd, find something useful create a script for that specifically 
+
+read about how to use rmd in hadley wickhams book, super useful. 
+
 
 ## Reading and Writing Files with readr
 
 #### setting directories 
 setwd()
 getwd()
-
-#### reading functions 
-local paths
-local data types
-online paths
-
-#### parsing data
-- columns
-- date-times
-- all that nonsense
-
-#### writing data 
-- goes to outputs
--scripts save in scripts
