@@ -1,14 +1,22 @@
 ---
-title: "R4DS - File Management and readr"
+title: "R4DS - Reading Data with readr"
 author: "Fisher Ankney"
-date: "February 10, 2018"
+date: "February 13, 2018"
 output: html_document
 ---
 This is the second of a six part series summarsing the core concepts of Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>. In the previous post, I've written about the R4DS chapters covering data visualization using ggplot2, you can find that post [here](site.baseurl/).
 
-Today I'll summarize importing and exporting data with the readr library as covered in R4DS. I'll also add my own two cents on how to keep an R project tidy and easily replicable. While these topics may sound trivial, they can become a huge headache later on if you don't tend to them. An unorganized project can causing important scripts to go missing, original data to be overwritten, and reproducability to be thrown out the window. 
+in this post, I'll summarize importing and exporting data with the readr library. While importing data may sound trivial, it can become a hassle when you're faced with parsing date-times, unusual file-types, non-typical encodings, or foreign language syntax. 
 
-For more useful resources, check out these links:    
+For more useful resources on importing data, check out these links:
+
+-
+-
+-
+-
+
+
+<br  />
 
 #### Load Libraries
 ```{r, message=FALSE}
@@ -20,28 +28,27 @@ library('readxl')    # used for reading in microsoft excel files
 You may also be interested in the following libraries, however I won't cover them in this blog post - 
 
 ```{r, eval=FALSE}
-library('haven')   # used for SPSS, SAS, and Strata input files
-library('DBl')     # used for database files, must combine with specific backend
-library('RMySQL')  # used for MySQL backend (with DBl)
+library('haven')       # used for SPSS, SAS, and Strata input files
+library('DBl')         # used for database files, must combine with specific backend
+library('RMySQL')      # used for MySQL backend (with DBl)
+library('RSQLite')     # used for SQLLite backend (with DBl)
+library('RPostgreSQL') # used for PostgreSQL (with DBl)
 ```
 
 
-## Reading and Writing Files with readr
 
-#### setting directories 
+### Reading Data
+local paths
 setwd()
 getwd()
-
-#### reading functions 
-local paths
 local data types
 online paths
 
-#### parsing data
-- columns
-- date-times
-- all that nonsense
+### Parsing Data
+columns
+date-times
+all that nonsense
 
-#### writing data 
-- goes to outputs
--scripts save in scripts
+### Writing Data 
+goes to outputs
+scripts save in scripts
