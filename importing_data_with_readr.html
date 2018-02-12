@@ -150,7 +150,36 @@ library('RPostgreSQL') # used for PostgreSQL (with DBl)</code></pre>
 </div>
 <div id="reading-data" class="section level3">
 <h3>Reading Data</h3>
-<p>local paths setwd() getwd() local data types online paths</p>
+<p>The readr and readxl libraries gives us a variety of functions that turn flat files into data frames. These are the functions that I find most useful.</p>
+<pre class="r"><code>read_file()     # catch all, useful for .txt files
+read_csv()      # comma seperative files
+read_tsv()      # tab seperated files
+read_xls()      # excel files (from readxl)</code></pre>
+<p>These readr functions can be used on a variety of paths, some you might not have otherwise known about.</p>
+<pre class="r"><code># example paths 
+read_csv(&quot;mtcars.csv&quot;)
+read_csv(&quot;mtcars.csv.zip&quot;)
+read_csv(&quot;~/local/path/to/my/file/mtcars.csv&quot;)
+read_csv(&quot;https://github.com/tidyverse/readr/raw/master/inst/extdata/mtcars.csv&quot;)
+read_csv(&quot;a,b,c
+         1,2,3
+         4,5,6&quot;)</code></pre>
+<p>In the first example, readr is simply reading in a .csv file found in the current working directory. You can find your current working directory using the base R <em>getwd( )</em> function. This is the most basic example of readr’s capabiities.</p>
+<p>In the second example line of code, readr is reading in a file that has a .zip extension. readr can unpack compressed files with .zip, .bz2 extensions and similiar.</p>
+<p>The third line of code is an example of readr following a local path to a folder in which R isn’t currently working in. The initial tilde tells R to start at your predescribed home directory and then follow the file path, sometimes the tilde isn’t necssiary if you’ve already set your R working directory using the <em>setwd( )</em> function.</p>
+<p>The fourth example is readr following an online path to a described dataset. Go ahead and follow the path and have a look at where it’s pointing.</p>
+<p><a href="https://github.com/tidyverse/readr/raw/master/inst/extdata/mtcars.csv" class="uri">https://github.com/tidyverse/readr/raw/master/inst/extdata/mtcars.csv</a></p>
+<p>Finally, the last line in the example code above shows how you can create an in-line csv file and read it in directly. This can be useful for creating reproducable examples, such as when you need a question answered on Stack Overflow.</p>
+<p>All of these readr functions can be expanded to include arguements that make your imported data more suitable to analysis. These are the arguements I use the most with readr, but there are many more. Check out ?read_csv in the R terminal for a full description of possible arguements.</p>
+<pre class="r"><code>read_csv(&quot;file_name.csv&quot;,            # file path and name always comes first
+         delim=&quot;,&quot;,                  # single character field seperator
+         quote = &quot;\&quot;&quot;,               # single character to quote strings
+         comment = &quot;#&quot;,              # single character to signal comments
+         col_names = c(&quot;add&quot;, &quot;names&quot;, &quot;or&quot;, &quot;T/F&quot;), # custom name columns on import
+         na = &quot;.&quot;,                   # string to signify missing values
+         skip = 0,                   # number of lines to skip before reading data
+         progress = show_progress()  # display a progress bar
+         )</code></pre>
 </div>
 <div id="parsing-data" class="section level3">
 <h3>Parsing Data</h3>
