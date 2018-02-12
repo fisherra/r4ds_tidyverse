@@ -1,35 +1,51 @@
 ---
-title: "Untitled"
+title: "Data Science Project Management"
 author: "Fisher Ankney"
 date: "2/11/2018"
 output: html_document
 ---
+There's a lot of great blog posts and online tutorials covering a wide range of data science topics online. Whether you're struggling to create your first ggplot, or if you're pursueing the latest machine learning techniques in R, you'll probably find hundreds of resources in our great community. There is one topic that I think is under appreciated though, and that topic is project management. 
 
-This is the second of a six part series summarsing the core concepts of Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>. In the previous post, I've written about the R4DS chapters covering data visualization using ggplot2, you can find that post [here](site.baseurl/).
-
-Today I'll summarize importing and exporting data with the readr library as covered in R4DS. I'll also add my own two cents on how to keep an R project tidy and easily replicable. While these topics may sound trivial, they can become a huge headache later on if you don't tend to them. An unorganized project can causing important scripts to go missing, original data to be overwritten, and reproducability to be thrown out the window. 
-
-For more useful resources, check out these links:    
-
+Proper project management might sound trivial, but it's essential to keeping your projects organized, reproducable, and secure. Just a few moments of forethought and effort can save you hours and hours of pain and regret later on. Check out these tips and habits that I've found keep my projects in tip-top shape. 
 
 <br  />
 
-## Organizing a Project in R
+#### Creating a Project 
 
-Properly organizing a project can be really simple, but it's something that a lot of people don't bother to talk about. Whenever I'm starting a new project, I create a new folder in my documents, giving the project an obvious title, such as turtle_analysis. I always use [snake_case](https://en.wikipedia.org/wiki/Snake_case) while working with projects in R. Once I've created te project folder I'll change my working directory to the project folder and then initiate a git repository. 
+The very first thing I do when I'm starting a data science project is to create a project folder. Anything and everything associated with your new project will live in this local project folder, so give it a good name. I always use [snake_case](https://en.wikipedia.org/wiki/Snake_case) while working with programming projects. snake_case creates consistency and makes navigating in the terminal a breeze. Once I've created te project folder I'll change my working directory to the project folder and create a text document. In this text document I keep a small project overview, putting my ideas for investigation into words and goals. Once my project has a name and direction, I initiate a git repository to start tracking my progress. 
 
-Creating git repositories and effectively using Github is an entire series of blog posts by itself. For the purposes of this post I'll just point you to Data Camp's [Introduction to Git for Data Science](https://www.datacamp.com/courses/introduction-to-git-for-data-science). It's a free and high quality four hour course that teaches you everything you need to know about git technology. While you're there, check out [Introduction to Shell for Data Science](https://www.datacamp.com/courses/introduction-to-shell-for-data-science) as well. 
+<br  />
 
-Once you've followed intiated a git repository inside your project folder you're ready to structure the folder. My project folders always end up looking something like this:
+#### Version Control
 
-#### turtle_analysis/
+*insert version control image here*
+
+If this comic accurately describes you, you're probably not using version control. Version control is the task of keeping a software system consisting of many versions and configurations well organized. Git is the one true diety in the world of version control. 
+
+Creating git repositories and interfacing with Github is an entire series of blog posts by itself. For the purposes of this post I'll just point you to Data Camp's [Introduction to Git for Data Science](https://www.datacamp.com/courses/introduction-to-git-for-data-science). It's a free, high-quality, four hour course that teaches you everything you need to know about git. While you're there, check out [Introduction to Shell for Data Science](https://www.datacamp.com/courses/introduction-to-shell-for-data-science) as well.
+
+<br  />
+
+#### Data Source
+
+Once your git repository is up and running, it's time to gather data! If you're working on a professional project you'll probably gather data from an SQL server or network database. If you're working on a personal project, you have a near infinite number of choices for gathering data. Check out some this [Dataquest](https://www.dataquest.io/blog/free-datasets-for-projects/) article on where to find some interesting datasets. 
+
+Once you've downloaded the data you would like to work with, you should never overwrite this original dataset. If you do want to make changes to your data, and you likely will, you should save the newer versions as such. Commonly, I'll change datasets into .csv or .txt files and change the encoding to UTF-8 among other things. If you're changing anything within the data, such as setting blank values to N/A, make these changes using R scripts and save the scripts for posterity. I've written a  [blog post](link) on effectively importing data into r using the readr library.
+
+<br  />
+
+#### Project Structure
+
+Where do all of these different datasets go? Where should my plots and scripts and markdown documents go? Instead of throwing all of your files into the project folder and calling it good, try to keep your project structured with sub-folders. My projects always end up looking something like this: 
+
+turtle_analysis/ <br  />
 |- input/ <br  />
 |\-\-\- about_turtles.txt <br  />
 |\-\-\- ocean_temp.csv <br  />
 |\-\-\- turtle_sizes.csv <br  />
 | <br  />
 |- scripts/ <br  />
-|\-\-\- turtle_eda.R <br  />
+|\-\-\- turtle_eda.Rmd <br  />
 |\-\-\- turtle_height_plot.R <br  />
 |\-\-\- turtle_width_plot.R <br  />
 | <br  />
@@ -41,21 +57,41 @@ Once you've followed intiated a git repository inside your project folder you're
 |- final_analysis.html <br  />
 |- README.md <br  /> 
 
-I always keep these three main folders within a project folder: input, scripts, and output. the input folder is where I store all of the project's data sources, usually .csv, .txt, and .xlsx files. The scripts folder is where the .R scripts go, and the output folder is where I save the products of those .R scripts.
+I use three main folders inside a project folder, input, scripts, and output. input/ is where all of the datasets related to your project reside. Remember, even if you don't use the original, unaltered dataset, it's still best to keep a copy of it. The scripts/ folder is where all of your programming goes. If you alter the dataset in any way, do it with a script, and save that script! If you create any plot, table, or calculation that may be useful, save the .R or .py file in in scripts/. Every script you create should explicitly load input files and explicitly save output files. finally, the output/ folder is where any figures that you create using scripts reside. 
 
-Your output should always be easily traced back to an input dataset. Each output should have it's own R script in the script folder, the script should have analogous name to the output. Each individual script should explicitily load the dataset and libraries that it requires. Always keeping the link between these three elements of analysis is the key to easy reproducability. 
+Outside of these three folders I'll create the final analysis, cherry-picking my favorite scripts and figures, adding a text explaination to create a compelling data-driven story. README.md files are useful for displaying your project in an easy to read manner on github. These can easily be created from a .Rmd analysis file. 
 
-Summarizing files such as final_analysis.Rmd / .html and README.md (for github) are placed in the project folder directly. Sometimes I make .txt to-do lists and keep them in the project folder as I'm working on the project as well. Summary compile the inputs, scripts, and outputs into one coherent analysis. Not all of the files you generate have to be included in the final analysis, just the ones that you think are important. 
+<br  />
 
-keep commiting to github often, I refer to previous commits in every project ive done. 
+#### R Markdown
+R markdown documents are awesome! If you've never used an R Markdown document before, check out Chapter 27 of Hadley Whickam's free book [R for Data Science](http://r4ds.had.co.nz/). It's a pretty quick read, within 30 minutes you should be up and running with R Markdown. If you need further assistance, refer to the [R Markdown Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) by RStudio.
 
-i do exploratory data analysis in .Rmd, find something useful create a script for that specifically 
+R markdown documents are great for exploratory data anylsis because you can quickly iterate through plot versions and easily keep notes on what you're doing in the same document. Once you've found something that is worth keeping, simply open up a new .R script copy and paste the associated code (including the explicit load and save commands), and move on to the next problem. 
 
-read about how to use rmd in hadley wickhams book, super useful. 
+Once your done working through your project, open up a new .Rmd file and glue together your best scripts with explaination text. Before you know it, you'll have a summary document worthy of sharing! With the click of a button, RStudio can 'knit' your R Markdown document into github-flavored markdown, normal markdown, .html, .pdf, and more. 
 
+<br  />
 
-## Reading and Writing Files with readr
+#### Blog Posts
 
-#### setting directories 
-setwd()
-getwd()
+If your interested in making blog posts from your analysis, just as I do on this very site, R markdown is going to be your best friend. This site is created using jeykll, the static site generator. Read more about Jekyll [here](https://jekyllrb.com/). It is hosted for free on github pages. Read more about github pages [here](https://pages.github.com/).
+
+Once I've finished my analysis in .Rmd, I knit the file into a markdown (.md) document using the knitr library. To change your output to .md, alter the YAML header of the R Markdown document to "output: markdown_document". Save and proceed to knit the document, and viola, final_analysis.md appears in your project directory along with it's associated images. 
+
+Using your favorite stand alone code editor (mine is Visual Studio Code), copy the markdown document into the posts/ directory of your websites blog, and copy the associated images to the images/ directory. After a few minor tweeks push a github commit and you're blog will be updated with the new post! Pretty cool! 
+
+<br  />
+
+#### Take Away Points
+
+- Use snake_case when naming files and folders! <br  />
+- Use version control!  <br  />
+- Never overwrite your original dataset!  <br  />
+- Explicitly load inputs in your scripts!  <br  />
+- Explicitly save outputs in your scripts!  <br  />
+- Keep a project folder tidy with 3 sub-folders!  <br  />
+- R Markdown is awesome, try it!  <br  />
+- Making a blog is easier than you think (and free), try it!  <br  />
+
+That's all for now, until next time, <br  />
+\- Fisher
