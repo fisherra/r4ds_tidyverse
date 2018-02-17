@@ -147,6 +147,7 @@ library('DBl')         # used for database files, must combine with specific bac
 library('RMySQL')      # used for MySQL backend (with DBl)
 library('RSQLite')     # used for SQLLite backend (with DBl)
 library('RPostgreSQL') # used for PostgreSQL (with DBl)</code></pre>
+<p><br /></p>
 </div>
 <div id="reading-data" class="section level3">
 <h3>Reading Data</h3>
@@ -180,14 +181,112 @@ read_csv(&quot;a,b,c
          skip = 0,                   # number of lines to skip before reading data
          progress = show_progress()  # display a progress bar
          )</code></pre>
+<p><br /></p>
 </div>
 <div id="parsing-data" class="section level3">
 <h3>Parsing Data</h3>
-<p>columns date-times all that nonsense</p>
+<p>Rarely do you read in files that have clean, correctly structured values. The readr library has a family of parsing functions built to analyze a character string into logical syntactic components. In other words, the parsing family of functions will clean up your data’s typing and transform the values into their correct data type. That’s the idea anyway.</p>
+<p>Most often I’ll use parsing to clean up numbers in a dataset, numeric entries can be surrounded by unwanted characters, such as $100 or 60%. There’s also the issue of grouping characters, i.e. 1,000,000 is written instead of 10000000. Finally, you may be working with foreign data that uses the comma as a decimal point instead of the period. Let’s go through how to correct these common issues using parsing.</p>
+<p><br /></p>
+<div id="numbers---unwanted-characters" class="section level5">
+<h5>Numbers - Unwanted Characters</h5>
+<pre class="r"><code>a &lt;- &quot;The price is $1993&quot;
+str(a)</code></pre>
+<pre><code>##  chr &quot;The price is $1993&quot;</code></pre>
+<pre class="r"><code>a &lt;- parse_number(a)
+str(a)</code></pre>
+<pre><code>##  num 1993</code></pre>
+<p><br /></p>
+</div>
+<div id="numbers---decimal-point-problems" class="section level5">
+<h5>Numbers - Decimal Point Problems</h5>
+<pre class="r"><code>a &lt;- &quot;1,99&quot;
+str(a)</code></pre>
+<pre><code>##  chr &quot;1,99&quot;</code></pre>
+<pre class="r"><code>a &lt;- parse_double(a, locale = locale(decimal_mark = &quot;,&quot;))
+str(a)</code></pre>
+<pre><code>##  num 1.99</code></pre>
+<p><br /></p>
+</div>
+<div id="numbers---grouping-markers" class="section level5">
+<h5>Numbers - Grouping Markers</h5>
+<pre class="r"><code>a &lt;- &quot;$100.000.000&quot;
+str(a)</code></pre>
+<pre><code>##  chr &quot;$100.000.000&quot;</code></pre>
+<pre class="r"><code>a &lt;- parse_number(a, locale = locale(grouping_mark = &quot;.&quot;))
+str(a)</code></pre>
+<pre><code>##  num 1e+08</code></pre>
+<p><br /></p>
+<p>Dates and times can be confusing since there are so many ways to write them. ISO8601 is an international date-time standard in which the components are ordered largest to smallest - year, month, day and optionally a T followed by hour, minute, second. If no time is specified, the parsing function sets the time to midnight.</p>
+<p><br /></p>
+</div>
+<div id="date---times" class="section level4">
+<h4>Date - Times</h4>
+<pre class="r"><code>a &lt;- &quot;20180228&quot;
+parse_datetime(a)</code></pre>
+<pre><code>## [1] &quot;2018-02-28 UTC&quot;</code></pre>
+<pre class="r"><code>b &lt;- &quot;2018-02-28T20:10:59&quot;
+parse_datetime(b)</code></pre>
+<pre><code>## [1] &quot;2018-02-28 20:10:59 UTC&quot;</code></pre>
+<p><br /></p>
+<p>Parsing only dates or only times is also straight forward. The dates function expects a four digit year and a - or / followed by the month with a - or / and the day. The times function expects the hour followed by a colon, :, followed by the minute and another colon, then the second.</p>
+<p><br /></p>
+</div>
+<div id="dates-or-times" class="section level4">
+<h4>Dates or Times</h4>
+<pre class="r"><code>a &lt;- &quot;2018/02/28&quot;
+parse_date(a)</code></pre>
+<pre><code>## [1] &quot;2018-02-28&quot;</code></pre>
+<pre class="r"><code>b &lt;- &quot;11:11:11&quot;
+parse_time(b)</code></pre>
+<pre><code>## 11:11:11</code></pre>
+<p><br /></p>
+<p>Say you’ve got a date-time to parse that isn’t in the ISO8601 format, perhaps the months are spelled out, or the data isn’t in 24 hour format. Here in the US we often write a date as month-day-year; <em>parse_datetime( )</em> won’t like that one bit. For these common situations, you can create your own date-time format using these building blocks.</p>
+<p><br /></p>
+<div id="year" class="section level5">
+<h5>Year <br /></h5>
+<p>%Y - 4 digit year number <br /> %y - last 2 digit year number; 00-69 = 2000 - 2069, 70-99 = 1970 - 1999 <br /></p>
+</div>
+<div id="month" class="section level5">
+<h5>Month <br /></h5>
+<p>%m - 2 digit month number <br /> %b - abbreviated month name, e.g. “Jan” <br /> %B - full month name, e.g. “January” <br /></p>
+</div>
+<div id="day" class="section level5">
+<h5>Day <br /></h5>
+<p>%d - 2 digit day number <br /> %e - option leading space <br /></p>
+</div>
+<div id="time" class="section level5">
+<h5>Time <br /></h5>
+<p>%H - 0 to 23 hour <br /> %I - 0 to 12 hour, must be used with %p <br /> %p - AM / PM indicator <br /> %M - minutes <br /> %S - integer seconds <br /> %OS - real seconds <br /> %Z - time zone, e.g. America/Chicago <br /> %z - time zone, offset from UTC, e.g. +0800 <br /></p>
+</div>
+<div id="other" class="section level5">
+<h5>Other <br /></h5>
+<p>%. - skips one non-digit character <br /> %* - skips any number of non-digits <br /></p>
+<p><br /></p>
+</div>
+</div>
+<div id="custom-date-times" class="section level4">
+<h4>Custom Date-Times</h4>
+<pre class="r"><code>a &lt;- &quot;Jan 7 2018&quot;
+parse_date(a, &quot;%b %d %Y&quot;)</code></pre>
+<pre><code>## [1] &quot;2018-01-07&quot;</code></pre>
+<pre class="r"><code>b &lt;- &quot;12:45 am&quot;
+parse_time(b, &quot;%I:%M %p&quot;)</code></pre>
+<pre><code>## 00:45:00</code></pre>
+<p><br /></p>
+</div>
 </div>
 <div id="writing-data" class="section level3">
 <h3>Writing Data</h3>
-<p>goes to outputs scripts save in scripts</p>
+<div id="write_csv" class="section level4">
+<h4>write_csv()</h4>
+</div>
+<div id="write_excel_csv" class="section level4">
+<h4>write_excel_csv()</h4>
+</div>
+<div id="ggsave" class="section level4">
+<h4>ggsave()</h4>
+</div>
 </div>
 
 
