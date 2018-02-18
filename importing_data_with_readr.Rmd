@@ -2,7 +2,7 @@
 title: "R4DS - Reading Data with readr"
 author: "Fisher Ankney"
 date: "February 13, 2018"
-output: html_document
+output: md_document
 ---
 This is the second of a six-part series summarizing the core concepts of Hadley Wickham's textbook, R for Data Science <http://r4ds.had.co.nz/>. In the previous [post](link) I've abridged the book’s chapters that cover data visualization with ggplot2.
 
@@ -201,7 +201,7 @@ When your analysis is complete and you’re ready to save the altered .csv files
 
 <br  />
 
-#### Writing .csv Files
+#### .csv Files
 
 ```{r, eval=FALSE}
 write_csv(
@@ -218,7 +218,7 @@ delimiters, missing values and more. Type ?write_csv into the R console for more
  
 <br  />
 
-#### Writing Image Files
+#### Image Files
 
 ```{r, eval=FALSE}
 library(‘ggplot2’)
