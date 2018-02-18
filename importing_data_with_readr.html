@@ -220,8 +220,8 @@ str(a)</code></pre>
 <p>Dates and times can be confusing since there are so many ways to write them. ISO8601 is an international date-time standard in which the components are ordered largest to smallest - year, month, day and optionally a T followed by hour, minute, second. If no time is specified, the parsing function sets the time to midnight.</p>
 <p><br /></p>
 </div>
-<div id="date---times" class="section level4">
-<h4>Date - Times</h4>
+<div id="iso8601-format" class="section level4">
+<h4>ISO8601 Format</h4>
 <pre class="r"><code>a &lt;- &quot;20180228&quot;
 parse_datetime(a)</code></pre>
 <pre><code>## [1] &quot;2018-02-28 UTC&quot;</code></pre>
@@ -265,8 +265,8 @@ parse_time(b)</code></pre>
 <p><br /></p>
 </div>
 </div>
-<div id="custom-date-times" class="section level4">
-<h4>Custom Date-Times</h4>
+<div id="custom-date---times" class="section level4">
+<h4>Custom Date - Times</h4>
 <pre class="r"><code>a &lt;- &quot;Jan 7 2018&quot;
 parse_date(a, &quot;%b %d %Y&quot;)</code></pre>
 <pre><code>## [1] &quot;2018-01-07&quot;</code></pre>
@@ -278,14 +278,31 @@ parse_time(b, &quot;%I:%M %p&quot;)</code></pre>
 </div>
 <div id="writing-data" class="section level3">
 <h3>Writing Data</h3>
+<p>After you’ve finally read in the data and worked out if it’s a date or time, a number or name, readr can help you with one final thing: writing out data. It’s important to explicitly write out new files and plots from within your R scripts for maximum reproducabiity. Always a good idea to be able to answer the question “where did this plot come from”.</p>
 <div id="write_csv" class="section level4">
 <h4>write_csv()</h4>
-</div>
-<div id="write_excel_csv" class="section level4">
-<h4>write_excel_csv()</h4>
+<pre class="r"><code>write_csv(
+  dataframe,                    #
+  &quot;path/to/file/filename.csv&quot;,  #
+  delim = &quot; &quot;,                  #
+  na = &quot;NA&quot;,                    #
+  append = FALSE                # 
+)</code></pre>
+<p>A straight forward function, <em>write_csv( )</em> saves your dataframe as a .csv file to the destination you specify. If instea you need to save a plot, as is often the case, load the ggplot2 library (it’s apart of the tidyverse library) and use the <em>ggsave( )</em> funtion.</p>
+<p><br /></p>
 </div>
 <div id="ggsave" class="section level4">
 <h4>ggsave()</h4>
+<pre class="r"><code>ggsave(
+  filename = &quot;path/to/file/filename.png&quot;,  #
+  plot = last_plot(),          #
+  scale = 1,                   #
+  width = NA,                  # 
+  height = NA                  #
+)</code></pre>
+<p>That’s the ins and outs of the readr package as taught in the R for Data Science ebook produced by Hadley Wickham. These basic functions are essential to geting your data science project up and running. For more tips and tricks on properly maintaining a data science project, check out my post <a href="link">Data Science Project Management</a>.</p>
+<p>If you found this summary helpful, stay tuned for part thre of the R4DS summary series, data wrangling with dplyr.</p>
+<p>Until next time, <br /> - Fisher</p>
 </div>
 </div>
 
