@@ -256,30 +256,29 @@ lead()         # offset, allows to refer to leading (+1) value</code></pre>
 ## 10  2013     1     1
 ## # ... with 336,766 more rows</code></pre>
 <p><br /></p>
-<p>Select keeps only the variables you mention as arguements behind the initial dataframe arguement. In the above example, select returns all observations between the year and day variable, in this case that just means the month variable.</p>
+<p>In a dataframe with numerous variables it’s easy become overwhelmed and broad with analysis. <em>Select</em> reduces the number of variabbles in a dataframe, only keeping variables that the user inputs as arguements. In this example, flights is reduced from 19 variables to the variables year, month and day.</p>
 <p><br /></p>
 </div>
 <div id="mutate" class="section level4">
 <h4>Mutate</h4>
-<pre class="r"><code>mutate(flights, speed = distance / air_time * 60)</code></pre>
-<pre><code>## # A tibble: 336,776 x 20
-##     year month   day dep_t… sched_… dep_d… arr_… sched… arr_d… carr… flig…
-##    &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;   &lt;int&gt;  &lt;dbl&gt; &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;
-##  1  2013     1     1    517     515   2.00   830    819  11.0  UA     1545
-##  2  2013     1     1    533     529   4.00   850    830  20.0  UA     1714
-##  3  2013     1     1    542     540   2.00   923    850  33.0  AA     1141
-##  4  2013     1     1    544     545  -1.00  1004   1022 -18.0  B6      725
-##  5  2013     1     1    554     600  -6.00   812    837 -25.0  DL      461
-##  6  2013     1     1    554     558  -4.00   740    728  12.0  UA     1696
-##  7  2013     1     1    555     600  -5.00   913    854  19.0  B6      507
-##  8  2013     1     1    557     600  -3.00   709    723 -14.0  EV     5708
-##  9  2013     1     1    557     600  -3.00   838    846 - 8.00 B6       79
-## 10  2013     1     1    558     600  -2.00   753    745   8.00 AA      301
-## # ... with 336,766 more rows, and 9 more variables: tailnum &lt;chr&gt;, origin
-## #   &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute
-## #   &lt;dbl&gt;, time_hour &lt;dttm&gt;, speed &lt;dbl&gt;</code></pre>
+<pre class="r"><code>mutate(flights, speed = distance / air_time * 60) %&gt;%
+  select(tailnum, distance, air_time, speed)</code></pre>
+<pre><code>## # A tibble: 336,776 x 4
+##    tailnum distance air_time speed
+##    &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+##  1 N14228      1400    227     370
+##  2 N24211      1416    227     374
+##  3 N619AA      1089    160     408
+##  4 N804JB      1576    183     517
+##  5 N668DN       762    116     394
+##  6 N39463       719    150     288
+##  7 N516JB      1065    158     404
+##  8 N829AS       229     53.0   259
+##  9 N593JB       944    140     405
+## 10 N3ALAA       733    138     319
+## # ... with 336,766 more rows</code></pre>
 <p><br /></p>
-<p>Mutate adds a new variable based on the existing variables, while retaining these existing variables. In the above example, mutate creates a variable flight, which takes each observations distance value, divides it by each observations air_time value, then multiplies the product? by 60. Mutatedoes vectorized math.</p>
+<p><em>Mutate</em> allows users to alter current variables and create new ones through various vectorized functions. In the above example the variable speed is created and is equal to distance divided by air time multiplied by 60. The pipe function %&gt;%, is used to move the <em>mutate</em> output to <em>select</em>. The new variable, speed, is output by the <em>select</em> function, along with each flight’s tail number, air time, and travel distance.</p>
 <p><br /></p>
 </div>
 <div id="summarise" class="section level4">
@@ -290,15 +289,15 @@ lead()         # offset, allows to refer to leading (+1) value</code></pre>
 ##   &lt;dbl&gt;
 ## 1  12.6</code></pre>
 <p><br /></p>
-<p>Summarise doesnt seem to be working right now. The output has one row for each group. In the above example summarise creates a new variable, yeah I dont really know how to use summarise correctly. look this up.</p>
+<p><em>Summarise</em> is perhaps the most complicated function in dplyr. Often used in conjunction with <em>group_by</em>, <em>summarise</em> collapses many values into a single summary. In the above example. <em>summarise</em> finds the mean departure delay of all 336,776 observations in the flights dataset. As a result, the single value 12.64 (minutes) summarises the mean departure delay.</p>
 <p><br /></p>
 </div>
 <div id="group-by" class="section level4">
 <h4>Group By</h4>
-<pre class="r"><code>group_by(flights, dest) %&gt;%                        # group flights by destination
-  summarise(count = n(),                           # summarise # of flights have invidual dest as variable &quot;count&quot;
-            dist = mean(distance, na.rm = TRUE),   # distance = mean distance to each group_by() destination
-            delay = mean(arr_delay, na.rm = TRUE)  # delay = mean arrival delay for each group_by() destination
+<pre class="r"><code>group_by(flights, dest) %&gt;%                       
+  summarise(count = n(),                          
+            dist = mean(distance, na.rm = TRUE),  
+            delay = mean(arr_delay, na.rm = TRUE) 
             ) </code></pre>
 <pre><code>## # A tibble: 105 x 4
 ##    dest  count  dist  delay
@@ -315,18 +314,18 @@ lead()         # offset, allows to refer to leading (+1) value</code></pre>
 ## 10 BHM     297   866  16.9 
 ## # ... with 95 more rows</code></pre>
 <p><br /></p>
-<p>A function that compliments summarise nicely, group by does groups by. in the above example…</p>
+<p><em>Summarise</em> becomes extremely useful when paired with the final primary dplyr function, <em>group_by</em>. <em>group_by</em> changes the unit of analysis from the complete dataset to an individual group, thus changing the scope of summarise. In the above example, the flights dataset is grouped by the dest variable, destination. Grouping by destination by itself does nothing to the dataframe, so the then pipe, %&gt;%, is used to push the output to the <em>summarise</em> function. Summarise first creates a count variable that is equivilant to the function <em>n( )</em>. <em>n( )</em> is another one of those secondary dplyr functions that often comes in handy; <em>n( )</em> is a function that finds the number of observations in the current group. Next, <em>summarise</em> creates a variable named distance based off the mean distance travelled by each observation, as grouped by destination. Finally <em>summarise</em> creates a variable named delay, based off the mean arrival delay each observation experienced, as grouped by destination. The resulting dataframe gives excellent insight into each of the 105 destinations present in the flights dataset.</p>
 <p><br /></p>
 </div>
 <div id="complex-inqueries" class="section level4">
 <h4>Complex Inqueries</h4>
-<pre class="r"><code>denver_xmas_delay &lt;- flights %&gt;%                          # create new dataframe, denver_xmas_delay
-  select(-tailnum) %&gt;%                                    # leave out tailnum from new dataframe
-  filter(month == 12 &amp; day == 25 &amp; dest == &quot;DEN&quot;) %&gt;%     # only keep christmas day flights, destination denver
-  group_by(carrier) %&gt;%                                   # group further analysis by carrier company
-  summarise(num_flights = n(),                            # num_flights that fits analysis, grouped by carrier
-            avg_delay = mean(dep_delay)) %&gt;%              # average delay (by carrier) = mean(departure delay)
-  arrange(desc(avg_delay))                                # arrange (by carrier) by biggest delay
+<pre class="r"><code>denver_xmas_delay &lt;- flights %&gt;%                          # create new dataframe, denver_xmas_delay, then
+  select(-tailnum) %&gt;%                                    # select all variables except for tailnum 
+  filter(month == 12 &amp; day == 25 &amp; dest == &quot;DEN&quot;) %&gt;%     # filter only flights with destination Denver on Christmas
+  group_by(carrier) %&gt;%                                   # now group fights by carrier company for summary analysis
+  summarise(num_flights = n(),                            # create num_flights variable, equal to the count sorted by carrier
+            avg_delay = mean(dep_delay)) %&gt;%              # create avg_delay variable, equal to mean departure delay by carrier
+  arrange(desc(avg_delay))                                # arrange these carriers by the new avg_delay variable
 denver_xmas_delay                                         # print results</code></pre>
 <pre><code>## # A tibble: 5 x 3
 ##   carrier num_flights avg_delay
@@ -336,9 +335,9 @@ denver_xmas_delay                                         # print results</code>
 ## 3 DL                3    - 1.00
 ## 4 F9                2    - 4.00
 ## 5 B6                1    - 5.00</code></pre>
-<p>All of these primary functions can be strung together using the %&gt;% ‘then’ pipe, and any combination of the forementioned secondary commands. Build up the chain one command at a time, don’t try to write it all then run it all at once. Possible to sort through millions of elements with relative ease, create new elements, focus your data analysis, extract meaning from enormous and complex datasets. dplyr is truely the bread and butter of data science with R, it may frusterate at times but it’s an extremely powerful tool.</p>
-<p>Read the chapter on it if you’d like practice, again this is just a quick reference if you forget the important core components of dplyr or how to use them.</p>
-<p>If you found this summary helpful, stay tuned for part four of the R4DS summary series, Tidy Data with tidyr.</p>
+<p><br /></p>
+<p>All of these primary functions are effortlessly strung together with the pipe, %&gt;%, to create a complex and extremely specific inquery into the dataframe. Dplyr’s advantage over base R resides in it’s readability (largely due to the pipe), as well as it’s intuitive use functions. I find it’s far easier to build a complex inquery like the example above, one step at a time. It’s far easier after each step instead of saving it for the end.</p>
+<p>Dplyr can often be a frusterating package to work with, but once you’ve become proficient at data wrangling, Hadley Wickham’s package becomes near indespensable. Hopefully this reference guide can help you on your journey to mastering dplyr and data wrangling with R. Stay tuned for part four of the six part R4DS summary series, tidy data with tidyr.</p>
 <p>Until next time, <br /> - Fisher</p>
 </div>
 
