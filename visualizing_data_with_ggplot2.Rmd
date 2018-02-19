@@ -3,7 +3,7 @@ title: "R for Data Science Summary Series I"
 subtitle: "Data Visualisation with ggplot2"
 author: "Fisher Ankney"
 date: "January 19, 2018"
-output: md_document
+output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

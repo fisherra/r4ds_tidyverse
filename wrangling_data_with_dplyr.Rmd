@@ -4,12 +4,11 @@ author: "Fisher Ankney"
 date: "February 18, 2018"
 output: html_document
 ---
-This is the third of a six-part series summarizing the core concepts of Hadley Wickham's textbook, R for Data Science <http://r4ds.had.co.nz/>. In the previous [post](link) I've abridged the book’s chapters that cover data handling with readr.
+This is the third installment of a six-part series summarizing the   concepts of Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous blog [post](link) I've abridged the book’s chapters that cover importing, parsing, and exporting data with readr.
 
-In this post, I’ll be focusing on the dplyr package. I consider dplyr to be the centr peice and of the tidyverse, unfortunately it also has the steepest learning curve. I'm not going to attempt to teach dplyr to you, the only way to learn it is through hours of practice, instead I hope to offer a quick refresher on functions, what they do, and examples of their use. 
+In this post, I’ll be focusing on chapter five which covers data transformation primarly with the dplyr package. I consider dplyr to share tidyverse center stage with ggplot2; unfortunetly dplyr has a steeper learning curve than it's co-star. I've written a post on data visualization with ggplot2 [here](post). In the case of dplyr, it is best learned through hours of practice rather than careful explaination. As such, I hope to offer an easily understood reference guide in this post, rather than a detailed tutorial.
 
-
-For more useful resources on dplyr, reference these links:
+For more in-depth resources on dplyr, reference these links:
 
 - 
 - 
@@ -26,11 +25,13 @@ library('dplyr')          # dplyr specifically
 
 <br  />
  
- Many assert that over 80% of an analytical project is data wrangling, that makes for ample opportunity to become a masterful dplyr user. Seven core functions make up the core component of dplyr. They can be easy to mix up at first, so I've created this list with a short comment to help you keep them straight. Below this list of seven primary dplyr commands is a longer list of secondary commands. Although used less commonly, these cmmands can also be helpful in a variety of circumstances. 
- 
+Some data scientists assert that over 80% of their time is used wrangling data; see this as an opportunity and important reason to master the art of dplyr. If you're looking to make the most of your data analysis routine, it makes sense to streamline the largest portion of your work-load before seeking efficiency elsewhere. 
+
+I've compiled this list of seven primary commands that form the core of dplyr's functionality. These are the most influential and called upon functions in the dplyr package. Seven second-tier functions follow; these commands are commonly useful but not as influential as the primary functions listed before them. 
+
 <br  />
 
-#### Primary Commands
+#### Primary Functions
 ```{r, eval=FALSE}
 filter()       # select rows based on value 
 arrange()      # sort rows based on values 
@@ -43,33 +44,31 @@ group_by()     # analyze by specified group, useful for summarise
 
 <br  />
 
-#### Secondary Commands 
+#### Secondary Functions
 ```{r, eval=FALSE}
-transmute()    # create new variables from existing ones, destroy existing ones
+transmute()    # create new variables from existing ones, remove existing variables
 ungroup()      # literally the name
-rename()       # literally the name 
 desc()         # descending order (large to small, z to a)
 count()        # simple function counting entries in a variable
 n()            # number of entries
 lag()          # offset, allows to refer to lagging (-1) value
 lead()         # offset, allows to refer to leading (+1) value
-cumsum()       # cumulative sum, also prod, mean, min, max 
 ```
 
 <br  />
 
-There's a lot to go through, I'll just explore primary commands in straight foward examples. Again the best way to learn dplyr is to use it. Hadley Wickham's R for Data Science book offers hours worth of challenges using the flights dataset, these are just the most straight forward usages.
+Of these functions I'll specifically examplify the first seven, and attempt to include the second seven throughout. Again, the goal of this post is to be a quick-reference as to the functionality of dplyr, not an in dpeth tutorial. The best way to learn data wrangling is experience, [R for Data Science Chapter 5](http://r4ds.had.co.nz/transform.html) has many examples and challenges you can work through to solidify your dplyr skills. 
 
 <br  />
 
-#### Dataset 
+#### Example Dataset 
 ```{r}
 flights
 ```
 
 <br  />
 
-The flights dataset gives on-time data for all flights that departed from New York City in 2013. There are 19 columns or variables, and 336,776 rows or observations. A large and diverse dataset such as flights is perfect for learning how to use dplyr. 
+Flights is a classic dataset that is large and diverse, perfect for testing out the primary functions of dpylr. This dataset gives on-time data for all flights that departed from New York City in 2013. There are 19 columns or variables, and 336,776 rows or observations. 
 
 <br  /> 
 
@@ -80,7 +79,7 @@ filter(flights, month == 12 & day == 25)
 
 <br  />
 
-Filter finds rows in which a condition is true. In the above example the filter function is used on the flights dataset, as declared in the first arguement. A set of condition follows - the months variable must equal 12 (December), and the day variable must also equal 25. These conditions return a flights dataset with only 719 observations, these are the 719 flights that departed New York City on Christmas Day, 2013. 
+*Filter* is a simple function that finds, or 'filters' observations that match true to a declared condition. In this example *filter* first's arguement is the flights dataset, the following arguements declare the conditions to be met. Retain observations (rows) with the months variable equal to 12, and the day variable equal to 25. The result is a dataframe with 719 flights that departed New York City on Christmas Day, 2013. 
 
 <br  />
 
@@ -91,7 +90,7 @@ arrange(flights, desc(dep_time))
 
 <br  />
 
-Arrange is a simple function, it reorders observations in a described fashion. The above example reorders the flights dataset by descending departure time. In other words, flights with the greatest (latest) departure time are moved to the top of the dataset. Flights with the least (earliest) departure time are moved to the bottom of the dataset. 
+Often times observations within a dataframe are ordered arbitrarily, or unproductively. *Arrange* reorders observations according to it's user specified arguements. In this exmaple the flights dataframe is called upon as the first arguement once again; this is common syntax within dplyr functions and I won't be referencing it henceforth. The second argeument is *desc(dep_time)*. *desc* is one of the secondary functions listed previously; it simply transforms a vector into a format that will be sorted in descending order. *dep_time* is the flights variable departure time, a number from 0000 to 2400, indicating the actual departure time of an individual aircraft. The resulting dataframe has all 336,776 observations sorted from latest (highest) to earliest (lowest) departure time. 
 
 <br  /> 
 
@@ -119,7 +118,7 @@ Mutate adds a new variable based on the existing variables, while retaining thes
 
 #### Summarise
 ```{r}
-summarise(flights, delay = mean(dep_delay)) 
+summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
 ```
 
 <br  />
