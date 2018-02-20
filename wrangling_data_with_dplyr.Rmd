@@ -2,17 +2,18 @@
 title: "R4DS - Wrangling Data with dplyr"
 author: "Fisher Ankney"
 date: "February 18, 2018"
-output: html_document
+output: md_document
 ---
-This is the third installment of a six-part series summarizing the   concepts of Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous blog [post](link) I've abridged the book’s chapters that cover importing, parsing, and exporting data with readr.
+This is the third installment of a six-part series summarizing the concepts of Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous blog [post](link) I abridged the book’s chapters that cover importing, parsing, and exporting data with readr.
 
-In this post, I’ll be focusing on chapter five which covers data transformation primarly with the dplyr package. I consider dplyr to share tidyverse center stage with ggplot2; unfortunetly dplyr has a steeper learning curve than it's co-star. I've written a post on data visualization with ggplot2 [here](post). In the case of dplyr, it is best learned through hours of practice rather than careful explaination. As such, I hope to offer an easily understood reference guide in this post, rather than a detailed tutorial.
+In this post, I’ll be focusing on chapter five which covers data transformation primarily with the dplyr package. dplyr shares tidyverse center stage with ggplot2; unfortunately, dplyr has a steeper learning curve than its co-star, ggplot2. I've written a post on data visualization with ggplot2 [here](post). When it comes to dplyr and data wrangling, it is a topic best learned through hours of practice and experience rather than careful explanation. As such, I hope to offer an easily understood reference guide in this post, rather than a detailed tutorial.
 
 For more in-depth resources on dplyr, reference these links:
 
-- 
-- 
-- 
+- [RStudio’s Data Wrangling Cheatsheet]( https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+- [Data School’s dplyr Tutorial Video](https://www.youtube.com/watch?v=jWjqLW-u3hc)
+- [CRAN Introduction to dplyr]( https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+- [CRAN dplyr Documentation (long)]( https://cran.r-project.org/web/packages/dplyr/dplyr.pdf)
 
 <br  />
 
@@ -37,8 +38,8 @@ filter()       # select rows based on value
 arrange()      # sort rows based on values 
 select()       # zoom in on specified columns
 mutate()       # create new variables from existing ones 
-summarise()    # collapse dataframe to single summary
-group_by()     # analyze by specified group, useful for summarise 
+summarize()    # collapse dataframe to single summary
+group_by()     # analyze by specified group, useful for summarize 
 %>%            # connecting pipe, read as "then"
 ```
 
@@ -57,7 +58,7 @@ lead()         # offset, allows to refer to leading (+1) value
 
 <br  />
 
-Of these functions I'll specifically examplify the first seven, and attempt to include the second seven throughout. Again, the goal of this post is to be a quick-reference as to the functionality of dplyr, not an in dpeth tutorial. The best way to learn data wrangling is experience, [R for Data Science Chapter 5](http://r4ds.had.co.nz/transform.html) has many examples and challenges you can work through to solidify your dplyr skills. 
+I'll give specific examples for the first seven of these functions, and attempt to include the second seven throughout these examples.  Again, the goal of this post is to be a quick-reference as to the functionality of dplyr, not an in-depth tutorial. The best way to learn data wrangling is experience, [R for Data Science Chapter 5](http://r4ds.had.co.nz/transform.html) has many examples and challenges you can work through to solidify your dplyr skills. 
 
 <br  />
 
@@ -79,7 +80,7 @@ filter(flights, month == 12 & day == 25)
 
 <br  />
 
-*Filter* is a simple function that finds, or 'filters' observations that match true to a declared condition. In this example *filter* first's arguement is the flights dataset, the following arguements declare the conditions to be met. Retain observations (rows) with the months variable equal to 12, and the day variable equal to 25. The result is a dataframe with 719 flights that departed New York City on Christmas Day, 2013. 
+*Filter* is a simple function that finds, or 'filters' observations that match true to a declared condition. In this example *filter* first's argument is the flights dataset, the following arguments declare the conditions to be met. Retain observations (rows) with the months variable equal to 12, and the day variable equal to 25. The result is a dataframe with 719 flights that departed New York City on Christmas Day, 2013. 
 
 <br  />
 
@@ -90,7 +91,7 @@ arrange(flights, desc(dep_time))
 
 <br  />
 
-Often times observations within a dataframe are ordered arbitrarily, or unproductively. *Arrange* reorders observations according to it's user specified arguements. In this exmaple the flights dataframe is called upon as the first arguement once again; this is common syntax within dplyr functions and I won't be referencing it henceforth. The second argeument is *desc(dep_time)*. *desc* is one of the secondary functions listed previously; it simply transforms a vector into a format that will be sorted in descending order. *dep_time* is the flights variable departure time, a number from 0000 to 2400, indicating the actual departure time of an individual aircraft. The resulting dataframe has all 336,776 observations sorted from latest (highest) to earliest (lowest) departure time. 
+Often observations within a dataframe are ordered arbitrarily, or unproductively. *Arrange* reorders observations according to its user specified arguments. In this example, the flights dataframe is called upon as the first argument once again; this is common syntax within dplyr functions and I won't be referencing it henceforth. The second argument is *desc(dep_time)*. *desc* is one of the secondary functions listed previously; it simply transforms a vector into a format that will be sorted in descending order. *dep_time* is the flights variable departure time, a number from 0000 to 2400, indicating the actual departure time of an individual aircraft. The resulting dataframe has all 336,776 observations sorted from latest (highest) to earliest (lowest) departure time. 
 
 <br  /> 
 
@@ -101,7 +102,7 @@ select(flights, year:day)
 
 <br  />
 
-In a dataframe with numerous variables it's easy become overwhelmed and broad with analysis. *Select* reduces the number of variabbles in a dataframe, only keeping variables that the user inputs as arguements. In this example, flights is reduced from 19 variables to the variables year, month and day. 
+In a dataframe with numerous variables it's easy become overwhelmed and broad with analysis. *Select* reduces the number of variables in a dataframe, only keeping variables that the user inputs as arguments. In this example, flights are reduced from 19 variables to the variables year, month and day. 
 
 <br  />
 
@@ -117,21 +118,21 @@ mutate(flights, speed = distance / air_time * 60) %>%
 
 <br  />
 
-#### Summarise
+#### Summarize
 ```{r}
-summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+summarize(flights, delay = mean(dep_delay, na.rm = TRUE))
 ```
 
 <br  />
 
-*Summarise* is perhaps the most complicated function in dplyr. Often used in conjunction with *group_by*, *summarise* collapses many values into a single summary. In the above example. *summarise* finds the mean departure delay of all 336,776 observations in the flights dataset. As a result, the single value 12.64 (minutes) summarises the mean departure delay. 
+*Summarize* is perhaps the most complicated function in dplyr. Often used in conjunction with *group_by*, *summarize* collapses many values into a single summary. In the above example. *summarize* finds the mean departure delay of all 336,776 observations in the flights dataset. As a result, the single value 12.64 (minutes) summarizes the mean departure delay. 
 
 <br  />
 
 #### Group By
 ```{r}
 group_by(flights, dest) %>%                       
-  summarise(count = n(),                          
+  summarize(count = n(),                          
             dist = mean(distance, na.rm = TRUE),  
             delay = mean(arr_delay, na.rm = TRUE) 
             ) 
@@ -139,17 +140,17 @@ group_by(flights, dest) %>%
 
 <br  /> 
 
-*Summarise* becomes extremely useful when paired with the final primary dplyr function, *group_by*. *group_by* changes the unit of analysis from the complete dataset to an individual group, thus changing the scope of summarise. In the above example, the flights dataset is grouped by the dest variable, destination. Grouping by destination by itself does nothing to the dataframe, so the then pipe, %>%, is used to push the output to the *summarise* function. Summarise first creates a count variable that is equivilant to the function *n( )*. *n( )* is another one of those secondary dplyr functions that often comes in handy; *n( )* is a function that finds the number of observations in the current group. Next, *summarise* creates a variable named distance based off the mean distance travelled by each observation, as grouped by destination. Finally *summarise* creates a variable named delay, based off the mean arrival delay each observation experienced, as grouped by destination. The resulting dataframe gives excellent insight into each of the 105 destinations present in the flights dataset. 
+*Summarize* becomes extremely useful when paired with the final primary dplyr function, *group_by*. *group_by* changes the unit of analysis from the complete dataset to an individual group, thus changing the scope of summarize. In the above example, the flights dataset is grouped by the dest variable, destination. Grouping by destination by itself does nothing to the dataframe, so the then pipe, %>%, is used to push the output to the *summarize* function. Summarize first creates a count variable that is equivalent to the function *n( )*. *n( )* is another one of those secondary dplyr functions that often comes in handy; *n( )* is a function that finds the number of observations in the current group. Next, *summarize* creates a variable named distance based off the mean distance travelled by each observation, as grouped by destination. Finally, *summarize* creates a variable named delay, based off the mean arrival delay each observation experienced, as grouped by destination. The resulting dataframe gives excellent insight into each of the 105 destinations present in the flights dataset. 
 
 <br  />
 
-#### Complex Inqueries
+#### Complex Inquiries
 ```{r}
 denver_xmas_delay <- flights %>%                          # create new dataframe, denver_xmas_delay, then
   select(-tailnum) %>%                                    # select all variables except for tailnum 
   filter(month == 12 & day == 25 & dest == "DEN") %>%     # filter only flights with destination Denver on Christmas
   group_by(carrier) %>%                                   # now group fights by carrier company for summary analysis
-  summarise(num_flights = n(),                            # create num_flights variable, equal to the count sorted by carrier
+  summarize(num_flights = n(),                            # create num_flights variable, equal to the count sorted by carrier
             avg_delay = mean(dep_delay)) %>%              # create avg_delay variable, equal to mean departure delay by carrier
   arrange(desc(avg_delay))                                # arrange these carriers by the new avg_delay variable
 denver_xmas_delay                                         # print results
@@ -157,9 +158,10 @@ denver_xmas_delay                                         # print results
 
 <br  />
 
-All of these primary functions are effortlessly strung together with the pipe, %>%, to create a complex and extremely specific inquery into the dataframe. Dplyr's advantage over base R resides in it's readability (largely due to the pipe), as well as it's intuitive use functions. I find it's far easier to build a complex inquery like the example above, one step at a time. It's far easier after each step instead of saving it for the end. 
+These primary dplyr functions are effortlessly strung together with the pipe, %>%, to create a complex and extremely specific inquiry into the dataframe. Dplyr's advantage over base R resides in its readability (largely due to the pipe), as well as it's intuitive use functions. I find it's far easier to build a complex inquiry like the example above, one step at a time. It's far easier after each step instead of saving it for the end. 
 
-Dplyr can often be a frusterating package to work with, but once you've become proficient at data wrangling, Hadley Wickham's package becomes near indespensable. Hopefully this reference guide can help you on your journey to mastering dplyr and data wrangling with R. Stay tuned for part four of the six part R4DS summary series, tidy data with tidyr. 
+Dplyr can often be a frustrating package to work with, but once you've become proficient at data wrangling, Hadley Wickham's package becomes near indispensable. Hopefully this reference guide can help you on your journey to mastering dplyr and data wrangling with R. Stay tuned for part four of the six part R4DS summary series, tidy data with tidyr. 
 
 Until next time, <br  />
 \- Fisher
+
