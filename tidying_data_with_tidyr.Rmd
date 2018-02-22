@@ -1,100 +1,99 @@
 ---
-title: "Untitled"
+title: "R4DS - Tidying Data with tidyr"
 author: "Fisher Ankney"
-date: "2/18/2018"
+date: "February 21, 2018"
 output: html_document
 ---
 
+This is the fourth installment of a six-part series summarizing the concepts of Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous blog [post](link) I abridged the book’s chapter that covers data wrangling with dplyr. 
+
+In this installment, I’ll be focusing on chapter twelve, the primary source for tidying data in R4DS. Four things to cover, first what is tidy data, and how can I tell if my data is tidy? Second, spreading and gathering data, third seperating and uniting data. finally, missing values. At first tidying data might seem like a clear cut step, when your done your done. Often tidyr functions come in handy later in analysis when you realize you want to join dataframes, or anything like that. Check out my post [text mining the hobbit](link) where I use tidyr in interesting ways throught the investigation. 
+
+For more in-depth resources on tidyr, reference these links:
+
+- 
+- 
+-
+-
+
+<br  />
+
+#### Libraries
+```{r, message=FALSE}
+library('tidyverse')      # includes tidyr
+library('tidyr')          # tidyr specifically
+```
+
+<br  />
+
+What is tidy data?
+
+<insert tidy data image here>
 
 
-############################
-##      How to tidyr      ##
-##    guide & snippets    ##
-############################
+### Functions
 
-# Fisher Ankney
-# January 2018
-
-######################################################################
-## Install Packages  #################################################
-######################################################################
-
-library('tidyverse') # all tidyverse packages
-library('tidyr') # tidyr specifically
-
-######################################################################
-## Tidy Data #########################################################
-######################################################################
-
-
-# dataframe     variable_1       variable_2      variable_3     
-# observe_1     value            value           value   
-# observe_2     value            value           value   
-# observe_3     value            value           value   
-# observe_4     value            value           value   
-# observe_5     value            value           value   
-
-######################################################################
-## Functions #########################################################
-######################################################################
-
+```{r eval=FALSE}
 gather()        # takes multiple clumns and collapsesinto key-value pairs
-
 spread()        # spreads a key-value pair across multiple columns
-
 separate()      # single column into multiple columns, defined seperator
-
 unite()         # multiple columns into single column, defined seperator
-
 left_join()     # combine a table 
-
 fill()          # fills missing values using the previous entry
+```
 
 
-######################################################################
-## Examples ##########################################################
-######################################################################
-
-## Gather ############################################################
+### Gather
+```{r eval=FALSE}
 table4a
 table4a %>% 
   gather(`1999`, `2000`, key = "year", value = "cases")
-
-# 'gather' columns titled `1999`, and `2000`, as these are values, 
-# not variables. 
-
-# 'key' a new column called 'year' to put 1999 and 2000 into. 
-
-# values associated with the new column 'year' need a new home
-# we now call them 'cases'. they still match with the intended years 
+```
 
 
+'gather' columns titled `1999`, and `2000`, as these are values, 
+not variables. 
+
+'key' a new column called 'year' to put 1999 and 2000 into. 
+
+values associated with the new column 'year' need a new home
+we now call them 'cases'. they still match with the intended years 
 
 
-## Spread ############################################################
 
+
+### Spread
+
+```{r eval=FALSE}
 table2 
 table2 %>%
 spread(key = type, value = count)
-
-# table 2's type column contains two different variables, cases and pop
-# we need to spread these into two new column heads, so spread(key = type, 
-# and the associated data is column count, or value = count). thats it!
+```
 
 
+table 2's type column contains two different variables, cases and pop
+we need to spread these into two new column heads, so spread(key = type, 
+and the associated data is column count, or value = count). thats it!
 
 
-## Seperate ############################################################
 
+
+### Seperate
+
+```{r eval=FALSE}
 table3
 table3 %>%
   seperate(rate, into = c("cases", "population", sep = "/"))
+```
 
-# pulls one column apart into multiple columns, default is by a 
-# non alphanumeric chr, but put in the sep variable if you want 
+pulls one column apart into multiple columns, default is by a 
+non alphanumeric chr, but put in the sep variable if you want 
 
-## dealing with missing values 
 
+
+### Missing Values  
+
+```{r eval=FALSE}
 tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
   separate(x, c("one", "two", "three"), extra="drop")
 # drops that extra value completely 
@@ -102,36 +101,46 @@ tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>%
 tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
   separate(x, c("one", "two", "three"), fill ="right")
 # fills the row by putting an NA on the right 
+```
 
 
 
 
-## Unite ##############################################################
 
+
+### Unite 
+
+```{r eval=FALSE}
 table5
 table5 %>%
   unite(full_year, century, year, sep = "")
 
-# declare a new column name, and unite two defined old variables by 
-# the indicated seperator. 
+```
+
+declare a new column name, and unite two defined old variables by 
+the indicated seperator. 
 
 
 
-## Join ############################################################
+### Join
 
+```{r eval=FALSE}
 tidy4a <- table4a %>% 
   gather(`1999`, `2000`, key = "year", value = "cases")
 tidy4b <- table4b %>% 
   gather(`1999`, `2000`, key = "year", value = "population")
 left_join(tidy4a, tidy4b)
-
-# after gathering the datasets into similiar, tidy dataframes, left_join()
-# combines them into a signle frame.
+```
 
 
+after gathering the datasets into similiar, tidy dataframes, left_join()
+combines them into a signle frame.
 
-## Fill ########################################################
 
+
+### Fill 
+
+```{r eval=FALSE}
 treatment <- tribble(
   ~ person,           ~ treatment, ~response,
   "Derrick Whitmore", 1,           7,
@@ -143,3 +152,10 @@ treatment %>%
   fill(person)
 
 # fill() will carry forward the last value for that column
+```
+
+<br  />
+
+
+Until next time, <br  />
+\- Fisher
