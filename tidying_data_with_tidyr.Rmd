@@ -5,20 +5,19 @@ date: "February 21, 2018"
 output: html_document
 ---
 
-This is the fourth installment of a six-part series summarizing the concepts of Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous blog [post](link) I abridged the book’s chapter that covers data wrangling with dplyr. 
+This is the fourth installment of a six-part series summarizing concepts from Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous [blog post](link) I abridged the book’s chapter that covers data wrangling with dplyr. 
 
-In this installment, I’ll be focusing on chapter twelve, the primary source for tidying data in R4DS. Four things to cover, first what is tidy data, and how can I tell if my data is tidy? Second, spreading and gathering data, third seperating and uniting data. finally, missing values. At first tidying data might seem like a clear cut step, when your done your done. Often tidyr functions come in handy later in analysis when you realize you want to join dataframes, or anything like that. Check out my post [text mining the hobbit](link) where I use tidyr in interesting ways throught the investigation. 
+In this installment, I'll be summarizing the tidyr package and tidy data practices, as taught in R for Data Science [Chapter 12](http://r4ds.had.co.nz/tidy-data.html). There are four components to the chapter and this summary blog post, the first being "what constitutes tidy data"?. The second and third component deal with correcting the two typical formatting issues of untidy data, and the fourth component dives into how to properly represent missing values in a dataset. 
 
-For more in-depth resources on tidyr, reference these links:
+For more resources on tidyr, reference these links:
 
-- 
-- 
--
--
+- [CRAN tidyr Documentation](https://cran.r-project.org/web/packages/tidyr/tidyr.pdf)
+- [STHDA tidyr Tutorial](http://www.sthda.com/english/wiki/tidyr-crucial-step-reshaping-data-with-r-for-easier-analyses)
+- [Journal Of Statistical Software: Tidy Data by Hadley Wickham](http://vita.had.co.nz/papers/tidy-data.pdf)
 
 <br  />
 
-#### Libraries
+### Libraries
 ```{r, message=FALSE}
 library('tidyverse')      # includes tidyr
 library('tidyr')          # tidyr specifically
@@ -26,30 +25,89 @@ library('tidyr')          # tidyr specifically
 
 <br  />
 
-What is tidy data?
-
-<insert tidy data image here>
-
-
-### Functions
+### Primary Functions
 
 ```{r eval=FALSE}
-gather()        # takes multiple clumns and collapsesinto key-value pairs
 spread()        # spreads a key-value pair across multiple columns
+gather()        # takes multiple columns and collapses into key-value pairs
 separate()      # single column into multiple columns, defined seperator
 unite()         # multiple columns into single column, defined seperator
-left_join()     # combine a table 
 fill()          # fills missing values using the previous entry
+complete()      # takes a set of columns and finds all unique combos
+```
+
+<br  />
+
+### Tidy Data
+
+There are three rules to tidy data -
+
+1. Each column is a variable <br  />
+2. Each row is an observation <br  />
+3. Each value has it's own cell <br  />
+
+<insert tidy data image here> 
+
+Tidy data is an easy and consistant way of storing data that makes further analytical steps more simple. Datasets that follow the three tidy data rules allow for R's vectorized nature to work it's magic. Other packages in the tidyverse, such as dplyr and ggplot2, expect datasets to be tidy when applying functions such as *mutate( )* and *ggplot( )*. Datasets may grow in size during the tidying process, but breaking down rows and columns into single observations and variables drastically simplifies the dataset for future analytics.
+
+Here's an example of a tidy dataset - 
+
+```{r}
+table1
+```
+
+<br  />
+
+Here's an example of an untidy dataset - 
+
+```{r}
+table2
+```
+
+<br  />
+
+Notice the differences between the two tables above; in table 1 the variables (columns) are country, year, cases, and population. In table 2 the variables are country, year, type and count. In table 2 the data is untidy; the observation, a specified country in a specified year, is spread among multiple rows. This is because population and cases are actually variables that should be column names, not values! 
+
+<br  /> 
+
+### Spread and Gather
+
+Spread and gather are two functions in the tidyr package that address these issues. While these functions are easy to use and understand, it's often quiet hard to determine what consitutes a discrete observation, and what constitutes a discrete variable. It takes time and practice to properly make these choices, but in general, I aim to break down observations and variables into the smallest and most easily retrievable chunks possible. 
+
+<br  />
+
+#### One Observation Across Multiple Rows
+
+The oppsoite of gather, used when an observation is scattered across mutliple rows. table2 is an example, an observation is a country in a year but each observation is spread across multiple rows. 
+
+```{r}
+table2 %>%
+spread(key = type, value = count)
+```
+
+<br  /> 
+
+table 2's type column contains two different variables, cases and pop
+we need to spread these into two new column heads, so spread(key = type, 
+and the associated data is column count, or value = count). thats it!
+
+
+<br  />
+
+#### One Variable Across Multiple Columns
+
+```{r}
+table4a
 ```
 
 
-### Gather
-```{r eval=FALSE}
-table4a
+
+```{r}
 table4a %>% 
   gather(`1999`, `2000`, key = "year", value = "cases")
 ```
 
+<br  />
 
 'gather' columns titled `1999`, and `2000`, as these are values, 
 not variables. 
@@ -60,38 +118,58 @@ values associated with the new column 'year' need a new home
 we now call them 'cases'. they still match with the intended years 
 
 
+<br  />
 
 
-### Spread
+### Seperate and Unite 
 
-```{r eval=FALSE}
-table2 
-table2 %>%
-spread(key = type, value = count)
-```
+#### One Column With Multiple Variables
 
-
-table 2's type column contains two different variables, cases and pop
-we need to spread these into two new column heads, so spread(key = type, 
-and the associated data is column count, or value = count). thats it!
-
-
-
-
-### Seperate
-
-```{r eval=FALSE}
+```{r}
 table3
-table3 %>%
-  seperate(rate, into = c("cases", "population", sep = "/"))
 ```
+
+<br  />
+
+```{r}
+table3 %>%
+  separate(rate, into = c("cases", "population", sep = "/"))
+```
+
+<br  />
 
 pulls one column apart into multiple columns, default is by a 
 non alphanumeric chr, but put in the sep variable if you want 
 
+<br  />
+
+#### Single Variable Among Multiple Columns 
+
+the inverse of seperate, combines multiple columns into a single column
+
+```{r}
+table5
+```
 
 
-### Missing Values  
+```{r}
+table5 %>%
+  unite(full_year, century, year, sep = "")
+
+```
+
+declare a new column name, and unite two defined old variables by 
+the indicated seperator. 
+
+
+
+<br  />
+<br  />
+<br  />
+
+
+
+### Fill and Complete 
 
 ```{r eval=FALSE}
 tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
@@ -104,41 +182,7 @@ tibble(x = c("a,b,c", "d,e", "f,g,i")) %>%
 ```
 
 
-
-
-
-
-### Unite 
-
-```{r eval=FALSE}
-table5
-table5 %>%
-  unite(full_year, century, year, sep = "")
-
-```
-
-declare a new column name, and unite two defined old variables by 
-the indicated seperator. 
-
-
-
-### Join
-
-```{r eval=FALSE}
-tidy4a <- table4a %>% 
-  gather(`1999`, `2000`, key = "year", value = "cases")
-tidy4b <- table4b %>% 
-  gather(`1999`, `2000`, key = "year", value = "population")
-left_join(tidy4a, tidy4b)
-```
-
-
-after gathering the datasets into similiar, tidy dataframes, left_join()
-combines them into a signle frame.
-
-
-
-### Fill 
+#### Fill 
 
 ```{r eval=FALSE}
 treatment <- tribble(
@@ -156,6 +200,15 @@ treatment %>%
 
 <br  />
 
+#### Complete 
+```{r, eval=FALSE}
+complete()
+```
+
+
+
+
+that is tidyr, super useful package! summary summary summary
 
 Until next time, <br  />
 \- Fisher

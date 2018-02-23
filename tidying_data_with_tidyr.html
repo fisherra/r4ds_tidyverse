@@ -126,58 +126,184 @@ $(document).ready(function () {
 </div>
 
 
-<p>This is the fourth installment of a six-part series summarizing the concepts of Hadley Wickham’s textbook, <a href="http://r4ds.had.co.nz/">R for Data Science</a>. In the previous blog <a href="link">post</a> I abridged the book’s chapter that covers data wrangling with dplyr.</p>
-<p>In this installment, I’ll be focusing on chapter twelve, the primary source for tidying data in R4DS. Four things to cover, first what is tidy data, and how can I tell if my data is tidy? Second, spreading and gathering data, third seperating and uniting data. finally, missing values. At first tidying data might seem like a clear cut step, when your done your done. Often tidyr functions come in handy later in analysis when you realize you want to join dataframes, or anything like that. Check out my post <a href="link">text mining the hobbit</a> where I use tidyr in interesting ways throught the investigation.</p>
-<p>For more in-depth resources on tidyr, reference these links:</p>
+<p>This is the fourth installment of a six-part series summarizing concepts from Hadley Wickham’s textbook, <a href="http://r4ds.had.co.nz/">R for Data Science</a>. In the previous <a href="link">blog post</a> I abridged the book’s chapter that covers data wrangling with dplyr.</p>
+<p>In this installment, I’ll be summarizing the tidyr package and tidy data practices, as taught in R for Data Science <a href="http://r4ds.had.co.nz/tidy-data.html">Chapter 12</a>. There are four components to the chapter and this summary blog post, the first being “what constitutes tidy data”?. The second and third component deal with correcting the two typical formatting issues of untidy data, and the fourth component dives into how to properly represent missing values in a dataset.</p>
+<p>For more resources on tidyr, reference these links:</p>
 <ul>
-<li></li>
-<li></li>
-<li></li>
-<li></li>
+<li><a href="https://cran.r-project.org/web/packages/tidyr/tidyr.pdf">CRAN tidyr Documentation</a></li>
+<li><a href="http://www.sthda.com/english/wiki/tidyr-crucial-step-reshaping-data-with-r-for-easier-analyses">STHDA tidyr Tutorial</a></li>
+<li><a href="http://vita.had.co.nz/papers/tidy-data.pdf">Journal Of Statistical Software: Tidy Data by Hadley Wickham</a></li>
 </ul>
 <p><br /></p>
-<div id="libraries" class="section level4">
-<h4>Libraries</h4>
+<div id="libraries" class="section level3">
+<h3>Libraries</h3>
 <pre class="r"><code>library('tidyverse')      # includes tidyr
 library('tidyr')          # tidyr specifically</code></pre>
 <p><br /></p>
-<p>What is tidy data?</p>
-<p><insert tidy data image here></p>
 </div>
-<div id="functions" class="section level3">
-<h3>Functions</h3>
-<pre class="r"><code>gather()        # takes multiple clumns and collapsesinto key-value pairs
+<div id="primary-functions" class="section level3">
+<h3>Primary Functions</h3>
+<pre class="r"><code>gather()        # takes multiple columns and collapses into key-value pairs
 spread()        # spreads a key-value pair across multiple columns
 separate()      # single column into multiple columns, defined seperator
 unite()         # multiple columns into single column, defined seperator
-left_join()     # combine a table 
-fill()          # fills missing values using the previous entry</code></pre>
+fill()          # fills missing values using the previous entry
+complete()      # takes a set of columns and finds all unique combos</code></pre>
+<p><br /></p>
 </div>
-<div id="gather" class="section level3">
-<h3>Gather</h3>
-<pre class="r"><code>table4a
-table4a %&gt;% 
+<div id="tidy-data" class="section level3">
+<h3>Tidy Data</h3>
+<p>There are three rules to tidy data -</p>
+<ol style="list-style-type: decimal">
+<li>Each column is a variable <br /></li>
+<li>Each row is an observation <br /></li>
+<li>Each value has it’s own cell <br /></li>
+</ol>
+<p><insert tidy data image here></p>
+<p>Tidy data is an easy and consistant way of storing data that makes further analytical steps more simple. Datasets that follow the three tidy data rules allow for R’s vectorized nature to work it’s magic. Other packages in the tidyverse, such as dplyr and ggplot2, expect datasets to be tidy when applying functions such as <em>mutate( )</em> and <em>ggplot( )</em>. Datasets may grow in size during the tidying process, but breaking down rows and columns into single observations and variables drastically simplifies the dataset for future analytics.</p>
+<p>Here’s an example of a tidy dataset -</p>
+<pre class="r"><code>table1</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country      year  cases population
+##   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt;
+## 1 Afghanistan  1999    745   19987071
+## 2 Afghanistan  2000   2666   20595360
+## 3 Brazil       1999  37737  172006362
+## 4 Brazil       2000  80488  174504898
+## 5 China        1999 212258 1272915272
+## 6 China        2000 213766 1280428583</code></pre>
+<p><br /></p>
+<p>Here’s an example of an untidy dataset -</p>
+<pre class="r"><code>table2</code></pre>
+<pre><code>## # A tibble: 12 x 4
+##    country      year type            count
+##    &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;           &lt;int&gt;
+##  1 Afghanistan  1999 cases             745
+##  2 Afghanistan  1999 population   19987071
+##  3 Afghanistan  2000 cases            2666
+##  4 Afghanistan  2000 population   20595360
+##  5 Brazil       1999 cases           37737
+##  6 Brazil       1999 population  172006362
+##  7 Brazil       2000 cases           80488
+##  8 Brazil       2000 population  174504898
+##  9 China        1999 cases          212258
+## 10 China        1999 population 1272915272
+## 11 China        2000 cases          213766
+## 12 China        2000 population 1280428583</code></pre>
+<p><br /></p>
+<p>Notice the differences between the two tables above; in table 1 the variables (columns) are country, year, cases, and population. In table 2 the variables are country, year, type and count. In table 2 the data is untidy; the observation, a specified country in a specified year, is spread among multiple rows. This is because population and cases are actually variables that should be column names, not values!</p>
+<p><br /></p>
+</div>
+<div id="spread-and-gather" class="section level3">
+<h3>Spread and Gather</h3>
+<p>Spread and gather are two functions in the tidyr package that address these issues. While these functions are easy to use and understand, it’s often quiet hard to determine what consitutes a discrete observation, and what constitutes a discrete variable. It takes time and practice to properly make these choices, but in general, I aim to break down observations and variables into the smallest and most easily retrievable chunks possible.</p>
+<p><br /></p>
+<div id="one-observation-across-multiple-rows" class="section level4">
+<h4>One Observation Across Multiple Rows</h4>
+<p>The oppsoite of gather, used when an observation is scattered across mutliple rows. table2 is an example, an observation is a country in a year but each observation is spread across multiple rows.</p>
+<pre class="r"><code>table2 %&gt;%
+spread(key = type, value = count)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country      year  cases population
+## * &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt;
+## 1 Afghanistan  1999    745   19987071
+## 2 Afghanistan  2000   2666   20595360
+## 3 Brazil       1999  37737  172006362
+## 4 Brazil       2000  80488  174504898
+## 5 China        1999 212258 1272915272
+## 6 China        2000 213766 1280428583</code></pre>
+<p><br /></p>
+<p>table 2’s type column contains two different variables, cases and pop we need to spread these into two new column heads, so spread(key = type, and the associated data is column count, or value = count). thats it!</p>
+<p><br /></p>
+</div>
+<div id="one-variable-across-multiple-columns" class="section level4">
+<h4>One Variable Across Multiple Columns</h4>
+<pre class="r"><code>table4a</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   country     `1999` `2000`
+## * &lt;chr&gt;        &lt;int&gt;  &lt;int&gt;
+## 1 Afghanistan    745   2666
+## 2 Brazil       37737  80488
+## 3 China       212258 213766</code></pre>
+<pre class="r"><code>table4a %&gt;% 
   gather(`1999`, `2000`, key = &quot;year&quot;, value = &quot;cases&quot;)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country     year   cases
+##   &lt;chr&gt;       &lt;chr&gt;  &lt;int&gt;
+## 1 Afghanistan 1999     745
+## 2 Brazil      1999   37737
+## 3 China       1999  212258
+## 4 Afghanistan 2000    2666
+## 5 Brazil      2000   80488
+## 6 China       2000  213766</code></pre>
+<p><br /></p>
 <p>‘gather’ columns titled <code>1999</code>, and <code>2000</code>, as these are values, not variables.</p>
 <p>‘key’ a new column called ‘year’ to put 1999 and 2000 into.</p>
 <p>values associated with the new column ‘year’ need a new home we now call them ‘cases’. they still match with the intended years</p>
+<p><br /></p>
 </div>
-<div id="spread" class="section level3">
-<h3>Spread</h3>
-<pre class="r"><code>table2 
-table2 %&gt;%
-spread(key = type, value = count)</code></pre>
-<p>table 2’s type column contains two different variables, cases and pop we need to spread these into two new column heads, so spread(key = type, and the associated data is column count, or value = count). thats it!</p>
 </div>
-<div id="seperate" class="section level3">
-<h3>Seperate</h3>
-<pre class="r"><code>table3
-table3 %&gt;%
-  seperate(rate, into = c(&quot;cases&quot;, &quot;population&quot;, sep = &quot;/&quot;))</code></pre>
+<div id="seperate-and-unite" class="section level3">
+<h3>Seperate and Unite</h3>
+<div id="one-column-with-multiple-variables" class="section level4">
+<h4>One Column With Multiple Variables</h4>
+<pre class="r"><code>table3</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country      year rate             
+## * &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;            
+## 1 Afghanistan  1999 745/19987071     
+## 2 Afghanistan  2000 2666/20595360    
+## 3 Brazil       1999 37737/172006362  
+## 4 Brazil       2000 80488/174504898  
+## 5 China        1999 212258/1272915272
+## 6 China        2000 213766/1280428583</code></pre>
+<p><br /></p>
+<pre class="r"><code>table3 %&gt;%
+  separate(rate, into = c(&quot;cases&quot;, &quot;population&quot;, sep = &quot;/&quot;))</code></pre>
+<pre><code>## Warning: Too few values at 6 locations: 1, 2, 3, 4, 5, 6</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##   country      year cases  population `/`  
+## * &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;
+## 1 Afghanistan  1999 745    19987071   &lt;NA&gt; 
+## 2 Afghanistan  2000 2666   20595360   &lt;NA&gt; 
+## 3 Brazil       1999 37737  172006362  &lt;NA&gt; 
+## 4 Brazil       2000 80488  174504898  &lt;NA&gt; 
+## 5 China        1999 212258 1272915272 &lt;NA&gt; 
+## 6 China        2000 213766 1280428583 &lt;NA&gt;</code></pre>
+<p><br /></p>
 <p>pulls one column apart into multiple columns, default is by a non alphanumeric chr, but put in the sep variable if you want</p>
+<p><br /></p>
 </div>
-<div id="missing-values" class="section level3">
-<h3>Missing Values</h3>
+<div id="single-variable-among-multiple-columns" class="section level4">
+<h4>Single Variable Among Multiple Columns</h4>
+<p>the inverse of seperate, combines multiple columns into a single column</p>
+<pre class="r"><code>table5</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country     century year  rate             
+## * &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;            
+## 1 Afghanistan 19      99    745/19987071     
+## 2 Afghanistan 20      00    2666/20595360    
+## 3 Brazil      19      99    37737/172006362  
+## 4 Brazil      20      00    80488/174504898  
+## 5 China       19      99    212258/1272915272
+## 6 China       20      00    213766/1280428583</code></pre>
+<pre class="r"><code>table5 %&gt;%
+  unite(full_year, century, year, sep = &quot;&quot;)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country     full_year rate             
+## * &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;            
+## 1 Afghanistan 1999      745/19987071     
+## 2 Afghanistan 2000      2666/20595360    
+## 3 Brazil      1999      37737/172006362  
+## 4 Brazil      2000      80488/174504898  
+## 5 China       1999      212258/1272915272
+## 6 China       2000      213766/1280428583</code></pre>
+<p>declare a new column name, and unite two defined old variables by the indicated seperator.</p>
+<p><br /> <br /> <br /></p>
+</div>
+</div>
+<div id="fill-and-complete" class="section level3">
+<h3>Fill and Complete</h3>
 <pre class="r"><code>tibble(x = c(&quot;a,b,c&quot;, &quot;d,e,f,g&quot;, &quot;h,i,j&quot;)) %&gt;% 
   separate(x, c(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;), extra=&quot;drop&quot;)
 # drops that extra value completely 
@@ -185,25 +311,8 @@ table3 %&gt;%
 tibble(x = c(&quot;a,b,c&quot;, &quot;d,e&quot;, &quot;f,g,i&quot;)) %&gt;% 
   separate(x, c(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;), fill =&quot;right&quot;)
 # fills the row by putting an NA on the right </code></pre>
-</div>
-<div id="unite" class="section level3">
-<h3>Unite</h3>
-<pre class="r"><code>table5
-table5 %&gt;%
-  unite(full_year, century, year, sep = &quot;&quot;)</code></pre>
-<p>declare a new column name, and unite two defined old variables by the indicated seperator.</p>
-</div>
-<div id="join" class="section level3">
-<h3>Join</h3>
-<pre class="r"><code>tidy4a &lt;- table4a %&gt;% 
-  gather(`1999`, `2000`, key = &quot;year&quot;, value = &quot;cases&quot;)
-tidy4b &lt;- table4b %&gt;% 
-  gather(`1999`, `2000`, key = &quot;year&quot;, value = &quot;population&quot;)
-left_join(tidy4a, tidy4b)</code></pre>
-<p>after gathering the datasets into similiar, tidy dataframes, left_join() combines them into a signle frame.</p>
-</div>
-<div id="fill" class="section level3">
-<h3>Fill</h3>
+<div id="fill" class="section level4">
+<h4>Fill</h4>
 <pre class="r"><code>treatment &lt;- tribble(
   ~ person,           ~ treatment, ~response,
   &quot;Derrick Whitmore&quot;, 1,           7,
@@ -216,7 +325,12 @@ treatment %&gt;%
 
 # fill() will carry forward the last value for that column</code></pre>
 <p><br /></p>
+</div>
+<div id="complete" class="section level4">
+<h4>Complete</h4>
+<pre class="r"><code>complete()</code></pre>
 <p>Until next time, <br /> - Fisher</p>
+</div>
 </div>
 
 
