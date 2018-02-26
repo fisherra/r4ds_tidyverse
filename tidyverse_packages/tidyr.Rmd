@@ -2,7 +2,7 @@
 title: "R4DS – Tidy data with tidyr"
 author: "Fisher Ankney"
 date: "February 23, 2018"
-output: html_document
+output: md_document
 ---
 
 This is the fourth installment of a six-part series summarizing concepts from Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous [blog post](link) I abridged the book’s chapter that covers data wrangling with dplyr. 
