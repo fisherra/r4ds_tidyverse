@@ -1,0 +1,191 @@
+---
+title: "R4DS Chapter 19 - Functions"
+author: "Fisher Ankney"
+date: "2/26/2018"
+output: html_document
+---
+
+<br> 
+
+#### Why Functions 
+
+1. You can name them, making your code easy to understand
+2. As requirements change, you can just update the function
+3. Don't repeat yourself, (DRY), copying and pasting is bad
+
+Consider writing functions whenever you find yourself copying and pasting code more than once. 
+
+#### How to Create a Function
+
+1. Name the function
+2. List the arguements
+3. Create the body
+
+It's easier to make body code that does a job for you, and then figure out how to move it into a function than to create a function and try to make it work. 
+
+#### Practice Problems
+```{r}
+# create a list with Inf and -Inf then map them to 1 and 2
+y <- c(1:10, T, Inf, -Inf) 
+y[is.infinite(y) & y > 0] <- 1 
+y[is.infinite(y) & y < 0] <- 2 
+y 
+
+# create a rescale function 
+rescale01 <- function(x) {   
+  rng <- range(x, na.rm = T, finite = T)  
+  (x - rng[1] / (rng[2] - rng[1]))         
+}
+
+# test function
+rescale01(y)   
+```
+<br>
+
+ 
+```{r}
+# create a new list
+x <- c(NA, 1:10)
+
+# make a function giving the % of numbers missing in a vector
+percent_na <- function(x) {
+  mean(is.na(x))
+}
+
+# test function
+percent_na(x)
+```
+
+<br> 
+
+```{r}
+# make a percent of total function
+perc_total <- function(x) {
+  x / sum(x, na.rm = T)
+}
+
+# test function
+perc_total(x)
+```
+
+<br> 
+
+```{r}
+# turn this into a function:
+# sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE)
+
+calc <- function(x) {
+  y <- sd(x, na.rm = TRUE)
+  z <- mean(x, na.rm = TRUE)
+  y/z
+}
+
+# test function
+calc(x)
+```
+
+<br>
+
+```{r}
+# make a funcion that counts number of common NA's 
+v1 <- c(1,2,3,NA)
+v2 <- c(NA,2,3,NA)
+
+both_na <- function(x,y) {
+  sum(is.na(x) & is.na(y))  
+}
+
+# test function
+both_na(v1,v2)
+```
+
+<br>
+
+#### Conditional Statements
+
+Typical conditional if-else statement:
+```
+if (condition) {
+  code executed when TRUE
+} else {
+  code executed when FALSE
+}
+```
+
+```{r}
+has_name <- function(x) {
+  nms <- names(x) 
+  if (is.null(nms)) {
+    rep(FALSE, length(x))
+  } else {
+    !is.na(nms) & nms != ""
+  }
+}
+```
+
+Condition must evaulate to either True or FALSE, it its a vector you get a warning, if its NA you get an error. 
+
+`|` and `&` are vectorized statements and should never be used in conditional statements. Use `||` and `&&` instead. 
+
+
+`all()` - are all of these values true? <br>
+`any()` - are any of these values true <br>
+`indentical()` - are these exactly the same? <br>
+`near()` - dplyr function, are these basically the same <br>
+
+<br>
+
+#### Multiple Conditions 
+
+typical if-else if statement
+```
+if (this) {
+  do that
+} else if (that) {
+  do something else
+} else {
+  do third thing
+}
+```
+
+typical switch statement
+```
+function(x, y, op) {
+  switch(op,
+    plus = x + y,
+    minus = x - y, 
+    times = x * y,
+    divide = x / y, 
+    stop("unknown op!")
+  )
+}
+```
+
+<br> 
+
+#### Practice Functions
+
+Create a function that greets you based on the time of day 
+```{r}
+library('lubridate')
+
+greetings <- function(time_now = lubridate::now()) {
+  hour_now <- lubridate::hour(time_now)
+  if (hour_now > 4 & hour_now < 12) {
+    "good morning"
+  } else if (hour_now >= 12 & hour_now <= 17) {
+    "good afternoon"
+  } else {
+    "good evening"
+  }
+}
+
+greetings()
+```
+
+Create a function that takes a single number and returns fizz if its divisable by 3, buzz if it's divisable by 5, and fizzbuzz if its divisiable by both. 
+```{r}
+
+```
+
+

@@ -1,0 +1,110 @@
+---
+title: "R4DS Chapter 18 - Pipes"
+author: "Fisher Ankney"
+date: "2/26/2018"
+output: html_document
+---
+<br>
+
+Pipes are a powerful tool for clear and decisive coding. 
+
+This is a pipe: `>%>` 
+
+This is where pipes come from: `library('magrittr')`
+
+<br> 
+
+### Many Ways to Foo Foo 
+
+There are several ways to *program* this childrens poem:
+
+```{r, eval=FALSE}
+Little bunny Foo Foo
+Went Hoping through the forest
+scooping up the field mice
+and bopping them on the head
+```
+
+<br> 
+
+#### Save each step as a new object
+```{r, eval=FALSE}
+foo_foo_1 <- hop(foo_foo, through = forest)
+foo_foo_2 <- scoop(foo_foo_1, up = field_mice)
+foo_foo_3 <- bop(foo_foo_2, on = head)
+```
+
+Cluttered code and a lot of typing; careful incrementation of each line is a hassle. 
+
+<br>
+
+#### Overwrite the original many times
+```{r, eval=FALSE}
+foo_foo <- hop(foo_foo, through = forest)
+foo_foo <- scoop(foo_foo, up = field_mice)
+foo_foo <- bop(foo_foo, on = head)
+```
+
+A bit less typing and thinking, but debugging is painful and the repitition obscures what is changing in each line. 
+
+<br> 
+
+#### Compose Functions
+```{r, eval=FALSE}
+bop(
+  scoop(
+    hop(foo_foo, through = forest),
+    up = field_mice
+  ), 
+  on = head
+)
+```
+
+Oh god, inside-out, right-to-left, this nest of functions is nearly impossible to comprehend. This is why people hate programming. 
+
+<br>
+
+#### Use the Pipe
+```{r, eval=FALSE}
+foo_foo %>% 
+  hop(through = forest) %>%
+  scoop(up = field_mouse) %>%
+  bop(on = head) 
+```
+
+Simple, elegant, easy to read and create. 
+
+<br> 
+
+### When Not To Use The Pipe
+
+Piping more than ~10 steps is a bad idea, create intermediate objects with meaningful names to help with debugging. 
+
+If there are multiple inputs or outputs, pipes are a bad idea. 
+
+Directed graph with a complex dependency structure, bad. 
+
+<br> 
+
+### Other Margrittr Tools 
+
+When you want to call a function for its side-effect and the function doesnt return anything useful it'll end a traditional pipe. the tee pipe `%T>%` works just like the normal pipe, but it returns the side effects. 
+
+```{r}
+library('magrittr')
+
+rnorm(100) %>%
+  matrix(ncol = 2) %>%
+  plot() %>%
+  str()
+```
+^ ## NULL because the `%>%` forwarded the actual plot to str(), not the side effect
+```{r}
+rnorm(100) %>%
+  matrix(ncol = 2) %T>%
+  plot() %>%
+  str()
+```
+^ `str()` worked!
+
+
