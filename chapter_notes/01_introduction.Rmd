@@ -1,0 +1,25 @@
+---
+title: "R4DS Chapter 1 - Introduction"
+author: "Fisher Ankney"
+date: "2/27/2018"
+output: html_document
+---
+
+R for Data Science is a free online resource written by Hadley Wickham, <http://r4ds.had.co.nz/introduction.html>. In this 522 equivilant page book, Hadley walks readers through the entire Data Science workflow from data input to report production. All tasks are complete in the R programming language, <https://cran.r-project.org/>. 
+
+This series of chapter notes serves as a quick reference to the code and ideas presented throughout R4DS. 
+
+The book is broken down into the following categories: <br> 
+- Explore <br> 
+- Wrangle <br> 
+- Program <br> 
+- Model   <br>
+- Communicate <br>
+
+Throughout the book, readers are introducted to a variety of packages to master, called the "tidyverse". The tidyverse consists of 8 core packages and a few dozen subsideary packages that are all built to simplify the data science process. I've written 8 posts exploring the core packages in my blog: <www.fisherankney.com/category/blog.html> 
+
+Enjoy the chapter notes! <br>
+\- Fisher
+
+
+

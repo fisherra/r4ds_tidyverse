@@ -1,39 +1,37 @@
-###########################
-##       Chapter 20      ##
-##        Vectors        ## 
-###########################
+---
+title: "R4DS Chapter 20 - Vectors"
+author: "Fisher Ankney"
+date: "2/27/2018"
+output: html_document
+---
 
-# Working through Hadley Wickham's R for Data Science 
-# Section 3, Chapter 20
-# Fisher Ankney 
-
-# load necissary libraries
+```{r}
 library('tidyverse')
+```
 
-# # # # # # 
 # Atomic Vectors (homogeneous)
-# logical, integer, double, character, complex, raw
-# Lists (heterogeneous)
+logical, integer, double, character, complex, raw
+Lists (heterogeneous)
 
-# NUll = absence of a vector 
-# NA = absence of a value in a vector 
+NUll = absence of a vector 
+NA = absence of a value in a vector 
 
-# determine vector type with 
+determine vector type with 
 typeof()
 
 
-# four type of augmented vectors - 
-# factors, dates, date-time, dataframe / tibble 
+four type of augmented vectors - 
+factors, dates, date-time, dataframe / tibble 
 
-# Logical vectors 
+Logical vectors 
 1:10 %% 3 == 0
 c(TRUE, TRUE, FALSE, NA)
 
-# Numeric vectors 
+Numeric vectors 
 typeof(1)
 typeof(1L)
 
-# doubles are approximations
+doubles are approximations
 x <- sqrt(2) ^ 2
 x - 2 
 
@@ -41,34 +39,34 @@ x - 2
 near()
 
 # integers have one special value, 
-# NA
-# while doubles have four,
-# NA, NaN, Inf, -Inf
+NA
+while doubles have four,
+NA, NaN, Inf, -Inf
 
-# dont use == to check for the special values, use the functions
+dont use == to check for the special values, use the functions
 is.finite()
 is.infinite()
 is.nan()
 is.na()
 
 
-# Using atomic vectors 
+Using atomic vectors 
 
-# explicit coercion 
+explicit coercion 
 as.logical()
 as.integer()
 as.double()
 as.character()
-# whenever you use these you should see if you could have fixed the
-# problem somewhere upstream
+whenever you use these you should see if you could have fixed the
+problem somewhere upstream
 
-# implicit coercion
+implicit coercion
 if (length(x)) { 
   # do something
 }
-# but its still best to be explicit 
+but its still best to be explicit 
 if (length(x) > 0) {
-  # do something
+ do something
 }
 
 # atomic vectors cannot mix their types, the most complex wins
@@ -149,6 +147,7 @@ attributes()
 
 # Augmented vectors - - - 
 # factors, date times, dates, tibbles
+
 
 
 

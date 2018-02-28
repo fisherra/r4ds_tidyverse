@@ -186,6 +186,132 @@ greetings()
 Create a function that takes a single number and returns fizz if its divisable by 3, buzz if it's divisable by 5, and fizzbuzz if its divisiable by both. 
 ```{r}
 
+fizzbuzz <- function(x) {
+  if (x %% 3 == 0 & x %% 5 == 0) {
+    "fizzbuzz"
+  } else if (x %% 3 == 0) {
+    "fizz" 
+  } else if (x %% 5 == 0) {
+    "buzz" 
+  } else 
+    "no fizzbuzz for you"
+  }
+
+fizzbuzz(1)
+fizzbuzz(3)
+fizzbuzz(5)
+fizzbuzz(15)
 ```
+
+Use `cut()` to simplify this set of nested if-else statements
+```{r}
+temp_original <- function(temp) {
+  if (temp <= 0) {
+    "freezing"
+  } else if (temp <= 10) {
+    "cold"
+  } else if (temp <= 20) {
+    "cool"
+  } else if (temp <= 30) {
+    "warm"
+  } else {
+    "hot"
+  }
+}
+```
+
+```{r}
+temp = 2
+
+temp_cut <- function(temp) {
+  breaks <- c(-Inf, 0, 10, 20 , 30, +Inf)
+  labels <- c("freezing", "cold", "cool", "warm", "hot")
+  cut(temp, breaks, labels)
+}
+
+temp_cut(1)
+```
+
+<br> 
+
+#### Function Arguements 
+
+Two types of functions, the data to be computed on, and the details of the computation. 
+
+`log()` the data is `x`, the detail is `base =` of the logarithm
+
+Generally the data argument always comes first. 
+
+Also space out the arguements with spaces after commas and between operators. That way it's easier to quickly skim what a function is doing. 
+
+Common naming schemes: <br> 
+`x`, `y`, `z`: vectors <br> 
+`w`: a vector of weights <br> 
+`df`: data frame <br> 
+`i`, `j`: rows and columns <br>
+`n`: length, number of rows <br>
+`p`: number of columns <br>
+
+<br> 
+
+#### Checking Values
+
+R uses vector recycling, meaning that you'll get screwed over if you assume that vectors will be the same length but they are not. 
+
+```{r}
+
+wt_mean <- function(x, w) {
+if (length(x) != length(w)) {
+  stop("`x` and `w` must be the same length", call. = FALSE)
+}
+  sum(w * x) / sum(w) 
+}
+
+wt_mean(c(1:4), c(4:8))
+wt_mean(c(1:4), c(4:7))
+```
+
+<br> 
+
+Be careful about being too careful, functions are supposed to improve efficiency, not suck it away. 
+
+Many functions let you input an arbitrary number of values, the `...`. 
+
+```{r}
+commas <- function(...) {
+  stringr::str_c(..., collapse = ", ")
+}
+
+commas(letters[1:10])
+```
+
+<br> 
+
+#### Return 
+
+`return()` breaks circuits early, returning whatever you wish. Useful for early returns before complex functions or missing arguements. 
+
+```
+complex_function ,- function(x, y, z) {
+  if (length(x) == 0 || length(y) == 0 {
+    return(0)
+  } else {
+  
+  # complex stuff
+  
+  }
+}
+```
+
+<br> 
+
+#### Writing pipeable functions
+
+It's important to think about return values if you want to write a pipeable function. Transform the object into a dataframe inside the function to pass it on to other dplyr and tidyr functions. 
+
+
+
+
+
 
 

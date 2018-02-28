@@ -1,0 +1,256 @@
+---
+title: "R4DS Chapter 3 - Data Visualization"
+author: "Fisher Ankney"
+date: "2/27/2018"
+output: html_document
+---
+
+### Introduction 
+
+How to visualize your data using ggplot2. ggplot2 implements grammer of graphics, a coherent system for describing and building graphs. ggplot2 is one of the 8 core packages in the tidyverse, and can be easily loaded as such. 
+
+```{r, message=F}
+library('tidyverse')
+```
+
+When explicitly loading functions from packages you can use the formatting `package::function()`. 
+
+<br> 
+
+### First Steps
+
+This is the dataset we'll be working to start off this chapter:
+```{r}
+mpg
+```
+
+<br> 
+
+The `mpg` dataframe that comes pre-loaded with the ggplot2 package. To plot the `mpg` dataframe with `displ` on the x-axis and `hwy` on the right axis execute this code: 
+```{r}
+ggplot() + 
+  geom_point(mpg, mapping = aes(x = displ, y = hwy))
+```
+
+<br> 
+
+A few things - The `ggplot()` function must always be called, and first. The `+` is a pipe of sorts, allowing further description of the desired plot. Geom functions come after the `ggplot() +` and specify the geometry of the plot. In this case it's a scatter plot, `geom_point()`. the first arguement of geom_point defines the dataset used. This arguement can be placed into ggplot, but I prefer it in the geom. 
+
+<br> 
+
+### Aesthetic Mappings 
+
+A third value can be added to a two dimensional scatterplot by mapping it to an aesthetic. Aesthetics are visual properties of the objects in your plots: shapes, sizes, colors, etc. 
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, 
+                           y = hwy, 
+                           color = class
+                           )
+             )
+```
+
+<br> 
+
+Other non-variable aethetic changes can be made:
+```{r}
+ggplot() + 
+  geom_point(data = mpg, 
+             aes(x = displ,
+                 y = hwy),
+             color = "blue", 
+             shape = 8, 
+             size=5,
+             alpha = 0.8
+             )
+```
+
+<br> 
+
+## Facets
+
+Facets can also add additional variables. `facet_wrap()` allows you to facet your plot by a single variable. The first arguement is a formula, which is created with a `~` followed by a variables name. This variable should be discrete. 
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+```
+
+<br> 
+
+Double facet! Based on two variables, use the `facet_grid()` function. Faceting by drv and cyl, or drive (4wd, front, rear) and cylenders (4,5,6,8) creates the following graph. 
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid( drv ~ cyl)
+```
+
+<br> 
+
+### Geometric Objects
+
+Different plots use different geometries, ggplot2 calls these geoms. Scatterplots, bar charts, line graphs, maps, pie charts, they all have an assigned geom. To browse the geoms simply type `geom_` into the R terminal while the ggplot2 package is loaded. RStudio's auto complete feature will list every avaliable geom in the package. There are thousands of add-ons out in the wild web, if ggplot2 doesn't have what suits you. 
+
+Different geoms take different `mapping` aesthetics. The linetype aesthetic wouldn't work too well with a scatteplot, but works great on `geom_smooth`.
+```{r}
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+```
+
+<br> 
+
+Plots can even have multiple geoms all together:
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+<br> 
+
+However, this creates a repetative command, and is better done as:
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()
+```
+
+<br> 
+
+### Statistical Transformations 
+
+A new dataset, diamonds! 
+```{r}
+diamonds
+```
+
+<br> 
+
+Statistical transformations are sometimes useful with box plots. Count, identity, and unique three types of statistical transformations that come in handy. Count is the default statistical transformation for geom_bar. 
+
+Count 
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut))
+```
+
+<br> 
+
+Identity allows you to map the height of bars to the raw values of a y variable instead of the height of the bars being tied to a count. I create the y variable then impliment it within the `aes()` mapping. To make this work you must change the default statistical transformation.  
+
+Identity 
+```{r}
+demo <- tribble(
+  ~cut,         ~freq,
+  "Fair",       5,
+  "Good",       10,
+  "Very Good",  12,
+  "Premium",    7,
+  "Ideal",      4
+)
+
+ggplot(data = demo) +
+  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+```
+
+<br> 
+
+### Position Adjustments 
+
+You can color bar charts based on variables - 
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, colour = cut))
+```
+
+<br> 
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = cut))
+```
+
+<br> 
+
+Or perhaps more usefully: 
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+```
+
+<br> 
+
+Position = "identity" places the bar chart sections directly on top off each other, overlapping them so they become more exact. 
+```{r}
+ggplot(data = diamonds, mapping = aes(x = cut, color = clarity)) + 
+  geom_bar(alpha = 0.2, position = "identity")
+```
+
+<br> 
+
+Position = "fill" allows you to more accurately compare the proportional makeup of each bar:
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")
+```
+
+<br> 
+
+
+Poisiton = "dodge" places overlaps next to each other instead of stacking them:
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge")
+```
+
+<br> 
+
+### Coordinate Systems
+
+Sometimes it's useful to flip coordinate systems using the `coord_flip()` function. It makes for more space with these box plots: 
+```{r}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) + 
+  geom_boxplot() + 
+  coord_flip()
+```
+
+`coord_fixed`, `coord_polar`, `coord_trans` and `coord_quickmap` may also come in handy. `coord_quickmap()` set the aspect ratio corectly for mapping. 
+```{r}
+library("maps")
+
+fr <- map_data("france")
+
+ggplot(fr, aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black") +
+  coord_quickmap()
+```
+
+<br> 
+
+### Summary 
+
+TEMPLATE - 
+``` 
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(
+    mapping = aes(<MAPPINGS>),
+    stat = <STAT>, 
+    position = <POSITION>
+  ) +
+  <COORDINATE_FUNCTION> +
+  <FACET_FUNCTION>
+```
+
+Seven Parameters to describe any plot - <br> 
+
+- Dataset <br> 
+- Shape <br> 
+- Mapping Aethetics <br> 
+- Statistical Transformations <br> 
+- Positioning <br> 
+- Coordinate Systems <br> 
+- Facets <br>
+
+This concludes my notes on chapter 3. 

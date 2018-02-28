@@ -1,11 +1,10 @@
-############################
-##        Chapter 4       ##
-##    Workflow: basics    ## 
-############################
+---
+title: "R4DS Chapter 4 - Workflow Basics"
+author: "Fisher Ankney"
+date: "2/27/2018"
+output: html_document
+---
 
-# Working through Hadley Wickham's R for Data Science 
-# Section 1, Chapter 4
-# Fisher Ankney 
 
 ## 4.1. Coding Basics 
 
