@@ -1,11 +1,10 @@
-##############################
-##        Chapter 23        ##
-##       Model Basics       ## 
-##############################
+---
+title: "Untitled"
+author: "Fisher Ankney"
+date: "2/28/2018"
+output: html_document
+---
 
-# Working through Hadley Wickham's R for Data Science 
-# Section 4, Chapter 23
-# Fisher Ankney 
 
 # load necissary libraries
 library('tidyverse')

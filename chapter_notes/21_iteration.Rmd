@@ -1,0 +1,312 @@
+---
+title: "R4DS Chapter 21 - Iteration"
+author: "Fisher Ankney"
+date: "2/28/2018"
+output: html_document
+---
+
+<br> 
+
+### Introduction
+ 
+Reducing the duplication in your code by creating functions is useful in software development and data science. It's easier to see the intent of your code, it's easier to change, and you're likely to have fewer bugs. Another tool for reducing duplication is iteration. Iteration helps you when you need to do the same thing to multiple inputs. Imperative programming and functional programming are two important iteration paradigms. On the imperative side you have for loops and while loops, they're very explicit. Functional programming offers tools for extracting out the duplication found in imperative programming, so a common for loop pattern will get it's own function. 
+
+```{r, message=FALSE}
+library('tidyverse')
+```
+
+<br> 
+
+### For Loops 
+
+Imagine we have this simple tibble: 
+```{r}
+df <- tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+```
+
+<br> 
+
+We want to compute the median of each column, you could do this with copy-and-paste:
+```{r, eval=FALSE}
+median(df$a)
+median(df$b)
+median(df$c)
+median(df$d)
+```
+
+<br>
+
+Nah that's stupid, use a for-loop:
+```{r}
+output <- vector("double", ncol(df)) # output
+for (i in seq_along(df)) {            # sequence
+  output[[i]] <- median(df[[i]])      # body 
+}
+
+output
+```
+
+<br> 
+
+Every for loop has three components 
+
+**Output** - `output <- vector("double", ncol(df))` - Before you start the loop you must always allocate sufficient space for the output. This is very important for efficiency: if you grow the for loop at each iteration using `c()` your for loop will be very slow. A general way of creating an empty vector of given length is the `vector()` function. It has two arguements: the type of vector, and the length of the vector. 
+
+**Sequence** - `i in seq_along(df) {` - Determines what to loop over, each run of the loop will assign i to a different value from seq_along(df). `seq_along()` is a safe version of `1:length(l)` because if you have a zer length vector, `seq_along()` resonds correctly. 
+
+**Body** - `output[[i]] <- median(df[[i]])` - This is the code that does the work. It's run repeatedly, each time with a different value for `i`. The first iteration runs `output[[1]] <- median(df[[1]])`, the second runs `output[[1]] <- median(df[[1]])`, and so on. 
+
+<br> 
+
+### Practice 
+
+Write a loop to compute the mean of every column in mtcar 
+```{r}
+head(mtcars)
+
+mtcars_out <- vector("double", ncol(mtcars))
+
+for (i in seq_along(mtcars)) {
+  mtcars_out[[i]] <- mean(mtcars[[i]])
+}
+
+mtcars_out
+```
+
+<br> 
+
+Determine the type of column in nycflights13::flights
+```{r}
+library('nycflights13')
+
+flights_out <- vector("list", ncol(flights))
+
+for (i in seq_along(flights)) {
+  flights_out[[i]] <- class(flights[[i]])
+}
+
+head(flights_out)
+```
+
+<br> 
+
+Compute the number of unique values in each column if `iris`
+```{r}
+head(iris)
+
+iris_unique <- vector("double", ncol(iris))
+ for (i in seq_along(iris)) {
+   iris_unique[[i]] <- length(unique(iris[[i]]))
+ }
+
+iris_unique
+```
+
+<br> 
+
+Write a for loop that prints the lyrics to "alice the camel" 
+```{r}
+num_humps <- c(4,3,2,1,"no")
+
+for (i in num_humps) {
+  cat(str_c("Alice the camel has ", rep(i, 3), " humps",
+            collapse = "\n"), "\n")
+  if (i == "no") {
+    cat(str_c("Now alice is a horse", "\n"))
+    } else {
+      cat(str_c("So go Alice go", "\n", "\n"))
+    }
+}
+```
+
+<br> 
+
+Convert the nursery rhyme "ten in the bed" to a function generalizing any number of people in any structure. 
+```{r}
+in_the_bed <- function(x, struct) {
+
+    y <- vector("double", length = x + 1)
+ 
+     for (i in y) {
+       if (x != 0) {
+      cat("There were", x, "in the", struct, "\nAnd the little one said", "\n'Roll Over! Roll Over'", "\nSo they all rolled over and one fell out", "\n\n")
+      x <- x - 1
+       } else {
+      cat("There was", x, "in the", struct, "\nAnd the little one said", "\nAlone at last!")
+     }
+  }
+}
+
+in_the_bed(4, "Walmart")
+```
+
+<br> 
+
+Convert the song "99 botles of beer on the wall" to a function. Generalise to any number of vessels containing any liquid on any surface. 
+```{r}
+on_the_wall <- function(w, x, y, z) {
+
+  l <- vector("double", length = w + 1)
+  
+  for (i in l) {
+    cat("There are", w, x, "of", y, "on the", z, "\n", w, x, "of", y, "\n Take one down, Pass it around\n", w-1, x, "of", y, "\n\n")
+    w <- w - 1
+    }
+}
+
+on_the_wall(4, "jugs", "vitamin water", "floor")
+```
+Close enough. 
+
+<br> 
+
+### For Loop Variation 
+
+1. Modify and existing object, instead of creating a new one <br> 
+2. Looping over names or values, instead of indices <br> 
+3. Handling outputs of unknown length <br> 
+4. Handling sequences of unknown length <br> 
+
+<br> 
+
+**Modifying an existing object** - Remember this from functions? 
+```{r}
+df <- tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+rescale01 <- function(x) {
+  rng <- range(x, na.rm = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+
+df$a <- rescale01(df$a)
+df$b <- rescale01(df$b)
+df$c <- rescale01(df$c)
+df$d <- rescale01(df$d)
+```
+
+<br> 
+
+To solve it with a for loop, we need to think about the three components:
+
+1. Output: we already have the output. it's the same as the input <br> 
+2. Sequence: we can think about a data frame as a list of columns, so we can iterate over each column with seq_along(df) <br>
+3. Body: apply rescale01() <br> 
+
+This gives us: 
+```{r}
+for (i in seq_along(df)) {
+  df[[i]] <- rescale01(df[[i]])
+}
+
+head(df)
+```
+
+<br>
+
+**Looping Patterns** - There are three basic ways to loop over a fector. so far we've seen the most general `for (i in seq_along(xs))`, and extracting the value with `x[[i]]`. There are two other forms. Loop over the elements `for (x in xs)` This is the most useful if you only care about side-effects. like plotting or saving a file, because it's difficult to save the output efficiently. Looping over the name `for (nm in names(xs))`. This gives you name, which you can use to access the values with `x[[nm]]`. This is useful if you want to use the name in a plot title or file name. If your're creating a named output, make sure to name it like so: 
+```{r, eval=FALSE}
+results <- vector("list", length(x))
+names(results) <- names(x)
+```
+
+<br>
+
+Iterating over the numeric indices is the most general form, becuse given the position you can extract both the name and the value: 
+```{r, eval=FAlSE}
+for (i in seq_along(x)) {
+  name <- names(x)[[i]]
+  value <- x[[i]]
+}
+```
+
+<br> 
+
+**Unknown Output Length** - Never program a growing vector! A better solution is to save the results in a list, then combine into a single vector after the loop is done. 
+
+```{r}
+means <- c(0,1,2)
+
+out <- vector("list", length("means"))
+
+out
+
+for (i in seq_along(means)) {
+  n <- sample(100, 1)
+  out[[i]] <- rnorm(n, means[[i]])
+}
+
+str(out)
+
+str(unlist(out))
+```
+
+<br> 
+
+`unlist()` flattens a list of vectors into a single vector. Another useful function is `paste(output, collapse = "")` which will combine character vectors into a signle string. `dplyr::bind_rows(output)` combines output lists into a big dataframe effectively. 
+
+<br>
+
+**Unknown Sequence Length** - Sometimes you don't know how long the input sequence should run for. That's when you use a while loop. A while loop is more general than a for loop, because you can write any for loop as a while loop, but you can't write any while loop as a for loop. 
+
+This for loop:
+```{r}
+for (i in seq_along(x)) {
+  # body 
+}
+```
+
+can become this while loop:
+```{r}
+i <- 1 
+
+while( i <= length(x)) {
+  # body
+  i <- i + 1
+}
+```
+
+<br> 
+
+Here's how to create a while loop to find how many tried it takes to get three heads coin flips ina row:
+```{r}
+flip <- function() {
+  sample(c("T", "H"), 1)
+}
+
+flips <- 0 
+nheads <- 0 
+
+while (nheads < 3) {
+  if (flip() == "H") {
+    nheads <- nheads + 1
+  } else {
+    nheads <- 0 
+  }
+  flips <- flips + 1
+}
+
+flips
+```
+
+<br> 
+
+While loops are most often used for simulations, which are out of the scope of this book but seem really awesome. 
+
+### Practice!
+
+
+
+### For Loops vs Functionals 
+### The Map Functions
+### Dealing With Failure
+### Mapping Over Multiple Arguements
+### Walk

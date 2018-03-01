@@ -4,47 +4,73 @@ author: "Fisher Ankney"
 date: "2/27/2018"
 output: html_document
 ---
+<br>
 
+### Coding Basics
 
-## 4.1. Coding Basics 
+Frustration is natural when you start programming in R, because it's a stickler for punctuation and even one character out of place makes it complain. A quick review of the basics - 
 
-# R the calculator: 
+R the calculator: 
+```{r}
 1 / 200 * 30
 (59 + 73 + 2) / 3
 sin(pi / 2)
+```
 
-# Assigning values
+<br> 
+
+Assigning a variable 
+```{r}
 x <- 3 * 4
+```
+
+<br> 
+
+Everything should be named in **snake_case**. CamelCase and naming.with.periods is bad; I don't like it. 
+
+You can inspect an object by typing it's name:
+```{r}
 x
+```
 
-## 4.2. Naming values
-i_use_snake_case <- 1
-otherPeopleUseCamelCase <- 2 
-some.people.use.periods <- 3
-And_aFew.People_RENOUNCEconvention <- 4
+<br> 
 
-## 4.3. Calling functions
+### Functions 
 
-#functions are called by: function_name(arg1 = val1, arg2 = val2, ...)
-seq(1,10)
-seq(1, 10, length.out = 5)
+Functions follow a specific formula: 
+```{r, eval=FALSE}
+function_name(arg1 = val1, arg2 = val2, ...)
+```
 
+<br> 
 
-## 4.4. Practice 
+If you forget to finish a function properly, R will promt you with a `+` in the console. You can finish the function or hit escape and try again. 
 
-# corrected code: 
+<br> 
+
+### Practice 
+ 
+```{r, eval=FALSE}
 library('tidyverse')
+```
 
+```{r, eval=FALSE}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy))
+```
 
+```{r, eval=FALSE}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy))
+```
 
+```{r, eval=FALSE}
 filter(mpg, cyl = 8)
+```
 
+```{r, eval=FALSE}
 filter(diamonds, carat > 3)
-
+```
 
 
 
