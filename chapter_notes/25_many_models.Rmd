@@ -1,0 +1,6 @@
+---
+title: "R4DS Chapter 25 - Many Models"
+author: "Fisher Ankney"
+date: "3/3/2018"
+output: html_document
+---

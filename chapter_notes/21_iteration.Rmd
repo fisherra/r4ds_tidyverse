@@ -202,11 +202,10 @@ To solve it with a for loop, we need to think about the three components:
 3. Body: apply rescale01() <br> 
 
 This gives us: 
-```{r}
+```{r, eval=FALSE}
 for (i in seq_along(df)) {
   df[[i]] <- rescale01(df[[i]])
 }
-
 head(df)
 ```
 
@@ -214,6 +213,8 @@ head(df)
 
 **Looping Patterns** - There are three basic ways to loop over a fector. so far we've seen the most general `for (i in seq_along(xs))`, and extracting the value with `x[[i]]`. There are two other forms. Loop over the elements `for (x in xs)` This is the most useful if you only care about side-effects. like plotting or saving a file, because it's difficult to save the output efficiently. Looping over the name `for (nm in names(xs))`. This gives you name, which you can use to access the values with `x[[nm]]`. This is useful if you want to use the name in a plot title or file name. If your're creating a named output, make sure to name it like so: 
 ```{r, eval=FALSE}
+x <- 1
+
 results <- vector("list", length(x))
 names(results) <- names(x)
 ```
@@ -221,11 +222,15 @@ names(results) <- names(x)
 <br>
 
 Iterating over the numeric indices is the most general form, becuse given the position you can extract both the name and the value: 
-```{r, eval=FAlSE}
+
+
+```{r, eval=FALSE}
+
 for (i in seq_along(x)) {
   name <- names(x)[[i]]
   value <- x[[i]]
 }
+
 ```
 
 <br> 
@@ -258,14 +263,14 @@ str(unlist(out))
 **Unknown Sequence Length** - Sometimes you don't know how long the input sequence should run for. That's when you use a while loop. A while loop is more general than a for loop, because you can write any for loop as a while loop, but you can't write any while loop as a for loop. 
 
 This for loop:
-```{r}
+```{r, eval=FALSE}
 for (i in seq_along(x)) {
   # body 
 }
 ```
 
 can become this while loop:
-```{r}
+```{r, eval=FALSE}
 i <- 1 
 
 while( i <= length(x)) {
@@ -301,12 +306,290 @@ flips
 
 While loops are most often used for simulations, which are out of the scope of this book but seem really awesome. 
 
+<br> 
+
 ### Practice!
 
+write a loop that will load a directory full of csv files into a signle dataframe 
+```{r}
 
+files <- dir("data/", pattern = "\\.csv$, full.names = TRUE")
+
+df <- vector("list", length(files))
+
+for (fname in seq_along(files)) {
+  df[[i]] <- read_csv(files[[i]])
+}
+
+df <- bind_rows(df)
+```
+
+<br> 
+
+Write a function that prints the mean of each numeric column in a dataframe along with its name. 
+```{r}
+show_mean <- function(df, digits = 2) {
+  # Get max length of any variable in the dataset
+  maxstr <- max(str_length(names(df)))
+  for (nm in names(df)) {
+    if (is.numeric(df[[nm]])) {
+      cat(str_c(str_pad(str_c(nm, ":"), maxstr + 1L, side = "right"),
+                format(mean(df[[nm]]), digits = digits, nsmall = digits),
+                sep = " "),
+          "\n")
+    }
+  }
+}
+show_mean(iris, 2)
+```
+
+<br> 
 
 ### For Loops vs Functionals 
+
+For loops are not as important in R as they are in other languages because R is functional. That means that usually for loops are wrapped up in functions instead of called directly. Imagine you want to compute the mean of every column in this dataframe:
+
+```{r}
+df <- tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+```
+
+<br> 
+
+You could do it with a for loop: 
+```{r}
+output <- vector("double", length(df)) 
+
+for (i in seq_along(df)) {
+  output[[i]] <- mean(df[[i]])
+}
+
+output
+```
+
+<br> 
+
+You realise that you're goingot want to comput the means of every column pretty frequently, so you extract it out into a function: 
+
+```{r}
+col_mean <- function(df) {
+  output <- vector("double", length(df))
+  for ( i in seq_along(df)) {
+    output[[i]] <- mean(df[[i]])
+  }
+  output
+}
+```
+
+<br> 
+
+But then you think it'd also be helpful to be able to compute the median, and the standard deviation, so instead of copying and pasting the `col_mean()` function and replace the `meean()` with `median()` and `sd()`, let's just create a composie function. 
+
+```{r}
+col_summary <- function(df, fun) {
+  out <- vector("double", length(df))
+  for (i in seq_along(df)) {
+    out[i] <- fun(df[[i]])
+  }
+  out
+}
+
+col_summary(df, median)
+col_summary(df, mean)
+col_summary(df, sum)
+```
+
+<br> 
+
+The idea of passing a function to another function is extremely powerful. The rest of the chapter is focused on learning `purrr` package functions that are meant to replace `apply()`, `lapply()`, and `tapply()` in base R. The goal of using purrr instead of for loops is to allow you to break common list manipulation challenges into independent peices. 
+
+- How can you solve the problem for a signle element of the list? Once you've solved that problem, purrr takes care of generalizing the solution. 
+
+- If you're solving a complex problem, how can you break it down into bite sied peices? With purrr,you get alots of small pieces that you can compose together with the pipe. 
+
+<br> 
+
 ### The Map Functions
+
+The pattern of looping over a vector, doing something to each element and saving the result is so common that purr provides a family of functions to do it for you, there is one function for each type of output. 
+
+`map()` - makes a list <br> 
+`map_lgl()` - makes a logical vector <br> 
+`map_int()` - make an integer vector <br> 
+`map_dbl()` - makes a double vector <br> 
+`map_chr()` - makps a character vector <br> 
+
+Each function takes a vector as input, applies a function to each piece, then returns a new vector thats the same length and has the same names as the input. the type of vector is determined by the suffix to the map function. 
+
+Using the map function to perform the same computation as the last for loop: 
+```{r}
+map_dbl(df, mean)
+map_dbl(df, median)
+map_dbl(df, sum)
+```
+
+<br> 
+
+The focus is on the verb, not the noun. This is even more apparent when you use a pipe: 
+```{r}
+df %>% map_dbl(mean)
+```
+
+<br> 
+
+All purrr functions are implemented in C. This makes them faster at the expense of readability. The second arguement, .f, the function to apply, can be a formula, a character vector, or an integer vector. `map()` uses ... to pass along additional arguements to .f each time it is called. Map also preserves names. 
+
+```{r}
+map_dbl(df, mean, trim = 0.5)
+```
+
+```{r}
+z <- list( x = 1:3, y = 4:5)
+map_int(z, length)
+```
+
+<br> 
+
+There are af few shortcuts you can use within the map functions. Imagine wanting to fit a linear model to each group in a dataset. This example splits up `mtcars` into three peices (one for each value of cylinder) and fits the same linear model to each piece: 
+
+```{r}
+models <- mtcars %>% 
+  split(.$cyl) %>%
+  map(function(df) lm(mpg ~ wt, data = df))
+
+models
+```
+
+The syntax for creating an anonymous function is verbose in R, so a one-sided formula is a convenient shortcut: 
+
+```{r}
+models <- mtcars %>% 
+split(.$cyl) %>% 
+map(~lm(mpg ~ wt, data = . ))
+```
+
+`.` is used as a pronoun in this case, it refers to the current listed element, in the same way that `i` refers to the current index in the for loop. 
+
+Extracting the Rsquared of a model is easy: 
+```{r}
+models %>% 
+  map(summary) %>%
+  map_dbl(~.$r.squared)
+```
+
+but extracting named components is a common operation so purr provides an even shorter shortcut: you can use a string: 
+
+```{r}
+models %>% 
+  map(summary) %>% 
+  map_dbl("r.squared")
+```
+
+You can also yuse an integer to select elements by position: 
+
+```{r}
+x <- list(list(1,2,3), list(4,5,6), list(7,8,9))
+x %>% map_dbl(2)
+```
+
+<br> 
+
+### Practice! 
+
+Write code that uses the map function to compute the mean of every column in mtcars: 
+```{r}
+mtcars %>% 
+  map_dbl(mean)
+```
+
+determines the type of column in each nycflights13::flights
+```{r}
+library('nycflights13')
+
+flights %>% 
+  map(class)
+```
+
+computes the number of unique values in each column of iris
+```{r}
+iris %>%
+  map(unique) %>%
+  map_int(length)
+```
+
+rewrite map(x, function(df) lm(mpg ~ wt, data = df)) to eliminate the anonymous function
+```{r, eval=FALSE}
+
+x %>% 
+  map(~lm(mpg ~ wt, data =  df))
+
+
+```
+
+<br> 
+
 ### Dealing With Failure
+
+Chances are that an operation in a map function will fail at some point. How do you ensure that one bad apple (failure) doesnt ruin the whole map function? `safely()` that's how. `safely()` will cause a list to return with two elements, result and error. 
+
+```{r}
+x <- list(1,10,"a")
+y <- x %>% map(safely(log))
+str(y)
+```
+
+<br>
+
 ### Mapping Over Multiple Arguements
-### Walk
+
+So far we've mapped along a signle input, but often you'll have multiplerelated inputs. that's the job of `map2()` and `pmap()`. So imagine you want to simuate some random normals with diferent means. You know how to do that with `map()`
+```{r}
+mu <- list(5,10,-3)
+mu %>% 
+  map(rnorm, n=5) %>%
+  str()
+
+```
+
+<br> 
+
+but what if you want to vary the standard deviation as well? That's when you use `map2()` to iterate over two vectors in parallel. 
+
+```{r}
+mu <- list(5,10,-3)
+sigma <- list(1,5,10)
+
+map2(mu, sigma, rnorm, n = 5) %>% str()
+```
+
+<br> 
+
+Note that arguements that vary for each call come before the function, and arguements that are the same for each call come after the function. Effectively, map2 is making the three functions `rnorm(5, 1, n = 5)`, `rnorm(10, 5, n = 5)` and `rnorm(-3, 10, n = 5)`. Here's what this looks like with a base for loop: 
+
+```{r}
+maps <- function(x, y, f, ...) {
+  out <- vector("list", length(x))
+  for (i in seq_along(x)) {
+    out[[i]] <- f(x[[i]], y[[i]], ...)
+  }
+  out
+}
+```
+
+<br> 
+
+In this sense, you can imagine a multitude of map functions for each number of variables. This is wher `pmap()` comes in handy. 
+```{r}
+n <- list(1,3,5)
+args1 <- list(n, mu, sigma)
+args1 %>%
+  pmap(rnorm) %>%
+  str()
+```
+
+<br> 
+

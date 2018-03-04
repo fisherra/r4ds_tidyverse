@@ -1,390 +1,503 @@
 ---
-title: "Untitled"
+title: "R4DS Chapter 5 - Data Transformation"
 author: "Fisher Ankney"
 date: "2/28/2018"
 output: html_document
 ---
 
-### Introduction 
+<br> 
 
+```{r, message=FALSE}
+library('tidyverse')
+library('nycflights13')
+```
 
+<br> 
 
- Common Variable Types - 
- int: integer, dbl: double, chr: character, dttm: date-time
- lgl: logical, fctr: factor, date: date
+### The Common Variable Types - <br> 
 
- Learning the 5 key dplyr basics 
- filter() pick observations by their values
- arrange() reorder rows
- select() pick variables by their values
- mutate() create new variables from existing ones
- summarise() collapse many values to a summary
+- Integer <br> 
+- Double <br> 
+- Character <br> 
+- Date-Time <br> 
+- Logical <br> 
+- Factor <br> 
+- Data <br> 
+<br> 
 
- use all of these dplyr commands with the group_by() and you can 
- organize anything!
+### Learning the Dplyr Basics 
+- `filter()` - pick observations by their values <br> 
+- `arrange()` - reorder rows <br> 
+- `select()` - pick variables by their values <br> 
+- `mutate()` - create new variables from existing ones <br> 
+- `summarise()` - collapse many values to a summary <br> 
 
- Filter
+Use all of these dplyr commands with the group_by() and you can organize anything!
 
-filter(<DATAFRAME>, condition 1, condition 2)
-jan_1 <- filter(flights, day == 1, month == 1)
+<br> 
+
+### Filter
+
+```{r}
 (dec_25 <- filter(flights, day == 25, month == 12))
+```
 
- also just for fun, check this out: 
-(1/49*49)==1
-near(1/ 49 * 49, 1)
+<br> 
 
- Logical Operators & (and) | (or) and ! (not)
-
- find all of the flights in november OR december
+Logical Operators & (and) | (or) and ! (not). Find all of the flights in november OR december:
+```{r}
 filter(flights, month == 11 | month == 12)
- note you cannot have: 
+```
+
+<br> 
+
+Note can't you do this as:
+```{r}
 filter(flights, month == 11 | 12)
- this is because it finds months equal to 11 or 12, which is true, 
- which is interpreted as '1', so It'll find all of the flights in january. 
+``` 
+This is because it finds months equal to 11 or 12, which is true, which is interpreted as '1', so It'll find all of the flights in january. 
 
- a shorthand for the above problem:
+<br> 
+
+A shorthand for the above problem:
+```
 nov_dec <- filter(flights, month %in% c(11, 12))
+```
 
+<br> 
 
- De Morgan’s law: !(x & y) is the same as !x | !y, 
- and !(x | y) is the same as !x & !y
+### Practice Time 
 
- an example of De Morgan's law - flights that weren't delayed 2+ hours:
-filter(flights, !(arr_delay > 120 | dep_delay > 120))
-filter(flights, arr_delay <= 120, dep_delay <= 120)
-
- to determine if there are missing variables use is.na()
-x <- NA
-is.na(x)
-
-
- Practice time!
- 1. Find all flights that...
-    Had an arrival delay of two or more hours
+Find all flights that had an arrival delay of two or more hours
+```{r}
 filter(flights, arr_delay >= 120)
-    Flew to Houston (IAH or HOU)
+```
+
+<br> 
+
+Flew to Houston (IAH or HOU):
+```{r}
 filter(flights, dest == "IAH" | dest == "HOU")
-    Were operated by United, American, or Delta
+```
+
+<br> 
+
+Were operated by United, American, or Delta
+```{r}
 filter(flights, carrier == "UA" | carrier == "AA" | carrier == "DL")
-    Departed in summer (July, August, and September)
+```
+
+<br> 
+
+Departed in summer (July, August, and September)
+```{r}
 filter(flights, month == 7 | month == 8 | month == 9)
-""    Arrived more than two hours late, but didn’t leave late
+```
+
+<br> 
+
+Arrived more than two hours late, but didn’t leave late
+```{r}
 filter(flights, arr_delay > 120 & dep_delay <= 0)
-""    Were delayed by at least an hour, but made up over 30 minutes in flight
+```
+
+<br> 
+
+Were delayed by at least an hour, but made up over 30 minutes in flight
+```{r}
 filter(flights, dep_delay >= 60 & arr_delay <= 30)
-    Departed between midnight and 6am (inclusive)
+```
+
+<br> 
+
+Departed between midnight and 6am (inclusive)
+```{r}
 filter(flights, dep_time >= 0 & dep_time <= 600)
- 2. Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify 
-    he code needed to answer the previous challenges?
+```
+
+<br> 
+
+Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify he code needed to answer the previous challenges?
+```{r}
 filter(flights, between(dep_time, 0, 600))
- 3. How many flights have a missing dep_time? 
-    What other variables are missing? What might these rows represent?
+``` 
+
+<br> 
+
+How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
+
+```{r}
 filter(flights, is.na(dep_time))
-    These appear to be cancelled flights. 
- 4. Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is FALSE & NA not missing? 
-    Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
+```
+
+<br> 
 
 
+### Arrange 
 
- 5.3. Arrange
+Arrange organizes the rows (default ascending) by the parameters you give it. 
 
- arrange organizes the rows (default ascending) by the parameters you give it
+```{r}
 arrange(flights, desc(arr_delay))
- note that missing values are always sorted at the end
-
- Practice!
- 1.  How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
+```
+ 
+ <br> 
+ 
+ ### Practice Time
+ 
+How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
+```{r}
 arrange(flights, desc(is.na(dep_time)))
+```
 
- 2.  Sort flights to find the most delayed flights. Find the flights that left earliest.
+<br> 
+
+Sort flights to find the most delayed flights.
+```{r}
 arrange(flights, desc(dep_delay))
-arrange(flights, dep_delay)
- 3.  Sort flights to find the fastest flights.
+```
+
+<br> 
+
+Find the flights that left earliest.
+```{r}
+arrange(flights, dep_time)
+```
+
+<br> 
+
+Arrange flights to find the fastest flights
+```{r}
 arrange(flights, air_time)
- 4.  Which flights travelled the longest? Which travelled the shortest?
-arrange(flights, distance)
+```
+
+<br> 
+
+Which flights travelled the shortest distance?
+```{r}
 arrange(flights, desc(distance))
+```
 
+<br> 
 
+### Select 
 
- 5.4. Select
- often datasets have many variables, select allows you to quickly create a subset of these variables
+Often datasets have many variables, select allows you to quickly create a subset of these variables. 
 
- select(flights dataset, variables: year, month, day)
-select(flights, year, month, day)
- select(flights dataset, variables: year through day inclusively)
+```{r}     
+flights %>% 
+select(year, month, day)
+```
+
+<br> 
+
+select(flights dataset, variables: year through day inclusively)
+```{r}
 select(flights, year:day)
+```
+
+<br> 
+
 select(flights dataset, leave out varaibles year through day inclusively)
+```{r}
 select(flights, -(year:day))
+```
 
- Select helper functions - 
-   starts_with("abc"): matches names that begin with “abc”.
-   ends_with("xyz"): matches names that end with “xyz”.
-   contains("ijk"): matches names that contain “ijk”.
-   matches("(.)\\1"): selects variables that match a regular expression. 
-   num_range("x", 1:3) matches x1, x2 and x3.
+<br>
 
- rename function 
+Select helper functions - <br> 
+- `starts_with("abc")`: matches names that begin with “abc”. <br> 
+- `ends_with("xyz")`: matches names that end with “xyz”. <br> 
+- `contains("ijk")`: matches names that contain “ijk”. <br> 
+- `matches("(.)\\1")`: selects variables that match a regular expression. <br> 
+- `num_range("x", 1:3)`: matches x1, x2 and x3. <br> 
+- `everything()`: goes within select, keeps everything after defined observations <br> 
+
+<br> 
+
+### Rename
+
+```{r}
 rename(flights, tail_num = tailnum)
- everything function useful for moving certain variables to the first columns and keeping the rest
-select(flights, time_hour, air_time, everything())
+```
+
+<br> 
+
+### Mutate
+
+Creates new columns that are the function of existing columns
+```{r}
+flights %>% 
+  select(year:day, ends_with("delay"), distance, air_time) %>%
+  mutate(gain = arr_delay - dep_delay, speed = distance / air_time * 60)
+```
+
+<br> 
 
 
+If you want to destroy the old data and only keep the newly created data use transmute()
+```{r}
+flights %>% 
+  transmute(
+            gain = arr_delay - dep_delay,
+            hours = air_time / 60,
+            gain_per_hour = gain / hours
+  )
+```
 
- 5.5. Mutate
+<br> 
 
- mutate() creates new columns that are the function of existing columns
-flights_sml <- select(flights, year:day, ends_with("delay"), distance, air_time)
- create flights_sml dataframe using specified parameters
-mutate(flights_sml, gain = arr_delay - dep_delay, speed = distance / air_time * 60)
- create 'gain' variable and 'speed' variable with mutate
-View(flights_sml)  dont forget the capital V 
- you can refer to the columns you just created in the same command:
-mutate(flights_sml,
-       gain = arr_delay - dep_delay,
-       hours = air_time / 60,
-       gain_per_hour = gain / hours
-)
- if you want to destroy the old data and only keep the newly created data use transmute()
-transmute(flights,
-          gain = arr_delay - dep_delay,
-          hours = air_time / 60,
-          gain_per_hour = gain / hours
-)
-
- Modular arithmatic %/% (integer division) %% remainder can be useful: 
+Modular arithmatic %/% (integer division) and remainder, %%,  can be useful: 
+```{r}
 transmute(flights, 
           dep_time,
           hour = dep_time %/% 100,
           minute = dep_time %% 100
 )
+```
 
- Other useful functions
-(x <- 1:10)
- offset x by -1
-lag(x)
- offset x by +1
-lead(x)
+<br> 
 
- running sum
-cumsum(x)
- running product
-cumprod(x)
-running minimum
-cummin(x)
- running maximum
-cummax(x)
- running mean
-cummean(x)
+### Other Useful Functions
+
+`lag()` - offset by -1
+`lead()` - offset by +1 
+`cumsum()`: running sum <br> 
+`cumprod()`: cumulative product <br> 
+`cummin()`: cumulative minimum <br> 
+`cummax()`: cumulative maximum <br> 
+`cummean()`: cumulative mean <br> 
+
+<br> 
+
+### Summarize
+
+The last key verb is summarize(). It collapses a data frame to a single row:
+```{r}
+summarize(flights, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+<br> 
 
 
- 5.6. Grouped Summaries
-
- The last key verb is summarise(). It collapses a data frame to a single row:
-summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
-
- summarise() is often best used with group_by():
+used with `group_by()`:
+```{r}
 by_day <- group_by(flights, year, month, day)
-summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
- now you can see the average delay per day, instead of per year
+summarize(by_day, delay = mean(dep_delay, na.rm = TRUE))
+```
 
- Grouped summaries one of the most powerful features of dplyr, but first we must learn the pipe:
+<br> 
 
- BEHOLD! THE DPLYR PIPE! THEN!
-           %>%
+### The Pipe
 
-delays <- flights %>%   put flights datatable into delays subset *then*
-  group_by(dest) %>%    changes the unit of analysis from whole dataset to individual dest, *then*
+`%>%`, read as then, strings together dplyr and other functions:
+```{r}
+flights %>%   
+  group_by(dest) %>%    
   summarise(         
-    count = n(),        create "count" variable, adding up  of flights to each group(dest)
-    dist = mean(distance, na.rm = TRUE),      mean distance to each destination
-    delay = mean(arr_delay, na.rm = TRUE)     mean delay to each destination
-  ) %>%                 *THEN*
-  filter(count > 20, dest != "HNL")           only destinations that have been flown to 20+ times, and not honalulu
+    count = n(),       
+    dist = mean(distance, na.rm = TRUE),      
+    delay = mean(arr_delay, na.rm = TRUE)     
+  ) %>%                
+  filter(count > 20, dest != "HNL")        
+```
 
- Note na.rm = TRUE very important to remove those cancelled flights
+<br> 
+
+Measurements of spread include: <br> 
+- `sd()`: mean squared deviation aka standard deviation <br> 
+- `IQR()`: Inter Quartile Range <br> 
+- `mad(x)`: Median absolute deviation <br> 
+
+<br> 
+
+Destinations with the most variability: 
+```{r}
 not_cancelled <- flights %>% 
   filter(!is.na(dep_delay), !is.na(arr_delay))
 
 not_cancelled %>% 
-  group_by(year, month, day) %>% 
-  summarise(mean = mean(dep_delay))
-
- doing counts on any data aggregate is a good idea: 
-(n())
-
-delays <- not_cancelled %>%     put all not_cancelled data into delays variable
-  group_by(tailnum) %>%         analyze by tailnumber (or unique airplane) 
-  summarise(   
-    delay = mean(arr_delay)     average arrival delay (by unique airplane)
-  )
-
-ggplot(data = delays, mapping = aes(x = delay)) +     plot frequency of delays
-  geom_freqpoly(binwidth = 10)                 
- Dang! some planes have average delays of -50 minutes, some of more than 300 minutes
-
-delays <- not_cancelled %>%         not_cancelled dataset re-writes delays
-  group_by(tailnum) %>%             analyze by individual airplane again
-  summarise(
-    delay = mean(arr_delay, na.rm = TRUE),       delay = average delay per airplane
-    number_of_flights = n()                         number_of_flights that plane has done
-    )
-ggplot(data = delays, mapping = aes(x = number_of_flights, y = delay)) + 
-  geom_point(alpha = 1/10)
- so now we can see that the 300 minute delay is the average of 1 flight
-
- lets filter out planes that have flown less that 25 times in the year 
-delays %>% 
-  filter(number_of_flights > 25) %>% 
-  ggplot(mapping = aes(x = number_of_flights, y = delay)) + 
-  geom_point(alpha = 1/10)
-
- subsetting can be very useful, average positive delay 
-not_cancelled %>% 
-  group_by(year, month, day) %>% 
-  summarise(
-    avg_delay1 = mean(arr_delay),
-    avg_delay2 = mean(arr_delay[arr_delay > 0])  the average positive delay
-  )
-
- Measurements of spread include:
- sd(x) mean squared deviation aka standard deviation
- IQR(x) Inter Quartile Range
- mad(x) Median absolute deviation
-
- Destinations with the most variability
-not_cancelled %>% 
   group_by(dest) %>% 
   summarise(distance_sd = sd(distance)) %>% 
   arrange(desc(distance_sd))
+```
 
- Which destinations have the most carriers?
+<br> 
+
+Which destinations have the most carriers?
+```{r}
 not_cancelled %>% 
   group_by(dest) %>% 
   summarise(carriers = n_distinct(carrier)) %>% 
   arrange(desc(carriers))
+```
 
- Counts are super useful!
+<br> 
+
+Counts are super useful!
+```{r}
 not_cancelled %>% 
   count(dest)
- weight variable (wt) will count (sum) the specified parameter
+```
+
+<br> 
+
+Weight variable (wt) will count (sum) the specified parameter:
+```{r} 
 not_cancelled %>% 
   count(tailnum, wt = distance)
- thus providing how far each plane on record flew
+```
+ 
+<br> 
+ 
+How many flights left before 5am? (these usually indicate delayed flights from the previous day)
+```{r}
+not_cancelled %>%
+  group_by(year, month, day) %>%     
+  summarise(n_early = sum(dep_time < 500))
+```
 
- How many flights left before 5am? (these usually indicate delayed
- flights from the previous day)
+<br> 
+
+What proportion of flights are delayed by more than an hour?
+```{r}
 not_cancelled %>% 
-  group_by(year, month, day) %>%     analyze by year, month, day 
-  summarise(n_early = sum(dep_time < 500))  number early 
+  group_by(year, month, day) %>%   
+  summarise(hour_perc = mean(arr_delay > 60))  
+```
 
- what proportion of flights are delayed by more than an hour?
-not_cancelled %>% 
-  group_by(year, month, day) %>%    group by day
-  summarise(hour_perc = mean(arr_delay > 60))   summarize 
+<br> 
 
- ungrouping use ungroup()
+### Ungroup
 
- 1. Brainstorm at least 5 different ways to probe this dataset and conduct them:
-
- 1. which carrier has the most delays? 
+Which carrier has the most delays? 
+```{r}
 num_delays <- not_cancelled %>%     
   group_by(carrier) %>%  
   summarise(num_delay = sum(arr_delay > 0)) %>%  
   arrange(desc(num_delay))
 num_delays[1,]
+```
 
- How fast was the fastest flight to denver? Really don't know why pipes arnt working on this one
-den_delay <- not_cancelled
-den_delay <- filter(den_delay, dest == "DEN") 
-den_delay <- arrange(den_delay, desc(arr_delay))
-den_delay <- select(den_delay, year:distance, -sched_arr_time)
-den_delay <- mutate(den_delay, speed = distance / (air_time / 60))
-den_delay <- arrange(den_delay, desc(speed))
-den_delay
+<br> 
 
- 3. Where do the flights go most often?
+How fast was the fastest flight to denver? Really don't know why pipes arnt working on this one
+
+```{r}
+not_cancelled %>%
+  filter(dest == "DEN") %>%
+  arrange(desc(arr_delay)) %>%
+  select(year:distance, -sched_arr_time) %>%
+  mutate(speed = distance / (air_time / 60)) %>%
+  arrange(desc(speed))
+```
+
+<br> 
+
+Where do the flights go most often?
+```{r}
 num_flights <- flights %>%
   group_by(dest) %>%
   summarise(count = n()) %>%
   arrange(desc(count))
 num_flights
-  
- 4. How long, in total, were flights delayed on christmas day?
-xmas_delay <- flights 
-xmas_delay <- filter(xmas_delay, month == 12 & day == 25)
-xmas_delay <- cumsum(xmas_delay$dep_delay)
-max(xmas_delay, na.rm=TRUE)
+```
 
- 5. how many flights were cancelled in november?
+<br> 
+
+How long, in total, were flights delayed on christmas day?
+
+```{r}
+flights %>%  
+  filter(month == 12 & day == 25) %>%
+  select(dep_delay) %>% 
+  cumsum() %>%
+  max(na.rm=TRUE)
+```
+
+<br> 
+
+How many flights were cancelled in November?
+```{r}
 nov_cancel <- flights %>%
   filter(is.na(dep_delay) & month == 11)
 count(nov_cancel)
+```
 
+<br> 
 
- 2. Come up with another approach that will give you the same output as 
-not_cancelled %>% count(dest) without using count()  how many planes went to each destination
+Come up with another approach that will give you the same output as 
+not_cancelled %>% count(dest) without using count() how many planes went to each destination
 
+```{r}
 not_cancelled %>% 
   group_by(dest) %>%
   summarise(count = n())
+```
 
- 4. Look at the number of cancelled flights per day. Is there a pattern? Is the proportion of cancelled flights related to the average delay?
-cancel <- flights %>% 
+<br> 
+
+Look at the number of cancelled flights per day. Is there a pattern? Is the proportion of cancelled flights related to the average delay?
+
+```{r}
+flights %>% 
   group_by(year, month, day) %>%
-  filter(is.na(dep_delay))
-cancel <- count(cancel)
-cancel  
+  filter(is.na(dep_delay)) %>%
+  count()
+```
 
-  
- 5. Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? 
-    Why/why not? (Hint: think about flights %>% group_by(carrier, dest) %>% summarise(n()))
-carrier_delay <- not_cancelled %>%
+<br> 
+
+Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about
+flights %>% group_by(carrier, dest) %>% summarise(n()))
+
+```{r}
+not_cancelled %>%
   group_by(carrier) %>%
   summarise(num_delay = sum(arr_delay > 0)) %>%
   arrange(desc(num_delay))
-carrier_delay
- 
-abc <- flights %>% 
+```
+
+```{r}
+flights %>% 
   group_by(carrier, dest) %>% 
-  summarise(n()))
+  summarise(n())
+```
 
- 6. What does the sort argument to count() do. When might you use it?
- order a vector or factor into ascending or descending order
+<br> 
+
+What does the sort argument to count() do. When might you use it?
+order a vector or factor into ascending or descending order
 
 
-
- Group mutate & filter
-flights_sml %>% 
+Group mutate & filter
+```{r}
+flights %>% 
   group_by(year, month, day) %>%
   filter(rank(desc(arr_delay)) < 10)
+```
 
- find groups bigger than a threshold 
+<br> 
+
+Find groups bigger than a threshold 
+```{r}
 popular_dests <- flights %>% 
   group_by(dest) %>% 
   filter(n() > 365)
 popular_dests
+```
 
- standardize to produce per group metrics
+<br> 
+
+Standardize to produce per group metrics
+```{r}
 popular_dests %>% 
   filter(arr_delay > 0) %>% 
   mutate(prop_delay = arr_delay / sum(arr_delay)) %>% 
   select(year:day, dest, arr_delay, prop_delay)
+```
 
-5.7.1 Exercises
-Refer back to the lists of useful mutate and filtering functions. Describe how each operation changes when you combine it with grouping.
+<br> 
 
-Which plane (tailnum) has the worst on-time record?
-
-What time of day should you fly if you want to avoid delays as much as possible?
-
-For each destination, compute the total minutes of delay. For each, flight, compute the proportion of the total delay for its destination.
-
-Delays are typically temporally correlated: even once the problem that caused the initial delay has been resolved, later flights are delayed to allow earlier flights to leave. Using lag() explore how the delay of a flight is related to the delay of the immediately preceding flight.
-
-Look at each destination. Can you find flights that are suspiciously fast? (i.e. flights that represent a potential data entry error). Compute the air time a flight relative to the shortest flight to that destination. Which flights were most delayed in the air?
-
-Find all destinations that are flown by at least two carriers. Use that information to rank the carriers.
-
-For each plane, count the number of flights before the first delay of greater than 1 hour.
+This concludes data transformation chater 5 notes. 
 

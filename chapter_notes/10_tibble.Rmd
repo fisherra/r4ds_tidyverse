@@ -1,11 +1,10 @@
-############################
-##       Chapter 10       ##
-##         Tibbles        ## 
-############################
+---
+title: "Untitled"
+author: "Fisher Ankney"
+date: "3/3/2018"
+output: html_document
+---
 
-# Working through Hadley Wickham's R for Data Science 
-# Section 2, Chapter 10
-# Fisher Ankney 
 
 # Coerse a dataframe to become a special tidyverse dataframe 'tibble'
 as_tibble(iris)

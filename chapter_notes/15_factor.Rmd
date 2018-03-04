@@ -1,3 +1,9 @@
+---
+title: "15_factor"
+author: "Fisher Ankney"
+date: "3/3/2018"
+output: html_document
+---
 ###########################
 ##        Chapter 14     ##
 ##         Strings       ## 

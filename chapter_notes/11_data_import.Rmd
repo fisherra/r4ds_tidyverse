@@ -1,11 +1,10 @@
-############################
-##       Chapter 11       ##
-##       Data Import      ## 
-############################
+---
+title: "Untitled"
+author: "Fisher Ankney"
+date: "3/3/2018"
+output: html_document
+---
 
-# Working through Hadley Wickham's R for Data Science 
-# Section 2, Chapter 11
-# Fisher Ankney 
 
 # There are many functions to read in data, but we focus on read_csv()
 
