@@ -1,65 +1,59 @@
 ---
-title: "Untitled"
+title: "R4DS Chapter 12 - Tidy Data"
 author: "Fisher Ankney"
 date: "3/3/2018"
 output: html_document
 ---
 
-###########################
-##       Chapter 12      ##
-##       Tidy Data       ## 
-###########################
+### What is Tidy Data
 
-# Working through Hadley Wickham's R for Data Science 
-# Section 2, Chapter 12
-# Fisher Ankney 
+THREE GOLDEN RULES OF A TIDY DATASET
+1. Each variable must have its own column. <br>
+2. Each observation must have its own row. <br>
+3. Each value must have its own cell. <br>
 
-# THREE GOLDEN RULES OF A TIDY DATASET
-# 1. Each variable must have its own column.
-# 2. Each observation must have its own row.
-# 3. Each value must have its own cell. 
+You'll satisfy these rules by remembering to put each dataset in a tibble and put each variable in a column. 
 
-# you'll satisfy these rules by remembering to...
-# Put each dataset in a tibble.
-# Put each variable in a column
+The two most important functions in tidyr are `gather()` and `spread()`.
 
-# the two most important functions in tidyr are - 
-# gather() and spread()
-
-## Gather - - - 
+### Gather 
+```{r}
 table4a %>% 
   gather(`1999`, `2000`, key = "year", value = "cases")
+```
 
-# the first entries are the set of columns that are screwed up, 
-# in this case 1999 and 2000 represent values not variables 
-# next we enter the key, which is the name of the variable whose 
-# values form column names i.e. the key is year (1999, 2000)
-# finally we clean up the variable whose values are spread across
-# the dataset, so in the problem columns (1999, 2000), there are a 
-# number of values that now need a new home. these values are named
-# "cases" by the code above. 
+<br> 
 
-#  now trying it for the second dataset
+The first entries are the set of columns that are screwed up, in this case 1999 and 2000 represent values not variables next we enter the key, which is the name of the variable whose values form column names i.e. the key is year (1999, 2000) finally we clean up the variable whose values are spread across the dataset, so in the problem columns (1999, 2000), there are a number of values that now need a new home. these values are named "cases" by the code above. 
+
+Noow trying it for the second dataset
+```{r}
 table4b %>% 
   gather(`1999`, `2000`, key = "year", value = "population")
+```
 
-# join the two tables togather!
+Join the two tables togather!
+```{r}
 tidy4a <- table4a %>% 
   gather(`1999`, `2000`, key = "year", value = "cases")
 tidy4b <- table4b %>% 
   gather(`1999`, `2000`, key = "year", value = "population")
 left_join(tidy4a, tidy4b)
+```
 
-
-# spread() is the opposite of gather, usable when the observations
-# are on multiple roles, see table2
+### Spread
+The opposite of gather, usable when the observations are on multiple roles, like this: 
+```{r}
 table2
 
 spread(table2, key = type, value = count)
-# we only need two parameters, key and value.
-# The column that contains variable names, the key column. Here, it’s type.
-# The column that contains values forms multiple variables, the value column. Here it’s count.
+```
 
+<br> 
+
+With spread, we only need two parameters, key and value The column that contains variable names, the key column. Here, it’s type. The column that contains values forms multiple variables, the value column. Here it’s count.
+
+```{r}
 stocks <- tibble(
   year   = c(2015, 2015, 2016, 2016),
   half  = c(   1,    2,     1,    2),
@@ -68,80 +62,97 @@ stocks <- tibble(
 stocks %>% 
   spread(year, return) %>% 
   gather("year", "return", `2015`:`2016`)
-# They cannot be symmetrical because you're defining the column
-# headers to be the years (2015, 2016) and the values to be the 
-# return numbers. then youre trying to gather up column headers
-# year and return, when they no longer exist. 
+```
 
-# convert runs type.convert() on the key column, 
-# useful when the names are numbers or logicals not characters
+<br> 
 
-table4a %>% 
-  gather(1999, 2000, key = "year", value = "cases")
-# didnt use special `1999`, `2000`
+They cannot be symmetrical because you're defining the column headers to be the years (2015, 2016) and the values to be the return numbers. then youre trying to gather up column headers year and return, when they no longer exist. 
 
-# tidy this tibble!
+Tidy this tibble!
+```{r}
 preg <- tribble(
   ~pregnant, ~male, ~female,
   "yes",     NA,    10,
   "no",      20,    12 
-) %>%  # here we go..!
+) 
+
+preg %>%   
   gather("male", "female", key = "sex", value = pregnants) %>% 
   spread(key = "pregnant", value = "pregnants") %>%
   rename("not_pregnant" = "no", "pregnant" = "yes") %>%
   select(sex, pregnant, not_pregnant)
-preg
+```
 
-# 12.4 seperating and uniting
+<br> 
 
+### Seperate
 
-# separate() pulls apart one column into multiple columns, 
-# by splitting wherever a separator character appears
+`separate()` pulls apart one column into multiple columns by splitting wherever a separator character appears
+```{r}
 table3
 table3 %>% 
   separate(rate, into = c("cases", "population"))
-# by default the spererator is a non-alphanumeric chr. but you can set it: 
+```
+
+<br> 
+
+
+By default the spererator is a non-alphanumeric chr. but you can set it: 
+```{r}
 table3 %>% 
   separate(rate, into = c("cases", "population"), sep = "/")
+```
 
-# unite() is the inverse of separate(): it combines multiple columns
-# into a single column
+<br>
+
+### Unite
+
+`unite()` is the inverse of `separate()`: it combines multiple columns into a single column
+```{r}
 table5 %>% 
   unite(new, century, year, sep = "")
+```
 
-## exercises
-# 1. extra warns when there are too many peices, warn, drop, merge
-# 2. fill warns when there are not enough peices, warn, right, left
 
+### Tidy Arguements
+
+Dropping extra values
+```{r}
 tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
   separate(x, c("one", "two", "three"), extra="drop")
-# drops that extra g
+```
 
+<br> 
+
+
+Fills in the missing column with an NA placeholder (right side, column 3)
+```{r}
 tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
   separate(x, c("one", "two", "three"), fill ="right")
-# fills in the missing column with an NA placeholder (right side, column 3)
+```
 
-tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
-  separate(x, c("one", "two", "three"), extra="drop")
 
-# explicit and implicit missing data
+explicit and implicit missing data
+```{r}
 stocks <- tibble(
   year   = c(2015, 2015, 2015, 2015, 2016, 2016, 2016),
   qtr    = c(   1,    2,    3,    4,    2,    3,    4),
   return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
 )
-# return for 4th Q is NA (explicit), entire 2016 Q1 missing (implicit)
+```
+return for 4th Q is NA (explicit), entire 2016 Q1 missing (implicit)
+
+```{r}
 stocks %>% 
   spread(year, return)
 
 stocks %>% 
   complete(year, qtr)
-# complete() takes a set of columns, and finds all unique combinations.
-# It then ensures the original dataset contains all those values, 
-# filling in explicit NAs where necessary.
+```
+`complete()` takes a set of columns, and finds all unique combinations. It then ensures the original dataset contains all those values, filling in explicit NAs where necessary.
 
-# sometimes you know what should be in those missing values because of 
-# the previous entries
+Sometimes you know what should be in those missing values because of the previous entries. `fill()` will cary forward the last value of that column. 
+```{r}
 treatment <- tribble(
   ~ person,           ~ treatment, ~response,
   "Derrick Whitmore", 1,           7,
@@ -151,33 +162,28 @@ treatment <- tribble(
 )
 treatment %>% 
   fill(person)
-# fill() will carry forward the last value for that column
+```
 
+<br> 
 
+Tidying in action 
+```{r}
+tidy_who <- who %>%   
+  gather(new_sp_m014:newrel_f65, key = "key", value = "cases", na.rm=TRUE) %>% 
+  mutate(key = stringr::str_replace(key,"newrel", "new_rel")) %>%  
+  separate(key, c("new", "type", "sexage"), sep = "_")   
 
-## Tidying WHO data casestudy - - - 
-tidy_who <- who %>%   # gather together the columns that are not variables
-  gather(new_sp_m014:newrel_f65, key = "key", value = "cases", na.rm=TRUE) %>% # new_sp_m014 to newrel_f65 are some type of value, not variable
-  mutate(key = stringr::str_replace(key,"newrel", "new_rel")) %>% # newrel and new_rel are not consistent throughout the dataset
-  separate(key, c("new", "type", "sexage"), sep = "_") # seperate the patient code into new, type of sickness, and sex+age using the _ 
+tidy_who %>% count(new) 
 
-tidy_who %>% count(new) # looks like we only have new cases listed in this dataset, therefor this isn't really a variable
-tidy_who <- select(tidy_who, -new, -iso2, -iso3) # remove redundant variables
+tidy_who <- select(tidy_who, -new, -iso2, -iso3) 
 
 tidy_who %>%
-separate(sexage, c("sex", "age"), sep = 1) # seperate sexage into sex, age by carving off the first character (sex) 
+  separate(sexage, c("sex", "age"), sep = 1) 
+```
 
-# data is tidy!
+<br> 
 
-
-## Exercises 
-
-# For each country, year, and sex compute the total number of cases of TB. Make an informative visualisation of the data.
-tidy_who %>% 
-  ggplot() + 
-    geom_point(mapping=aes(x=year, y = cases))
-    
-
+ That concludes chapter 12 notes. 
 
 
 

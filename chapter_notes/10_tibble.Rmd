@@ -1,54 +1,168 @@
 ---
-title: "Untitled"
+title: "R4DS Chapter 10 - Tibbles"
 author: "Fisher Ankney"
 date: "3/3/2018"
 output: html_document
 ---
 
+<br> 
 
-# Coerse a dataframe to become a special tidyverse dataframe 'tibble'
-as_tibble(iris)
+### Introduction
 
+```{r, message=FALSE}
+library('tidyverse')
+```
 
-# tibles are smart and match the vector lengths so you dont have to 
+<br> 
+
+Tibbles are dataframes, but they tweak some older behavior to make life easier. Tibble is one of the eight core tidyverse packages. Coerce dataframes into tibbles using `as_tibble()`. Create new tibbles by hand, tibble automatically recycles inputs of length 1 as shown below:
+```{r}
 tibble(
   x = 1:5, 
   y = 1, 
   z = x ^ 2 + y
 )
+```
 
-# possible for tibbles to have non-syntatic names that don't start with letters
+<br> 
+
+`tibble()` never changes the type of inputs, the names of the variables, or creates row names. It's possible for non-syntactic names to go into a tibble using the backtick character:
+```{r}
 tb <- tibble(
   `:)` = "smile", 
   ` ` = "space",
   `2000` = "number"
 )
-tb
 
-# view 10 tibble rows
+tb
+```
+
+<br> 
+
+### Tibbles vs Dataframes
+
+Tibbles have a method of printing that shows only the first ten rows, and all of the columns that will fit on screen. Each column also reports it's type, a feature that's not included in dataframes. 
+
+
+ view 10 tibble rows
 options(tibble.print_max = 10, tibble.print_min = 10)
-# but view all the tibble columns
+ but view all the tibble columns
 options(tibble.width = Inf)
 
-# subsetting
+```{r}
+tibble(
+  a = lubridate::now() + runif(1e3) * 86400,
+  b = lubridate::today() + runif(1e3) * 30,
+  c = 1:1e3,
+  d = runif(1e3),
+  e = sample(letters, 1e3, replace = TRUE)
+)
+```
+
+<br> 
+
+Sometimes you need more output that the default display, here are a few options changes that can help. 
+
+`options(tibble.print_max = n, tibble.print_min = m`: if more than `m` rows, print only `n` rows <br> 
+`options(dplyr.print_min = Inf)`: always show all rows <br> 
+`options(tibble.width = Inf)`: always print all columns <br> 
+`View()`: RStudio's built in data viewer <br>
+
+<br> 
+
+### Subsetting 
+
+Two tools: `$` and `[[`. If you want to pull out a signle variable by name, `$` works well. If you want to pul out a signle variable by name or position, `[[` is your guy. 
+
+```{r}
 df <- tibble(
   x = runif(5),
   y = rnorm(5)
 )
-# Extract by name
+
 df$x
-df[["x"]]
 
-# Extract by position
 df[[1]]
+```
 
-# however to use these extractions in a pipe, you need the special 
-# placeholder '.'
-df %>% .$x
+<br> 
 
-# if your older function doesnt work with a tibble, turn it back into df
-as.data.frame(df) 
+If you want to use these extractions in a pipe, you need the special 
+ placeholder `.`
+```{r}
+df %>% 
+  .$x
+```
+ 
+<br> 
+
+If you have some old function that won't play well with tibble, use this code to turn it into a dataframe: 
+```{r, eval=FALSE}
+class(as.data.frame())
+```
+
+### Practice! 
+
+How can you tell if an object is a tibble?
+```{r}
+str(mtcars)
+```
+
+<br> 
+
+Compare and contrast the following operations on a dataframe and a tibble. 
+
+```{r}
+df <- data.frame(abc = 1, xyz = "a")
+tb <- tibble(abc = 1, xyz = "a")
+
+df$x
+tb$x
+
+df[, "xyz"]
+tb[, "xyz"]
+
+df[, c("abc", "xyz")]
+tb[, c("abc", "xyz")]
+```
+
+<br> 
+
+Practice referring to non-syntactic names in the following dataframe
+```{r}
+annoying <- tibble(
+  `1` = 1:10, 
+  `2` = `1`  * 2 + rnorm(length(`1`))
+)
+
+annoying
+```
+
+Extract the variable called 1:
+```{r}
+annoying[[1]]
+```
+
+plot a scatterplot of 1 vs 2 
+```{r}
+ggplot(data = annoying) + 
+geom_point(aes(x = `1`, y = `2`))
+```
+
+Createa  new column `3` which is `2` divided by `1`
+```{r}
+annoying$`3` = annoying$`2` / annoying$`1`
+
+annoying
+```
 
 
+```{r}
+annoying
+names(annoying)<- c("one", "two", "three")
+annoying
+```
 
+<br>
 
+That's all for chapter 10. 
