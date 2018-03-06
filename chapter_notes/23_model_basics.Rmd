@@ -141,78 +141,129 @@ ggplot(sim1, aes(x, y)) +
   )
 ```
 
- newton-raphson search using optim()
+<br> 
 
+### Optimize
+
+You can use the above method iteratively to optimize the model for distance. In R you can do this using the `optim()` function. 
+
+```{r}
 best <- optim(c(0,0), measure_distance, data = sim1)
 best$par
 
 ggplot(sim1, aes(x, y)) + 
   geom_point(size = 2, color = "grey30") + 
   geom_abline(intercept = best$par[1], slope = best$par[2])
+```
 
+<br> 
 
- fitting linear models 
-lm() 
+### Linear Model 
 
+Basically we just worked out the long version of the function `lm()`. `lm()` produces a linear model, optimizing for distance, just as we calculated. 
+```{r}
 sim1_mod <- lm(y ~ x, data = sim1) 
 coef(sim1_mod)
+```
 
-sim1a <- tibble(
-  x = rep(1:10, each = 3),
-  y = x * 1.5 + 6 + rt(length(x), df = 2)
-)
+<br>
 
+### Predictions
 
- mean-absolute distance
-measure_distance <- function(mod, data) {
-  diff <- data$y - make_prediction(mod, data)
-  mean(abs(diff))
-}
-
- understanding models and residuals 
-
-data_grid()  create even grid of values covering region where
-             data lies
-
-grid <- sim1 %>% 
-  data_grid(x) 
+To visualize the predictions from a model, we start by generating an evenly spaced grid of values that covers the region where our data lies. The easiest way to do this is `modelr::data_grid()`. It's first arguement is a dataframe, and each subsequent arguement is a unique variable. 
+```{r}
+grid <- sim1 %>%
+  data_grid(x)
 grid
+```
 
+<br> 
+
+Next add predictions with `modelr::add_predictions()` which takes a dataframe and a model. It adds the predictions to the new column in the data frame. 
+```{r}
 grid <- grid %>% 
   add_predictions(sim1_mod)
 grid
+```
 
+<BR> 
+
+And now, plot the prediction. 
+```{r}
  ggplot(sim1, aes(x)) + 
    geom_point(aes(y = y)) + 
    geom_line(aes(y = pred), data = grid, color = "red", size = 1)
 
- Residuals
-  tells you what the model has missed, the distance between
-  the predicted and observed value 
+```
 
-add_residuals() 
+<br>
 
+### Residuals
+
+The flip side of predictions are residuals. The predictiont ells you the pattern that themodel has captured, the residual tells you what the model has missed. 
+
+Add residuals with `add_residuals()`. 
+```{r}
 sim1 <- sim1 %>%
   add_residuals(sim1_mod)
 sim1
+```
 
- understand the spread of the residual 
+<br> 
+
+There are a few ways to understand what a residual tells us about a model. One way is to simply draw a frequency polygon to hep understand the spread of the residual: 
+```{r}
 ggplot(sim1, aes(resid)) +
   geom_freqpoly(binwidth = 0.5)
-
- average of residual will always be zero 
- often want to recreate plots using the residual
-
+```
+ 
+ <br>
+ 
+ This helps calibrate teh quality of the model, note that the average of the residual will always be zero. Often you'll want to recreate a plot with residuals as the variable to capture more patterns. 
+```{r}
 ggplot(sim1, aes(x, resid)) + 
   geom_ref_line(h = 0) + 
   geom_point()
+```
+ 
+ <br>
+ 
+ When the graph looks like random noise, such as this one, the model fits the data signal well. 
+ 
+ 
+### Formulas and model families 
 
- when the graph looks like random noise the model fits
- the data signal well 
+Formulas are not the same thing inside R as they are in math. You've seen formulas before when using `facet_wrap()` and `facet_grid()`. Rather than evaluating the values of the variables right away, they capture them so they can be interpreted by the function. 
 
+`y ~ x` is standard conversion to `y = a_1 + a_2 * x`. 
+
+generating a function from a formula is straight forward when the predictor is continuous, however categorical variables present a challenge. Imagine a formula like `y ~ sex`, where sex could be either male or female. `y = x_0 + x_1 * sex` doesnt make any sense. Instead, R converts it to `y = x_0 + x_1 * sex_male` where `sex_male` is a one if `sex` is male and zero otherwise. 
+
+```{r}
+library('tidyverse')
+df <- tribble( 
+  ~ sex, ~ response, 
+  "male", 1, 
+  "female", 2, 
+  "male", 1
+  )
+
+model_matrix(df, response ~ sex)
+
+```
+
+<br> 
+
+If you focus on visualizing predictions, you dont need to worry about the exact parameterisation. 
+```{r}
 ggplot(sim2) + 
   geom_point(aes(x,y))
+```
 
+<br> 
+
+We can fit a model to this dataset and generate some predictions. 
+```{r}
 mod2 <- lm(y ~ x, data = sim2)
 
 grid <- sim2 %>%
@@ -223,16 +274,33 @@ grid
 ggplot(sim2, aes(x)) + 
   geom_point(aes(y = y)) + 
   geom_point(data = grid, aes(y = pred), color = "red", size = 4)
+```
 
+### Interactions
 
- Interactiosn (continous and categorical)
-
+What happens when you combine a continuous variable with a categorical variable? `sim3` contains just that. We can visualize it in this plot:
+```{r}
 ggplot(sim3, aes(x1, y)) + 
   geom_point(aes(color = x2))
+```
 
+<br> 
+
+There are two possible models you could fit to this data: 
+```{r}
 mod1 <- lm(y ~ x1 + x2, data = sim3)
 mod2 <- lm(y ~ x1 * x2, data = sim3)
+```
 
+<br> 
+
+When you add variables with `+` the model will estimate each effect indpenedent of all the others. To visualize these models we need two new tricks: 
+
+1. We have two predictors, so we need to give `data_grid()` both variables. It finds all the unique values of `x1` and `x2` and then generates all combinations. <br> 
+
+2. To generate predictions from both models simultaneously, we can use `gather_predictions()` which adds each prediction as a row. the complement of `gather_predictions()` is `spread_predictions()` which adds each prediction to a new column. 
+
+```{r}
 grid <- sim3 %>%
   data_grid(x1, x2) %>%
   gather_predictions(mod1, mod2)
@@ -242,21 +310,43 @@ ggplot(sim3, aes(x1, y, color = x2)) +
   geom_point() + 
   geom_line(data = grid, aes(y = pred)) + 
   facet_wrap(~ model)
+```
 
+<br> 
 
- facet models by x2
-
+Facet models by x2
+```{r}
 sim3 <- sim3 %>% 
   gather_residuals(mod1, mod2)
 
 ggplot(sim3, aes(x1, resid, colour = x2)) + 
   geom_point() + 
   facet_grid(model ~ x2)
+```
 
+<br> 
 
+There is little obvious pattern in the residuals for `mod2`. The residuals for `mod1` show that the model has clearly missed some pattern in `b`. Less so, but still present in `c` and `d`.
 
- 
- 
+<br> 
+
+### Interactions (two continuous)
+
+Let's take a look at the equivalent model for two continous variables. initially things proceed almost identically to the previous example. 
+```{r}
+mod1 <- lm(y ~ x1 + x2, data = sim4)
+mod2 <- lm(y ~ x1 * x2, data = sim4)
+
+grid <- sim4 %>% 
+  data_grid(
+    x1 = seq_range(x1, 5), 
+    x2 = seq_range(x2, 5) 
+  ) %>% 
+  gather_predictions(mod1, mod2)
+grid
+```
+
+ <br> 
  
  
  
