@@ -1,9 +1,41 @@
 ---
-title: "R4DS - Wrangling Data with dplyr"
+title: "Unpacking the Tidyverse - dplyr"
 author: "Fisher Ankney"
 date: "February 18, 2018"
 output: md_document
 ---
+
+### Tidyverse Post Template - 
+
+<br> 
+
+### Introduction 
+- This is the x of an 8 part series 
+- last post here, next post here 
+- most taken from r4ds found here
+- more information found here
+
+<br> 
+
+### Primary Functionality
+- list of primary functions and what they do 
+
+### Minor Functionality 
+- list of minor perks from the package and what they do 
+
+<br> 
+
+### Primary Functions m - n 
+- explain and examples
+
+<br> 
+
+### Summary 
+
+<br> 
+
+
+
 This is the third installment of a six-part series summarizing the concepts of Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous blog [post](link) I abridged the book’s chapters that cover importing, parsing, and exporting data with readr.
 
 In this post, I’ll be focusing on chapter five which covers data transformation primarily with the dplyr package. dplyr shares tidyverse center stage with ggplot2; unfortunately, dplyr has a steeper learning curve than its co-star, ggplot2. I've written a post on data visualization with ggplot2 [here](post). When it comes to dplyr and data wrangling, it is a topic best learned through hours of practice and experience rather than careful explanation. As such, I hope to offer an easily understood reference guide in this post, rather than a detailed tutorial.

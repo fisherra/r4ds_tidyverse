@@ -1,9 +1,44 @@
 ---
-title: "R4DS - Reading Data with readr"
+title: "Unpacking the Tidyverse - readr"
 author: "Fisher Ankney"
 date: "February 13, 2018"
 output: md_document
 ---
+
+
+
+### Tidyverse Post Template - 
+
+<br> 
+
+### Introduction 
+- This is the x of an 8 part series 
+- last post here, next post here 
+- most taken from r4ds found here
+- more information found here
+
+<br> 
+
+### Primary Functionality
+- list of primary functions and what they do 
+
+### Minor Functionality 
+- list of minor perks from the package and what they do 
+
+<br> 
+
+### Primary Functions m - n 
+- explain and examples
+
+<br> 
+
+### Summary 
+
+<br> 
+
+
+
+
 This is the second of a six-part series summarizing the core concepts of Hadley Wickham's textbook, R for Data Science <http://r4ds.had.co.nz/>. In the previous [post](link) I've abridged the book’s chapters that cover data visualization with ggplot2.
 
 In this post, I’ll be focusing on readr, a core component of the Hadley’s tidyverse packages. Importing, parsing, and exporting data may sound trivial, but it is an integral part of the data science workflow; developing good data handling habits is a worthy goal. Properly utilizing readr can increase an analysis’ reproducibility and decreasing data structuring errors, all while saving you precious time.  

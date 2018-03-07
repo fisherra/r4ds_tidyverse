@@ -1,105 +1,66 @@
 ---
-title: "R4DS – Tidy data with tidyr"
+title: "Unpacking the Tidyverse - tidyr"
 author: "Fisher Ankney"
 date: "February 23, 2018"
 output: md_document
 ---
+---
+title: "Unpacking the Tidyverse - tidyr"
+author: "Fisher Ankney"
+date: "February 23, 2018"
+output: html_document
+---
 
-This is the fourth installment of a six-part series summarizing concepts from Hadley Wickham's textbook, [R for Data Science](http://r4ds.had.co.nz/). In the previous [blog post](link) I abridged the book’s chapter that covers data wrangling with dplyr. 
+<br> 
 
-In this installment, I'll be summarizing the tidyr package and tidy data practices, as taught in R for Data Science [Chapter 12](http://r4ds.had.co.nz/tidy-data.html). There are four components to the chapter and this summary blog post, the first being "what constitutes tidy data"?. The second and third component deal with correcting the two typical formatting issues of untidy data, and the fourth component dives into how to properly represent missing values in a dataset. 
+### Introduction 
 
-For more resources on tidyr, reference these links:
+This is the fourth of eight installments of my *Unpacking the Tidyverse* series. Each installment focuses on one of the eight core packages in Hadley Wickham's tidyverse. Instructions given in each post are mainly derived from Hadley's textbook, [R for Data Science](http://r4ds.had.co.nz/), and CRAN package documentation. This installment of *Unpacking the Tidyverse* focuses on the data-tidying package, tidyr. The previous installment focuses on the dplyr package, and can be found [here](link). The next installment focuses on the stringr package, and can be found [here](link). 
 
-- [CRAN tidyr Documentation](https://cran.r-project.org/web/packages/tidyr/tidyr.pdf)
-- [STHDA tidyr Tutorial](http://www.sthda.com/english/wiki/tidyr-crucial-step-reshaping-data-with-r-for-easier-analyses)
-- [Journal Of Statistical Software: Tidy Data by Hadley Wickham](http://vita.had.co.nz/papers/tidy-data.pdf)
+Tidy data is an easy and consistent way of storing data that makes future analytical steps simpler. Datasets that follow the three tidy data rules allow for R's vectorized nature to work its magic. The package tidyr is meant to coerce your dataset to follow the three rules of tidy data; it is not meant for general reshaping or aggregating of data. 
 
-<br  />
-
-### Libraries
-```{r, message=FALSE}
-library('tidyverse')      # includes tidyr
-library('tidyr')          # tidyr specifically
-```
-
-<br  />
-
-### Primary Functions  
-
-```{r eval=FALSE}
-spread()        # spreads a key-value pair across multiple columns
-gather()        # takes multiple columns and collapses into key-value pairs
-separate()      # single column into multiple columns, defined separator
-unite()         # multiple columns into single column, defined separator
-```
-
-<br  />
-
-### Tidy Data
-
-There are three rules to tidy data -
+Tidy Data Rules: 
 
 1. Each column is a variable <br  />
 2. Each row is an observation <br  />
-3. Each value has it's own cell <br  />
+3. Each value has its own cell <br  />
 
 <insert tidy data image here> 
 
-Tidy data is an easy and consistent way of storing data that makes further analytical steps more simple. Datasets that follow the three tidy data rules allow for R's vectorized nature to work its magic. Other packages in the tidyverse, such as dplyr and ggplot2, expect datasets to be tidy when applying functions such as *mutate( )* and *ggplot( )*. Datasets may grow in size during the tidying process, but breaking down rows and columns into single observations and variables drastically simplifies the dataset for future analytics.
+<br> 
 
-Here's an example of a tidy dataset - 
-
-```{r}
-table1
+```{r, message=FALSE}
+library('tidyverse')
 ```
 
-<br  />
+<br> 
 
-Here's an example of an untidy dataset - 
+### Important Package Functions
 
-```{r}
-table2
+<br> 
+
+```
+gather()        # Takes multiple columns and collapses into key-value pairs
+spread()        # Spreads a key-value pair across multiple columns
+separate()      # Single column into multiple columns, defined separator
+unite()         # Multiple columns into single column, defined separator
+complete()      # Turns implicit missing values explicit
+fill()          # Fills in missing rows in a column based on the last entry
 ```
 
-<br  />
+<br> 
 
-Notice the differences between the two tables above; in table 1 the variables (columns) are country, year, cases, and population. In table 2 the variables are country, year, type and count. In table 2 the data is untidy; the observation, a specified country in a specified year, is spread among multiple rows. This is because population and cases are variables that should be column names, not values! 
+### `gather()`
 
-<br  /> 
-
-### Spread and Gather
-
-Spread and gather are two functions in the tidyr package that address these issues. While these functions are easy to use and understand, it's often quiet hard to determine what constitutes a discrete observation, and what constitutes a discrete variable. It takes time and practice to properly make these choices, but in general, I aim to break down observations and variables into the smallest and most easily retrievable chunks possible. 
-
-<br  />
-
-#### One Observation Across Multiple Rows
-
-```{r}
-table2
-```
-
-<br  />
-
-`spread()` is one of the most commonly used tidyr functions; it is used when one coherent observation is *spread* across multiple rows of the dataset. The function takes two arguments, a key, and a value. the key argument names the column that currently contains variable names. In the case of table 2, the key is "type" because it contains the variables cases and population. The second argument of `spread()` is value; value defines the column with *values* associated with the key. In table 2 the values are found in the column "count". 
-
-```{r}
-table2 %>%
-spread(key = type, value = count)
-```
-
-<br  />
-
-#### One Variable Across Multiple Columns
+Often, a dataset has column names that are not the names of variables, but the values of variables. take `table4a` for example. 
 
 ```{r}
 table4a
 ```
 
-<br  />
+<br> 
 
-Table 4a presents a new challenge for tidying data. Perhaps even more common than the previous function, `gather()` deals with one variable across multiple columns. In table 4a there are three observations of three variables: country, 1999, and 2000. But 1999 and 2000 are not variables, they are values of the missing variable "year". To "gather" these values under one new variable, implement the `gather()` function. The first argument defines the values mascaraing as variables that must be gathered, in this case it's 1999 and 2000. The next argument defines the key, or name of the new variable that holds these values. In the case of table4a the key is year. Finally, the values associated with the old variables need to be gathered into a new variable since they no longer have a home. In this case "value" which defines the new variable associated with year is "cases". 
+In `table4a`, the column names `1999` and `2000` are values of the variable year, not variables themselves. The `gather()` function can fix this, it is perhaps the most commonly used function in tidyr. Begin by listing the column names that are actually variable names into `gather()` as its first arguments. Once these column names have been entered, define a `key` as the second argument. In this case, `1999` and `2000` are both years, so the key, or new variable name, is `year`. Finally, define a `value` to be associated with the key as the last argument in `gather()`. The `value` is the name given to the elements that were previously linked to the previous `1999` and `2000` false variables. Because these two years have been gathered into a new `year` variable, the associated elements need a new column to call home. In this case, the values represent a number positive cases, so the `value` is now defined as cases. 
 
 ```{r}
 table4a %>% 
@@ -108,11 +69,29 @@ table4a %>%
 
 <br  />
 
-### Separate and Unite 
+### `spread()`
 
-Separate and unite tackle a different, and less common challenge in data tidying. When one column contains multiple variables, or a variable is spread across multiple columns, it's time to pull out these tools and get to work. 
 
-#### One Column With Multiple Variables
+When an observation is scattered across multiple rows, variable names appear repeatedly as elements in a dataframe. In `table2` a single observation is a country in each year, but each observation is spread across two rows. 
+
+```{r}
+table2
+```
+
+<br  />
+
+To tidy this data, utilize `spread()`, one of the most common functions in tidyr. The first argument in `spread()` is the column that contains the variable names, the `key` column. In the case of `table2`, the key column is type, because cases and population are both variables, not values. The second and final argument in `spread()` is the column that contains values associated with the previously defined key, the `value` column. In `table2` the it is the count column that contains the associated values.
+
+```{r}
+table2 %>%
+spread(key = type, value = count)
+```
+
+<br  />
+
+### `separate()`
+
+Sometimes a column contains more than variable worth of information in each element. In `table3` this is exemplified by the `rate` column. 
 
 ```{r}
 table3
@@ -120,16 +99,19 @@ table3
 
 <br  />
 
-In table 3 the variable "rate" contains a fraction. Now it's possible that rate may be a useful variable in the future, but more likely we'll want it in decimal form. To split rate into two *separate* variables, we employ the `separate()` function. The first argument of separate defines the variable to be separated. The next argument is formatted as into = c(...). You can use `separate()` to break a column apart into as many variables as you see fit. In this case `separate()` is used to create two new variables, "cases" and "population", as defined by the separator "/". 
+A simple problem to fix, the `separate()` function splits two variables apart from a single column. The first argument in `separate()` is the column in question, in this case it's `rate`. The next argument is a bit more complex; the `into` argument needs a concatenated input, `c()` to define the names and number of new columns. As for table3, the new columns are defined as `into = c("cases", "population")`. Finally, a separator character can be defined in the third argument. The separator defaults to any non-alphanumeric character, but can be customized. 
 
 ```{r, warning=FALSE}
 table3 %>%
-  separate(rate, into = c("cases", "population", sep = "/"))
+  separate(rate, into = c("cases", "population"))
 ```
 
 <br  />
 
-#### Single Variable Among Multiple Columns 
+### `unite()`
+
+When a single variable is spread between multiple columns, it's time to unite them. In `table5` the century and year variables should be united to create a single variable, the full year. 
+
 
 ```{r}
 table5
@@ -137,8 +119,7 @@ table5
 
 <br  /> 
 
-Table 5 presents a challenge best handled the inverse function of `seperate()`, `combines()`. Century and year are two halves of a single variable that must be "combined". The first argument of `combines()` names the new composite variable, in this case it's "full_year". The next argument defines the columns in which the variables will be combined from. Finally, a character to separate the two halves of the new variable is created, in this case we don't want to separate the first two digits from the last two digits of the year, so no character is entered. 
-As the inverse of separate, `combines()` 
+The `unite()` function works in a similar way to `separate()`, as it is it's inverse. The first argument of `unite()` is to define the name of the new, united, variable. In the case of `table3`, this variable shall be called `full_year`. The next arguments define the columns that need to be united; this can be any number of columns. `century` and `year` need to be united to form `full_year` in this example. Finally, it's sometimes wise to indicate a separator character, just as with `separate()`. The separator character in `unite()` defaults to the underscore, `_`. 
 
 ```{r}
 table5 %>%
@@ -147,7 +128,70 @@ table5 %>%
 
 <br  /> 
 
-Proper use of these four functions will make data tidying a breeze! The intuitive functions of tidyr allow you to spend less time on preparing your data, and more time on analyzing it. Stick around for the next installment of the R4DS series, tibble! 
+### `complete()`
+
+When dealing with missing data it's often important to turn implicitly missing values to explicit missing values. There are two missing values from the stocks tibble, 4th quarter 2015 and 1st quarter 2016. 
+
+```{r, echo = FALSE}
+stocks <- tibble(
+  year   = c(2015, 2015, 2015, 2015, 2016, 2016, 2016),
+  qtr    = c(   1,    2,    3,    4,    2,    3,    4),
+  return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
+)
+````
+
+```{r}
+stocks
+```
+
+<br> 
+
+The `complete()` function takes a set of columns, and finds all unique combinations. It ensures the original dataset contains all those values, explicitly filling in `NA` when necessary. The input arguments of `complete()` are simply the columns you want to cross reference. In the case of `stocks` we want to find all of the combinations between the `year` and `qtr` variable, as to fill in implicit missing variables with `NA`. 
+
+```{r}
+stocks %>% 
+  complete(year, qtr)
+```
+
+<br> 
+
+### `fill()`
+
+When dealing with missing data, it can be the case that you know that missing values are supposed to be carried on from the last observation. Something along the line of "ditto" quotations on a sign-up sheet. In the tibble treatment, we see just that. 
+
+```{r, echo = FALSE}
+treatment <- tribble(
+  ~ person,           ~ treatment, ~response,
+  "Derrick Whitmore", 1,           7,
+  NA,                 2,           10,
+  NA,                 3,           9,
+  "Katherine Burke",  1,           4
+)
+```
+
+```{r}
+treatment
+```
+
+
+The function `fill()` is the perfect fix for this situation. `fill()` takes a set of columns where you want missing values to be replaced with the most recent non-missing value. Simply input the column in question as the argument in `fill()`, and let R do the rest. In the case of the tibble `treatment`, the column in question is `person`. 
+
+```{r}
+treatment %>%
+  fill(person)
+```
+
+<br> 
+
+Additional Resources: 
+
+- [CRAN Documentation](https://cran.r-project.org/web/packages/tidyr/tidyr.pdf)
+- [JSS: Tidy Data by Hadley Wickham](http://vita.had.co.nz/papers/tidy-data.pdf)
+- [STHDA tidyr Tutorial](http://www.sthda.com/english/wiki/tidyr-crucial-step-reshaping-data-with-r-for-easier-analyses)
+
+<br  />
 
 Until next time, <br  />
 \- Fisher
+
+

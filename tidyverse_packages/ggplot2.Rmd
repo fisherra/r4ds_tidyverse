@@ -1,13 +1,44 @@
 ---
-title: "R for Data Science Summary Series I"
-subtitle: "Data Visualisation with ggplot2"
+title: "Unpacking the Tidyverse - ggplot2"
 author: "Fisher Ankney"
 date: "January 19, 2018"
 output: html_document
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
+### Tidyverse Post Template - 
+
+<br> 
+
+### Introduction 
+- This is the x of an 8 part series 
+- last post here, next post here 
+- most taken from r4ds found here
+- more information found here
+
+<br> 
+
+### Primary Functionality
+- list of primary functions and what they do 
+
+### Minor Functionality 
+- list of minor perks from the package and what they do 
+
+<br> 
+
+### Primary Functions m - n 
+- explain and examples
+
+<br> 
+
+### Summary 
+
+<br> 
+
+
+
+
+
+
 
 This is the first of a five part series summarsing the core concepts of Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>. 
 
