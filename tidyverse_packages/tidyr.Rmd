@@ -4,12 +4,6 @@ author: "Fisher Ankney"
 date: "February 23, 2018"
 output: md_document
 ---
----
-title: "Unpacking the Tidyverse - tidyr"
-author: "Fisher Ankney"
-date: "February 23, 2018"
-output: html_document
----
 
 <br> 
 

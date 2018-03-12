@@ -1,112 +1,134 @@
-This is the second of a six-part series summarizing the core concepts of
-Hadley Wickham's textbook, R for Data Science <http://r4ds.had.co.nz/>.
-In the previous [post](link) I've abridged the book’s chapters that
-cover data visualization with ggplot2.
+### Introduction
 
-In this post, I’ll be focusing on readr, a core component of the
-Hadley’s tidyverse packages. Importing, parsing, and exporting data may
-sound trivial, but it is an integral part of the data science workflow;
-developing good data handling habits is a worthy goal. Properly
-utilizing readr can increase an analysis’ reproducibility and decreasing
-data structuring errors, all while saving you precious time.
+This is the second of eight installments in my *Unpacking the Tidyverse*
+series. Each installment focuses on one of the eight core packages in
+Hadley Wickham's tidyverse. Instructions given in each post are mainly
+derived from Hadley's textbook, [R for Data
+Science](http://r4ds.had.co.nz/), and CRAN package documentation. This
+installment of *Unpacking the Tidyverse* focuses on the data-importing
+package, readr. The previous installment focuses on the ggplot2 package,
+and can be found [here](link). The next installment focuses on the dplyr
+package, and can be found [here](link).
 
-For more useful resources on readr and other data importing methods,
-check out these links:
+Spending a small amount of time to properly import, parse, and export
+data will save countless hours of frustration later in your analysis.
+The Tidyverse tool built to tackle these tasks is none other than the
+readr package. Understanding how to properly utilize readr to increase
+an analysis' reproducibility and decrease data structuring errors is a
+worthy goal, and the main topic of this post.
 
--   readr package documentation
-    <https://cran.r-project.org/web/packages/readr/readr.pdf>
--   readr Github repository - <https://github.com/tidyverse/readr>
--   Non-readr import methods
-    <https://www.r-bloggers.com/this-r-data-import-tutorial-is-everything-you-need/>
+<br>
 
-<br  />
+    library('tidyverse')
 
-#### Load Libraries
+<br>
 
-    library('tidyverse') # used for many amazing things, includes readr library
-    library('readr')     # used to read in a variety of file types
-    library('readxl')    # used for reading in Microsoft excel files
+### Important Package Functions
 
-You may also be interested in the following libraries; however I won't
-cover them in this blog post -
+    read_delim()    # Importing .csv and .tsv files
+    read_file()     # Importing text files
+    read_xls()      # Importing excel files (from readxl)
+    parse_*()       # Family of parsing functions
+    write_delim()   # Explicitly export .csv and .tsv files
+    write_file()    # Explicitly export text files
+    ggsave()        # Explicitly save plots (from ggplot2)
 
-    library('haven')       # used for SPSS, SAS, and Strata input files
-    library('DBl')         # used for database files, must combine with specific backend
-    library('RMySQL')      # used for MySQL backend (with DBl)
-    library('RSQLite')     # used for SQLLite backend (with DBl)
-    library('RPostgreSQL') # used for PostgreSQL (with DBl)
+<br>
 
-<br  />
+### `read_delim()`
 
-### Reading Data
+The two special cases of `read_delim()` are `read_csv()` and
+`read_tsv()`. These two commands are useful for the most common type of
+flat data files, comma separated files and tab separated files. If
+you're using European .csv data with `;` as separators instead of
+commas, use `read_csv2()`.
 
-The readr and readxl libraries gives a variety of functions that turn
-flat files into data frames. These are the functions that I most often
-find useful.
+readr functions can be used on a variety of paths, some you might not
+otherwise have known about:
 
-    read_file()     # catch all, useful for .txt files
-    read_csv()      # comma seperative files
-    read_tsv()      # tab seperated files
-    read_xls()      # excel files (from readxl)
-
-readr functions can be used on a variety of paths, some of these you
-might not have otherwise known about.
-
-    # example paths 
     read_csv("mtcars.csv")
-    read_csv("mtcars.csv.zip")
-    read_csv("~/local/path/to/my/file/mtcars.csv")
+    read_tsv("mtcars.tsv.zip")
+    read_tsv("~/local/path/to/my/file/mtcars.tsv")
     read_csv("https://github.com/tidyverse/readr/raw/master/inst/extdata/mtcars.csv")
 
-In the first line of the above example code, readr simply processes a
-.csv file found in the current working directory. You can find your
-current working directory using the base R *getwd( )* function. Next,
-exhibits a file that has a .zip extension. readr can unpack compressed
-files with .zip, .bz2, and other similar extensions. The third line is
-an example of readr following a local path to a folder in which R isn't
-currently working in. Set your current working directory in RStudio
-using the setwd( ) function or the navigation within the files panel.
-The fourth and final example is following an online path to a described
-dataset. Go ahead and follow the path and have a look at where it's
-pointing if you wish.
+As you can see, readr `read_` functions can access files within the
+working directory, compressed files, files in other directories, or
+files from the internet.
 
-<https://github.com/tidyverse/readr/raw/master/inst/extdata/mtcars.csv>
+There are over a dozen arguments that can be included in a read
+function, here are the ones that I find most useful. Type `?read_delim`
+into the R console for the complete list of arguments.
 
-readr functions can be expanded to include arguments that make your
-imported data more suitable for analysis. Here are the arguments I use
-the most commonly. Type ?read\_csv to the R console for a full
-description of possible arguments.
+    read_csv(
+      "file_name.csv",            # file path and name always comes first
+      delim=",",                  # single character field separator
+      quote = "\"",               # single character to quote strings
+      comment = "#",              # single character to signal comments
+      col_names = c("add", "names", "or", "T/F"), # custom name columns on import
+      na = ".",                   # string to signify missing values
+      skip = 0,                   # number of lines to skip before reading data
+      progress = show_progress()  # display a progress bar
+      )
 
-    read_csv("file_name.csv",            # file path and name always comes first
-             delim=",",                  # single character field separator
-             quote = "\"",               # single character to quote strings
-             comment = "#",              # single character to signal comments
-             col_names = c("add", "names", "or", "T/F"), # custom name columns on import
-             na = ".",                   # string to signify missing values
-             skip = 0,                   # number of lines to skip before reading data
-             progress = show_progress()  # display a progress bar
-             )
+<br>
 
-<br  />
+### `read_file()`
 
-### Data Parsing
+Typically used with text files, `read_file()` can also be used as a
+backup read function to nearly any file type. `read_file()` reads a
+complete file into a single object: either a character vector of length
+one, or a raw vector (`read_file_raw()`). I use this function with the
+single file path argument, It lacks the customization present in
+`read_delim()` and should be used as a last resort for uncooperative
+files that aren't `.txt`.
 
-Rarely can you read in files that have correctly structured data. The
-readr library has a family of parsing functions built in to turn
-character string into your desired data structure. Parsing can be used
-to format data into any structure, but I most often use it to clean up
-number and date-time values.
+When working with text files, I suggest looking into the *tidytext*
+library's `unnest_tokens()` function. Read more about tidytext
+[here](https://www.tidytextmining.com/).
+
+<br>
+
+### `read_excel()`
+
+I'm cheating a little bit with including `read_excel()`, as it is
+actually from the readxl library. The package must be loaded separately
+from the tidyverse.
+
+    library('readxl')
+
+`read_excel()` does just what you think it does! It auto detects the
+format, `.xls` or `.xlsx` from the file extension. The function also
+comes with a variety of customizable arguments, similar to
+`read_delim()`.
+
+    read_excel(
+      "path/file_name.xlsx",   # path to excel file
+      sheet = c("sheet1","sheet3"),  # name or integer position of sheets, defaults to first sheet
+      range = "A1:D10",       # range of cells to be read, takes precedence over skip, n_max, sheet
+      col_names = TRUE,       # true to use first row as col names
+      col_types = NULL,       # NULL to have readr guess from spreadsheet 
+      trim_ws = TRUE,         # should leading and trailing white space be trimmed?
+      skip = 100,             # number of columns to skip before reading
+      n_max = 1000            # maximum number of rows to read in
+    )
+
+<br>
+
+### `parse_*()`
+
+When the data you read in isn't structured properly, it's time to parse.
+The readr library has a family of parsing functions built in to help
+format your data. There are several parsing functions, including
+`parse_logical`, `parse_factor`, `parse_atomic`, `parse_number`,
+`parse_datetime` and more. Typically I use the last two, `parse_number`
+and `parse_datetime`, so I'll cover those in detail.
 
 Numeric entries can be surrounded by unwanted characters, such as “$100”
 or “60%”. There's also the issue of grouping characters, e.g. 1,000,000
 instead of 10000000. Finally, you may work with foreign data sources
 that use the comma as a decimal point instead of the period, e.g. 1,00
-instead of 1.00. Let's go through how to correct these common issues
-using simple parsing.
-
-<br  />
-
-##### Unwanted Characters
+instead of 1.00. Correcting these issues is simple with the parse
+function.
 
     a <- "The price is $1993"
     str(a)
@@ -120,8 +142,6 @@ using simple parsing.
 
 <br  />
 
-##### Decimal Points
-
     a <- "1,99"
     str(a)
 
@@ -134,8 +154,6 @@ using simple parsing.
 
 <br  />
 
-##### Group Markers
-
     a <- "$100.000.000"
     str(a)
 
@@ -146,18 +164,14 @@ using simple parsing.
 
     ##  num 1e+08
 
-<br  />
+<br>
 
-Dates and times can become confusing since there are so many ways to
-write them. ISO8601 is an international date-time standard in which the
-components are ordered largest to smallest - year, month, day and
-optionally a T followed by hour, minute, second. If no time is
-specified, the parsing function sets the time to midnight. Here’s an
-example of parsing out ISO8601 date-time.
-
-<br  />
-
-#### ISO8601 Date - Time
+Parsing numbers is easy, but dates can be a little trickier. There are
+so many ways to denote a date-time, but ISO8601 is an international
+date-time standard that is often used. ISO8601 orders the components
+from largest to smallest - year, month, day and optionally a T followed
+by hour, minute, second. If your date-time is in this format, parsing it
+is a breeze.
 
     a <- "20180228"
     parse_datetime(a)
@@ -171,15 +185,11 @@ example of parsing out ISO8601 date-time.
 
 <br  />
 
-Parsing only dates or only times is even more straight forward. The
-dates function expects a four digit year with a “-“ or “/” followed by
-the month with a “-“ or “/” followed by the day. The times function
-expects the hour value followed by a “:” followed by the minutes value
-with another “:” and finally then the seconds value.
-
-<br  />
-
-#### Dates or Times
+If you're only working with dates or only times, use `parse_date` or
+`parse_time`. The dates function expects a four digit year with a “-“ or
+“/” followed by the month with a “-“ or “/” followed by the day. The
+times function expects the hour value followed by a “:” followed by the
+minutes value with another “:” and finally then the seconds value.
 
     a <- "2018/02/28"
     parse_date(a)
@@ -193,10 +203,9 @@ with another “:” and finally then the seconds value.
 
 <br  />
 
-Say you've got a date-time to parse that isn't in the ISO8601 format,
-perhaps the months are spelled out properly or there’s an AM/PM
-indicator. For these and similar situations you can create your own
-date-time parsers using these building blocks indicators.
+Sometimes your data doesn't follow any of these formatting requirements,
+readr gives you the ability to build your own parsing formulas using
+these building blocks.
 
 <br  />
 
@@ -229,8 +238,6 @@ non-digits <br  />
 
 <br  />
 
-#### Custom Date - Times
-
     a <- "Jan 7 2018"
     parse_date(a, "%b %d %Y")
 
@@ -241,37 +248,44 @@ non-digits <br  />
 
     ## 00:45:00
 
-<br  />
+<br>
 
-### Writing Data
+### `write_delim()`
 
-When your analysis is complete and you’re ready to save the altered .csv
-files or newly created figures, readr can come back into action. It’s
-important to explicitly save files from within the R script to properly
-keep track of figures data sources and increase an analysis’
-reproducibility. You never want to answer the question, “where did this
-plot come from?” with “I don’t know”. readr can help with that.
-
-<br  />
-
-#### .csv Files
+When your analysis is complete and you’re ready to save a .csv or .tsv
+file, readr comes back into action. It’s important to explicitly save
+files from within R scripts to increase an analysis' reproducibility.
 
     write_csv(
-      dataframe,                    #
-      "path/to/file/filename.csv",  #
-      delim = " ",                  #
-      na = "NA",                    #
-      append = FALSE                # 
-    )
+      dataframe,                    # The R object you want to save 
+      "path/to/file/filename.csv",  # The saved files name and path
+      delim = " ",                  # Custom delimiter
+      na = "NA",                    # Set NA values
+      append = FALSE                # Concatenate to a file or overwrite, T/F
+      )
 
 A straight forward function, *write\_csv( )* saves your defined data as
 a .csv file to the destination and name you specify as the second
 argument. write\_csv( ) allows you to specify delimiters, missing values
 and more. Type ?write\_csv into the R console for more arguments.
 
-<br  />
+<br>
 
-#### Image Files
+### `write_file()`
+
+There isn't much explaining to be done about `write_file`, it only has
+four arguments to worry about, just liek `read_file`. They're the same
+arguments and the function does just what you would expect; it's
+included in this post just so you know that it exists!
+
+<br>
+
+### `ggsave()`
+
+From the ggplot2 library, which is also loaded with the tidyverse,
+`ggsave` is the `write_file` equivalent to plots. A key difference is
+the order of arguments in the function. With `ggsave` the filename is
+defined before the plot is defined, as shown in this example.
 
     library(‘ggplot2’)
 
@@ -283,12 +297,7 @@ and more. Type ?write\_csv into the R console for more arguments.
       height = NA                  #
     )
 
-This one comes from the ggplot2 package, so make sure you’ve loaded it
-into your library before attempting to call it. ggsave( ) swaps the
-order of the arguments, putting the filename and path before the
-specified plot, otherwise it’s a very similar function to write\_csv( ).
-Type ?ggsave into the R console for more information on arguments used
-with the ggsave function.
+<br>
 
 That covers the ins and outs of the readr package as taught in the R for
 Data Science book by Hadley Wickham. These basic functions are essential
@@ -296,7 +305,14 @@ to getting your data science project up and running. For more tips and
 tricks on properly maintaining a data science project, check out my post
 [Data Science Project Management](link).
 
-If you found this summary helpful, stay tuned for part three of the R4DS
-summary series, data wrangling with dplyr.
+If you found this summary helpful, check out the other posts on
+*Unpacking the Tidyverse*.
 
-Until next time, <br  /> - Fisher
+Additional Resources: <br> - [CRAN
+Documentation](https://cran.r-project.org/web/packages/readr/readr.pdf)
+<br> - [Github Repository](https://github.com/tidyverse/readr) <br> -
+[Other Import
+Methods](https://www.r-bloggers.com/this-r-data-import-tutorial-is-everything-you-need/)
+<br>
+
+Until next time, <br> - Fisher
