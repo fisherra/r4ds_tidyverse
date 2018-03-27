@@ -5,4 +5,67 @@ date: "3/5/2018"
 output: html_document
 ---
 
-### HEllo 
+# StringR Datacamp course
+writeLines() is base R, separates the strings with a new
+format() also base R, digits = 1, scientific = T/F, justify = r/l/c
+paste() base R, arguements, if vectors not the same size, then repeat, sep = "", collapse = "", 
+
+all stringr functions start with str_ 
+
+str_c() is similiar to paste, defaults sep = "", also contains the collapse arguement, doesnt convert NA into the string "NA" like base R does 
+
+str_length() counts the length of a string! ofc 
+
+str_sub() extracts part of the string based on it's location
+
+str_sub(string_in_question, start with this num, end at this num) 
+can also use negative to count backwards
+
+str_sub(string_in_question, -3) - returns last three characters in string
+
+Hunting for matches
+
+str_detect(object, pattern to match)
+
+can save str_detect to a variable, because it returns T/F, then subset original object with T/F to return those that matched TRUE. you could skip that trouble by using str_subset()
+
+str_subset() does the same thing as str_detect but it automatically subsets the original object for the TRUE matches
+
+
+str_count() counts the number of occurances
+
+str_split() splits things according to the separator! fixed(" ") defines the separator, which is weird, idk what the fixed does. also simplify makes a matrix if you set it to true. if its default false, then it returns a list. 
+
+length()
+
+str_length()
+
+str_replace(object, "pattern", "replacement")
+str_replace_all(object, "pattern", "replacement")
+
+
+really dont get the point of fixed("") on pattern declare
+
+str_split() important to use simplify = T, and n = num of columns
+
+
+
+Regular Expressions - - - 
+
+Library(rebus)
+
+# Match the strings that start with "co" 
+str_view(x, pattern = START %R% "co")
+
+# Match the strings that end with "at"
+str_view(x, pattern = "at" %R% END)
+
+# Match any character followed by a "t"
+str_view(x, pattern = ANY_CHAR %R% "t")
+
+# Match two characters
+str_view(x, pattern = ANY_CHAR %R% ANY_CHAR)
+
+# Match a string with exactly three characters
+str_view(x, pattern = START %R% ANY_CHAR %R% ANY_CHAR %R% ANY_CHAR %R% END)
+

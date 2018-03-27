@@ -5,6 +5,105 @@ date: "February 18, 2018"
 output: md_document
 ---
 
+Additional Notes - - - 
+Useful with select()
+starts_with()
+ends_with()
+contains()
+matches()
+num_range("x", 1:5)
+
+Join functions
+
+you can add things together in an arrange
+arrange(hflights, depdelay + arrdelay) 
+
+aggregate functions - - - 
+min(), max(), mean(), median(), quantile(x,p), sd(), var(), IQR(), 
+
+dplyr aggregate functions
+
+first(x) the first element of vector x
+last(x) the last element
+nth(x, n) the nth element 
+n() the number of rows in the dataframe that summarise() describes
+n_distinct() number of unique values in vector x 
+
+joining data with dplyr - - - 
+
+mutating joings- functions that match variables in datasets
+filtering joings - extract rows from combinations
+best practices, bindrow, bindcol, 
+diagnose what can go wrong
+case study 
+
+key is a column that occurs in both tables that you want to join
+key in the first table = primary, second table = secondary, or foreign key 
+primary key uniquely ID each row in first dataset
+acceptable for values not to appear at all in secondary key 
+
+primary key has to uniquely id all rows! might be more than 1 column combined
+
+left_join is the basic join
+
+left_join(*primary table*, *secondary table*, by = name of the key to join as chr string)
+
+right_join is kind of useless
+
+inner join returns only the rows from the first that have a match in the second, every row must be present in both dataset
+
+full_join is the most inclusive join, joins everything no matter if it's present or not 
+
+inner_join(x,y,by="")
+full_join(x,y,by="")
+left_join(x,y,by="")
+right_join(x,y,by="")
+semi_join() - only joings things with matches
+anti_join() - opposite of semi join, only joins not matches
+
+semi_join provides a concise way to filter data from the first dataset based on the second datset. 
+- number of albums in albums dataset that were made by a band in the bands dataset - 
+
+albums %>%
+  semi_join(bands, by = "band") %>%
+  nrow()
+  
+you really just have to know how the primary and secondary keys work, and which join does what. 
+
+anti_joins do the opposite of semi_join, only returns rows that dont have matches
+
+union() provides an easy way to combine two datasets without duplicating any values 
+intersect() set operator equivalent for semi-join, what you would use if your datasets have the exact same variables. 
+
+setdiff() does the same thing as anti_join() but uses every column as a key 
+
+
+setequal() to check if two datasets contain the same rows in any order, returns T/F
+
+bind_rows() - I really dont understand the .id arguement, useful for turning lists into one large table or dataframe
+bind_cols() 
+
+data_frame() 
+as_data_frame() - turns lists into dataframe
+
+dplyr doesnt coerce data, except for factors, but gives warning
+
+rownames_to_column(name of dataframe, name of new column to add) - might be useful
+
+also colorRampPalette() can be a pretty fun RColorBrewer Tool  :) 
+
+rename(data, new_name = old_data) - very useful 
+
+you can use select() to rename columns with an equals 
+
+reduce function from purrr
+
+tables <- list(surnames, first, middle) 
+reduce(tables, left_join, by = "name")
+
+tally() counts things
+
+
 ### Tidyverse Post Template - 
 
 <br> 
