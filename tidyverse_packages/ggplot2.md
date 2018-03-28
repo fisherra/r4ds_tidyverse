@@ -1,98 +1,97 @@
-This is the first of a five part series summarsing the core concepts of
-Hadley Wickham's R for Data Science: <http://r4ds.had.co.nz/>.
+<br>
 
-I'd recommend Hadley's book as an excellent and most comprehensive
-introduction to R programming. Hadley immediately introduces data
-visualisation concepts in R4DS, giving students a fun and highly
-functional introduction to R. While data visualisation is continously
-referenced throughout the text, it is heavily emphasized in chapters 3,
-7, and 28. This write up is an attempt to synthesis this information in
-a valueable and concise manner. Of course, this isn't a conprehensive
-guide to ggplot2, rather it's a small collection of code snippets and
-ideas that I find solve 80% of my ggplot2 problems.
+### Introduction
 
-For more useful resources, including advanced ggplot2 techniques, check
-out these links:
+<br>
 
-R Graphics ggplot2 Cookbook - <http://www.cookbook-r.com/Graphs/>  
-Top 50 Visualizations -
-<http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html>  
-R Studio's ggplot2 Cheat Sheet -
-<https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf>  
-Hadley's ggplot2 book (amazon) -
-<https://www.amazon.com/dp/331924275X/ref=cm_sw_su_dp>
+This is the first of eight installments of my *Unpacking the Tidyverse*
+series. Each installment focuses on one of the eight core packages in
+Hadley Wickham's tidyverse. Instructions given in each post are mainly
+derived from Hadley's textbook, [R for Data
+Science](http://r4ds.had.co.nz/), and CRAN package documentation. This
+installment of *Unpacking the Tidyverse* focuses on the graphing
+package, ggplot2. The next installment focuses on the readr package and
+can be found [here](link).
 
-<br  />
+The ggplot2 package is a powerful data visualization tool based on the
+grammar of graphics: an idea that any plot can be described using seven
+distinct parameters. In this blog post, I run through these parameters
+attempting summarize them in an easy-to-access resource for some of the
+most common tasks in data visualization.
 
-### Associated Libraries
+<br>
 
-    # install.packages('tidyverse', 'RColorBrewer', 'maps')
+    library('ggplot2')       
+    library('RColorBrewer')  
+    library('viridisLite')  
 
-    library('tidyverse')     # install ggplot2 and associated tidyverse packages
-    library('ggplot2')       # install only ggplot2
-    library('RColorBrewer')  # install for excellent color palettes
-    library('maps')          # install for geospatial visualisations
+<br>
 
-I recommend installing the entire tidyverse package collection whenever
-you're working with and graphing data. If you don't want access to the
-other useful tidyverse tools, it's fine to just call the ggplot2 package
-by itself. RColorBrewer is my favorite way to quickly create visualy
-pleasing color schemes, but there are many other packages out there to
-choose from. The maps package integrates with ggplot2 really well, but
-there are probably better geospatial packages out there too.
+### Template
 
-<br  />
+<br>
 
-### Graphing Template
-
-    ggplot( < enter data here > ) +            
-    geom_< enter geometry here >(              
-      mapping = aes( < enter variables here > ),    
-      stat = < enter statistical transformations here >,          
-      position = < enter position adjustments here >        
+    ggplot( ***dataset*** ) +            
+    geom_***geometry***(              
+      mapping = aes( ***variables*** ),    
+      stat = ***statistical transformation***,          
+      position = ***position adjustment***        
     ) + 
-    coord_< enter coordinate system here >() +          
-    facet_< enter facet system here >()              
+    coord_***coordinate system****() +          
+    facet_***facet declaration***()              
 
-With these seven parameters you can create and describe almost any
-graph. This is the underlying tidyverse philosophy, giving a 'grammer to
-graphics' as it were. Now let's go through these parameters
-individually, and toss in a few additional aestetic parameters for good
-measure.
+<br>
+
+Not all parameters must be defined for every ggplot call, but by
+defining the dataset, plot geometry, variables, statistical
+transformations, position adjustments, coordinate system and facets, you
+can create almost any plot with ggplot2. Of course, there are additional
+functions that affect the aesthetics of the plot, such as annotations,
+titles, axes, and legends. Let's briefly cover all seven of these
+parameters, discussing the commands that I most commonly find useful for
+each of them.
 
 <br  />
 
-### Base Graph
+### Dataset
+
+<br>
 
     ggplot(mpg)
 
-![](visualizing_data_with_ggplot2_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+![](ggplot2_files/figure-markdown_strict/unnamed-chunk-2-1.png)
 
-Just calling ggplot( ) with an assoicated dataset will create a canvas
-for your graphic, but it won't do much else. We really need to add a
-geometry to the ggplot recipe.
+<br>
+
+Just calling `ggplot()` with an associated dataset will create a canvas
+for your graphic, not an actual plot. This is because R doesn't know
+what variables you want plotted from that dataset, or how you want them
+plotted. To create a basic plot, you'll have to provide information on
+the plot's geometry.
 
 <br  />
 
-### Geometry
+### Geometries
+
+<br>
 
     ggplot(mpg) +
-      geom_point(mapping = aes(x = displ, y = hwy))
+      geom_point(mapping = aes(x = displ, y = hwy, color = cyl))
 
-![](visualizing_data_with_ggplot2_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](ggplot2_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
-Declaring a plot geometry is perhaps the most important part of a ggplot
-recipe; when you're doing exploratory data analysis I find you typically
-don't have to go any further than calling the geom function and
-declaring it's mappable variables. I've listed the handful of
-geometries, mappings, and aestetics that I use most often. There are
-hundreds of geometries if you include the extensions that the ggplot
-community has created. If you can imagine it, there's probably a ggplot
-geometry that can create it.
+<br>
+
+Plot geometries are the most important parameter, and the only parameter
+other than `ggplot()` that must be defined in every single
+visualization. There are hundreds of geometries available for your use,
+courtesy of the R community; check out <http://www.ggplot2-exts.org/>
+for more information. Here's a list of the handful of geometries,
+mappings, and aesthetics that I use most often.
 
 ##### Geometries
 
--   **geom\_density( )** - 1 variable gaussian distribution
+-   **geom\_density( )** - 1 variable Gaussian distribution
 -   **geom\_point( )** - 2, 3, or 4 variable scatterplot
 -   **geom\_smooth( )** - 2 or 3 variable line plot
 -   **geom\_bar(stat="identity")** - 2 or 3 variable bar plot
@@ -102,45 +101,56 @@ geometry that can create it.
 
 ##### Mappings
 
--   **aes( x = )** - x-variable
--   **aes( ..., y = )** - y-variable
--   **aes( ..., color / fill = )** typically a third or fourth variable
--   **aes( ..., size = )** typically a third or fourth variable
+-   **aes( x = )** - x-axis location
+-   **aes( y = )** - y-axis location
+-   **aes( ..., color = )** - color dependent on variable's value
+-   **aes( ..., linetype = )** - line type dependent on variable's value
+-   **aes( ..., size = )** - size of object dependent on variable's
+    value
 
 ##### Aestetics
 
--   **size =** size of a point, declared by a double
+-   **size =** size of a point, declared by an integer
 -   **linetype =** 0 (blank), 1 (solid), 1 (dashed), 3 (dotted), 4
     (dot-dash), 5 (long-dash), 6 (two-dash)
--   **weight =** (line thickness) double
+-   **weight =** (line thickness) integer
 -   **color =** (outline) string
 -   **fill =** (inside) string
--   **alpha =** (transparency) 0-1
+-   **alpha =** (transparency) double from 0 to 1
 
 <br  />
 
-### Statistical Transformations
+### Statistical Transformation
 
-Sometimes you want to visualize a transformed version of the original
-data. The statistical transformation I use most often is the identity
-trasformation with geom\_bar. There are, however, several other useful
-transformations.
+<br>
 
--   **geom\_(aes(...), stat = "count")** - visualise the number of
-    entires in a variable, n()  
--   **geom\_(aes(...), stat = "identity")** - visuaise the variable, not
-    the count  
--   **geom\_(aes(...), stat = "unique")** - visualise only unique
+Statistical transformations are most useful with `geom_bar`. Each
+geometry has an associated transformation, and most of the time this
+transformation is useful and should not be changed. The default
+transformation associated with `geom_bar` is `"count"`, or the total
+number of occurrences of each variable. Sometimes you want a bar chart
+to visualize something else, like the unique occurrences of each
+variable, or a different variable all together. These three
+transformations allow you control over bar charts to visualize your data
+in entirely new ways.
+
+-   **geom\_bar(aes(...), stat = "count")** - visualize the number of
+    entries in a variable, n()  
+-   **geom\_bar(aes(...), stat = "identity")** - visualize the variable,
+    not the count  
+-   **geom\_bar(aes(...), stat = "unique")** - visualize only unique
     components of the variable
 
 <br  />
 
-### Position Adjustments
+### Position Adjustment
 
-When geometric data occupies the same space, it is useful to use a
-position adjustment to better understand the visualisation. I really
-only find adjusting the positioning of data useful when I'm working with
-bar charts and scatterplots.
+<br>
+
+When there are multiple data points occupying the same space or are
+stacked too closely together, position adjustments allow for a clearer
+visualization. Most often used with bar charts and scatter plots, these
+are the three position adjustments I find to be the most useful.
 
 -   **geom\_point(aes(...), position = "jitter")** - adds a small amount
     of noise to better view overlapping points  
@@ -149,46 +159,53 @@ bar charts and scatterplots.
 -   **geom\_bar(aes(...), position = "fill")** - arranges bar elements
     on top of each other, normalizing height
 
-<br  />
+<br>
 
-### Coordinates
+### Coordinate Systems
+
+<br>
 
     ggplot(mpg) +
       geom_point(mapping = aes(x = displ, y = hwy)) + 
       coord_flip()  
 
-![](visualizing_data_with_ggplot2_files/figure-markdown_strict/unnamed-chunk-5-1.png)
-<br  />  
-Cartesian coordinates are the go-to for 95% of my visualisations, but
-the coord\_ function does more than call different coordinate systems.
-Often it's useful to fix the x-y ratio, or flip the axis of bar charts.
-When your working with exponential data, you may want to transform an
-axis to a logarithmic system. These useful functions and many more can
-be done by the coord\_ function.
+![](ggplot2_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+
+<br  />
+
+Cartesian coordinates are the go-to most visualizations, but the coord\_
+function does more than call different coordinate systems. Often, it's
+useful to fix the x-y ratio, or flip the axis of bar charts. When you’re
+working with exponential data, you may want to transform an axis to a
+logarithmic system. These useful functions and many more can be done by
+the coord\_ function.
 
 -   **coord\_fixed(ratio, xlim, ylim)** - fixing the aspect ratio
     between x and y
 -   **coord\_flip(xlim, wlim)** - flipping the axes
--   **coord\_polar(theta, start, direction)** - coverting cartesian to
+-   **coord\_polar(theta, start, direction)** - converting Cartesian to
     polar coordinates
--   **coord\_trans(xtrans, ytrans, limx, limy)** - transform cartesian
-    coordiantes, use with log functions  
+-   **coord\_trans(xtrans, ytrans, limx, limy)** - transform Cartesian
+    coordinates, use with log functions  
 -   **coord\_map(projection, orientation, xlim, ylim)** - mapproj
     package projections
 
-<br  />
+<br>
 
 ### Facets
+
+<br>
 
     ggplot(data = mpg) + 
       geom_point(mapping = aes(x = displ, y = hwy)) + 
       facet_wrap(~ class, nrow = 2)
 
-![](visualizing_data_with_ggplot2_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](ggplot2_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
-I don't use facets that much; to be honest I find them pretty
-distracting. If you're a fan of contrasting minerature plots, you might
-find these faceting options useful.
+<br>
+
+I don't use facets that often, but if you're a fan multiple miniature
+plots, you might find these faceting options useful.
 
 -   **facet\_grid(x ~ y, labeller, scales)** - facets the display into
     rows and columns based on the two given variables (".""
@@ -200,6 +217,8 @@ find these faceting options useful.
 
 ### Labels
 
+<br>
+
     ggplot(mpg) + 
       labs(
         title = "title", 
@@ -209,9 +228,9 @@ find these faceting options useful.
         ylab = "y-label"
       )
 
-![](visualizing_data_with_ggplot2_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](ggplot2_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
-Labels are helpful for properly communicating your visualisation.
+Labels are helpful for properly communicating your visualization.
 Including these five labels with your plots can help clarify your topic,
 variables, and sources.
 
@@ -219,13 +238,14 @@ variables, and sources.
 
 ### Annotations
 
-Annotations are another feature I don't use too often, but I'll include
-them anyways. I think annotating individual observations is a mistake,
-it clutters the graphic and takes away from the effectiveness of the
-visualisation. Packages like plotly and shiny do a better job of
-creating interactive graphics if you want individual labels. If you,
-however, insist on creating a ggplot with annotations, these might be
-useful.
+<br>
+
+Annotations can be helpful to point out specific properties of a
+visualization. I think annotating multiple individual observations is a
+mistake, it clutters the graphic and takes away from the effectiveness
+of the visualization. Packages like plotly and shiny do a better job of
+creating interactive graphics if you want individual labels. With that
+in mind, here are some annotations that are easy to use in ggplot2.
 
 -   **geom\_text(aes(label = "text here"), vjust = , hjust = )** -
     places a summary annotation within the graphic, according to vjust
@@ -234,7 +254,7 @@ useful.
     creates a horizontal reference line through the plot according to
     yintercept  
 -   **geom\_vline(xintercept = , size =, color =, linetype =)** -
-    creates a verticle reference line through the plot according to
+    creates a vertical reference line through the plot according to
     xintercept  
 -   **geom\_rect(aes(xmin = , xmax = , ymin = , ymax = ))** - creates a
     rectangle to box in and highlight interesting data  
@@ -245,10 +265,12 @@ useful.
 
 ### Scales
 
+<br>
+
 Scales are automatically set when you create a ggplot, but sometimes
-it's useful to alter the color scheme, legend, or axes. The naming sceme
-for these functions is scale\_ followed by the name of the aesthetic
-then another \_, and then the name of the scale.
+it's useful to alter the color scheme, legend, or axes. The naming
+scheme for these functions is scale\_ followed by the name of the
+aesthetic then another \_, and then the name of the scale.
 
 ##### Aestetic Names
 
@@ -268,9 +290,9 @@ then another \_, and then the name of the scale.
 -   **\_identity** - uses data values as visual values
 -   **\_manual** - values = c( ), maps discrete values to manually chose
     visual values
--   **\_gradient** - creates a two color gradient, low - high
--   **\_gradient2** - creates a diverging two color gradient, positive -
-    negative
+-   **\_gradient** - creates a two-color gradient, low - high
+-   **\_gradient2** - creates a diverging two color gradients,
+    positive - negative
 -   **\_gray** -creates a gradient in gray
 -   **\_brewer** - brewer( palette = " "), calls RColorBrewer palettes
 
@@ -278,13 +300,19 @@ then another \_, and then the name of the scale.
 
 ### Axes
 
+Scales can also be used to alter axes in ggplot2, these are some
+commented examples for fixing common behavioral issues you may have with
+your axes.
+
+<br>
+
     scale_x_continuous(breaks = seq(0, 10, by = 1), labels = c(1:9, "ten")) 
     # define breaks by sequence, define labels of breaks
 
     scale_x_discrete(breaks=c("ctrl", "trt1", "trt2"),            # defined tick marks
                      labels=c("Control", "Treat 1", "Treat 2"))   # new names
                      
-    expand_limits(x = c(0,8), y = c(0,8))                         # expand the limits of the graph to visualise specific values
+    expand_limits(x = c(0,8), y = c(0,8))                         # expand the limits of the graph to visualize specific values
 
     scale_y_reverse()     # Reverse y-axis direction (zero on top)
 
@@ -300,13 +328,14 @@ then another \_, and then the name of the scale.
     scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                   labels = trans_format("log10", math_format(10^.x)))
 
-Scales can be used to alter axes in ggplot2, it's a fairly straight
-forward process. These are some commented examples for fixing common
-behavioral issues you may have with your axes.
-
 <br  />
 
 ### Legends
+
+<br>
+
+Legends can be a bit harder to wrangle than axes. Here are examples to
+several common problems I have with legends.
 
     theme(legend.position = "left")    # legend to the left of plot
     theme(legend.position = "top")     # legend above plot
@@ -321,7 +350,7 @@ behavioral issues you may have with your axes.
     # changing the order of items in your legend, scale_ function is dependent upon the type of plot
     scale_fill_discrete(breaks=(c("item1", "item2", "item3")))
 
-    # simply reverse the current item display in thelegend
+    # simply reverse the current item display in the legend
     scale_fill_discrete(guide = guide_legend(reverse=TRUE))
 
     # manually alter color, break, label, and name of legend items.
@@ -330,12 +359,11 @@ behavioral issues you may have with your axes.
                       breaks=c("ctrl", "trt1", "trt2"),
                       labels=c("Control", "Treatment 1", "Treatment 2"))
 
-Legends can be a bit harder to wrangle than axes. Heere are examples to
-several common problems I have with legends.
-
-<br  />
+<br>
 
 ### Colors
+
+<br>
 
 Some of my favorite preset colors include
 
@@ -346,13 +374,22 @@ Some of my favorite preset colors include
 -   deepskyblue
 -   lightslateblue
 
-The RColorBrewer package also has pleasing color palettes.
+The RColorBrewer package also has some great color palettes.
 
     RColorBrewer::display.brewer.all()
 
-<br  />
+<br>
+
+The viridisLite Package has contains 5 color scales that are color-blind
+and gray-scale friendly.
+
+INSERT IMAGE HERE
+
+<br>
 
 ### Themes
+
+<br>
 
 Sometimes you don't want to go through the effort of creating your own
 theme, so ggplot2 has some built in. Here are four basic themes that are
@@ -366,15 +403,30 @@ build off.
 
 <br  />
 
-### Summary
+### Final Thoughts
 
-This is just a fraction of what ggplot2 can do, but with this
-infromation I think you should be able to solve 80% of your graphing
-needs. Again, the references listed at the beginning of this write up
-are excellent and worth checking out. If you want to learn more about R
-for Data Science written by Hadley Wickham, it's free to read at
-<http://r4ds.had.co.nz/>. If you're too lazy to read the entire book,
-check out the other posts in my R for Data Science Summary Series.
+<br>
+
+This is just a small taste of what ggplot2 can do, but with this
+information you should be able to solve 80% of your graphing needs.
+Again, the references listed at the beginning of this write up are
+excellent and worth checking out. If you want to learn more about R for
+Data Science written by Hadley Wickham, it's free to read at
+<http://r4ds.had.co.nz/>. If you don't want to read through the entire
+book, check out the other posts in my R for Data Science Summary Series.
+
+For more useful resources, including advanced ggplot2 techniques, check
+out these links:
+
+-   [R Graphics ggplot2 Cookbook](http://www.cookbook-r.com/Graphs/)  
+-   [Top 50
+    Visualizations](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html)
+-   [R Studio's ggplot2 Cheat
+    Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+-   [Hadley's ggplot2 Book for
+    sale](https://www.amazon.com/dp/331924275X/ref=cm_sw_su_dp)
+
+<br  />
 
 Thanks for reading,  
 - Fisher
