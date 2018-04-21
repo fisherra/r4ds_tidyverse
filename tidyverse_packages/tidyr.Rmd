@@ -9,7 +9,7 @@ output: md_document
 
 ### Introduction 
 
-This is the fourth of eight installments of my *Unpacking the Tidyverse* series. Each installment focuses on one of the eight core packages in Hadley Wickham's tidyverse. Instructions given in each post are mainly derived from Hadley's textbook, [R for Data Science](http://r4ds.had.co.nz/), and CRAN package documentation. This installment of *Unpacking the Tidyverse* focuses on the data-tidying package, tidyr. The previous installment focuses on the dplyr package, and can be found [here](link). The next installment focuses on the stringr package, and can be found [here](link). 
+This is the fourth of eight installments of my *Unpacking the Tidyverse* series. Each installment focuses on one of the eight core packages in Hadley Wickham's tidyverse. Instructions given in each post are mainly derived from Hadley's textbook, [R for Data Science](http://r4ds.had.co.nz/), and CRAN package documentation. This installment of *Unpacking the Tidyverse* focuses on the data-tidying package, tidyr. The previous installment focuses on the dplyr package, and can be found [here](link). The next installment focuses on the tibble package, and can be found [here](link). 
 
 Tidy data is an easy and consistent way of storing data that makes future analytical steps simpler. Datasets that follow the three tidy data rules allow for R's vectorized nature to work its magic. The package tidyr is meant to coerce your dataset to follow the three rules of tidy data; it is not meant for general reshaping or aggregating of data. 
 

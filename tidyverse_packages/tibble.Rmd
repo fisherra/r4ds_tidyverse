@@ -1,10 +1,122 @@
 ---
-title: "Unpacking the Tidyverse - Tibbles"
+title: "Unpacking the Tidyverse - Tibble"
 author: "Fisher Ankney"
-date: "3/5/2018"
+date: "April 21, 2018"
 output: html_document
 ---
 
+```{r, message=F}
+library('tidyverse')
+```
+
 <br> 
 
-Tibbles 
+### Introduction 
+
+This is the fifth of eight installments of my *Unpacking the Tidyverse* series. Each installment focuses on one of the eight core packages in Hadley Wickham's tidyverse. Instructions given in each post are mainly derived from Hadley's textbook, [R for Data Science](http://r4ds.had.co.nz/), and CRAN package documentation. This installment of *Unpacking the Tidyverse* focuses on the modern data.frame package, tibble. The previous installment focuses on the tidyr package, and can be found [here](link). The next installment focuses on the forcats package, and can be found [here](link). 
+
+Tibbles are an updated version of the base R `data.frame`. Tibbles are default throughout the tidyverse and are compatable with most other modern packages, they keep base R `data.frame` behaviors that are favorable, and drop those that are not. 
+
+<br> 
+
+### Creating Tibbles
+
+Creating a tibble is simple, instead of using `data.frame()` use the `tibble()` function. Tibbles never change an inputs type like data frames do, they never adjust the names of variables, and they evaluate arguements lazily and sequentially. Tibble doesn't use rownames() and never stores variables as special attributes. Creating a uniform dataframe is that is consistent and highly compatable is the reasoning behind tibble. 
+
+### Tibble vs Data Frames
+
+<br> 
+
+#### Printing
+
+Object as a `data.frame` will print all rows, I've used the `head()` function to stop this behavior. Gives no information on the variable types, 
+```{r}
+head(iris)
+```
+
+
+<br> 
+
+Printing a tibble will inform you on the diminsions and type of data object your using, prints the first ten rows, and whatever columns fit on the screen. each columns data type is defined in the tibble. 
+```{r}
+
+iris.tib <- as_tibble(iris)
+iris.tib
+```
+
+`View()` in RStuido is anoter great option. 
+
+
+<br> 
+
+#### Subsetting
+
+Tibbles are strict on subsetting, remember that a single bracket `[` will always produce another tibble (many values) and a double bracket `[[` will produce a single vector. 
+
+One bracket = Multiple Vectors, Two brackets = Single vector. 
+
+Also use the `$` to pull single vector of information. 
+
+When using $, tibbles are stricter than data.frames, they wont do partial matching.
+
+```{r}
+df <- data.frame(abc = 1)
+df$a
+
+df2 <- tibble(abc = 1)
+df2$a
+
+```
+ if you want to use subsetting in a pipe `%>%`, you'll need to use the special character `.`.
+ 
+```{r}
+df <- tibble(
+  x = runif(5),
+  y = rnorm(5)
+)
+
+df %>% .$x
+
+df %>% .[["x"]]
+```
+
+<br> 
+
+#### Recycling 
+
+My favorite upgrade between tibbles and data.frames is the lack of vector recycling. With data.frame a vector of any size is recycled, see this example.
+
+```{r}
+data.frame(a = 1:6, b = 1:2)
+```
+
+```{r, error=T}
+tibble(a = 1:6, b = 1:2)
+```
+
+They'll both let you recycle a lenght 1 vector though, which I think is good. 
+
+```{r}
+data.frame(a = 1:10, b = 1)
+tibble(a=1:10, b = 1)
+
+```
+
+<br> 
+
+### Coercing Tibbles
+
+If you're working with an object that is not a tibble, use `as_tibble()` to coerce the object into the tibble. `as_tibble()` has been especially created with speed in mind. 
+
+<br> 
+
+A simple but highly effective package, tibble is great. It takes a few hours to make a habbit out of using tibbles, but it's time wel spent given the benefits of tibbles over data frames. 
+
+
+Additional Resources - 
+
+- [CRAN Tibble Documentation](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html)
+- [R For Data Science Chapter 10](http://r4ds.had.co.nz/tibbles.html) 
+
+Until next time, <br  />
+\- Fisher 
