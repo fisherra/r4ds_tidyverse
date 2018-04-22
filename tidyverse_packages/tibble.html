@@ -126,34 +126,41 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code>library('tidyverse')</code></pre>
 <p><br></p>
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
-<p>This is the fifth of eight installments of my <em>Unpacking the Tidyverse</em> series. Each installment focuses on one of the eight core packages in Hadley Wickham’s tidyverse. Instructions given in each post are mainly derived from Hadley’s textbook, <a href="http://r4ds.had.co.nz/">R for Data Science</a>, and CRAN package documentation. This installment of <em>Unpacking the Tidyverse</em> focuses on the modern data.frame package, tibble. The previous installment focuses on the tidyr package, and can be found <a href="link">here</a>. The next installment focuses on the forcats package, and can be found <a href="link">here</a>.</p>
-<p>Tibbles are an updated version of the base R <code>data.frame</code>. Tibbles are default throughout the tidyverse and are compatable with most other modern packages, they keep base R <code>data.frame</code> behaviors that are favorable, and drop those that are not.</p>
+<p>This is the fifth of eight installments of my <em>Unpacking the Tidyverse</em> series. Each installment focuses on one of the eight core packages in Hadley Wickham’s tidyverse. Instructions given in each post are mainly derived from Hadley’s textbook, <a href="http://r4ds.had.co.nz/">R for Data Science</a>, and CRAN package documentation. This installment of <em>Unpacking the Tidyverse</em> focuses on the modernized data frame package, tibble. The previous installment focuses on the tidyr package, and can be found <a href="link">here</a>. The next installment focuses on the forcats package, and can be found <a href="link">here</a>.</p>
+<p>Tibbles are an updated version of the base R data frames, the fundamental data structure used in R. Tibbles are default throughout the tidyverse and are compatable with most other modern packages, they keep the best qualities of the data frame while dropping the features that are less than desirable.</p>
+<pre class="r"><code>library('tidyverse')</code></pre>
 <p><br></p>
 </div>
 <div id="creating-tibbles" class="section level3">
 <h3>Creating Tibbles</h3>
-<p>Creating a tibble is simple, instead of using <code>data.frame()</code> use the <code>tibble()</code> function. Tibbles never change an inputs type like data frames do, they never adjust the names of variables, and they evaluate arguements lazily and sequentially. Tibble doesn’t use rownames() and never stores variables as special attributes. Creating a uniform dataframe is that is consistent and highly compatable is the reasoning behind tibble.</p>
+<p>It’s simple to create a tibble - instead of using base R’s <code>data.frame()</code> function, use tibble’s <code>tibble()</code> function. If you’re looking to coerce an object into a tibble, use <code>as_tibble()</code> instead of <code>as.data.frame()</code>. The function <code>as_tibble()</code> was created with speed in mind, it is much quicker than the base R counterpart.</p>
+<p>Using tibbles instead of data frames is an easy habbit to form, and the benefits of using tibbles make it time well spent. Tibbles never change input types like dataframes do, they also never adjust the names of variables. Tibbles evaluate arguements laziy and sequentially, resulting in more user friendly structure creation and manipulation. They also don’t use <code>rownames()</code> and store variables as special attributes; tibbles are a standardized dataframe that consistantly simplify the user experience.</p>
+<p><br></p>
 </div>
 <div id="tibble-vs-data-frames" class="section level3">
 <h3>Tibble vs Data Frames</h3>
+<p>In addition to the previously mentioned benefits of tibbles, here are perhaps the three most important changes made from the outdated data frame.</p>
 <p><br></p>
 <div id="printing" class="section level4">
 <h4>Printing</h4>
-<p>Object as a <code>data.frame</code> will print all rows, I’ve used the <code>head()</code> function to stop this behavior. Gives no information on the variable types,</p>
-<pre class="r"><code>head(iris)</code></pre>
-<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-## 1          5.1         3.5          1.4         0.2  setosa
-## 2          4.9         3.0          1.4         0.2  setosa
-## 3          4.7         3.2          1.3         0.2  setosa
-## 4          4.6         3.1          1.5         0.2  setosa
-## 5          5.0         3.6          1.4         0.2  setosa
-## 6          5.4         3.9          1.7         0.4  setosa</code></pre>
+<p>Objects as a <code>data.frame</code> will print every column in the dataframe. This behavior is rarely useful, so I’ve used the <code>head()</code> function to limit the output.</p>
+<pre class="r"><code>head(iris, n = 10)</code></pre>
+<pre><code>##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1           5.1         3.5          1.4         0.2  setosa
+## 2           4.9         3.0          1.4         0.2  setosa
+## 3           4.7         3.2          1.3         0.2  setosa
+## 4           4.6         3.1          1.5         0.2  setosa
+## 5           5.0         3.6          1.4         0.2  setosa
+## 6           5.4         3.9          1.7         0.4  setosa
+## 7           4.6         3.4          1.4         0.3  setosa
+## 8           5.0         3.4          1.5         0.2  setosa
+## 9           4.4         2.9          1.4         0.2  setosa
+## 10          4.9         3.1          1.5         0.1  setosa</code></pre>
 <p><br></p>
-<p>Printing a tibble will inform you on the diminsions and type of data object your using, prints the first ten rows, and whatever columns fit on the screen. each columns data type is defined in the tibble.</p>
+<p>When an object is stored as a tibble, calling it will automatically limit the output to ten rows.</p>
 <pre class="r"><code>iris.tib &lt;- as_tibble(iris)
 iris.tib</code></pre>
 <pre><code>## # A tibble: 150 x 5
@@ -170,37 +177,43 @@ iris.tib</code></pre>
 ##  9         4.40        2.90         1.40       0.200 setosa 
 ## 10         4.90        3.10         1.50       0.100 setosa 
 ## # ... with 140 more rows</code></pre>
-<p><code>View()</code> in RStuido is anoter great option.</p>
+<p><br></p>
+<p>You’ll also notice that tibbles inform you on the data structures and diminsions, data frames do not. If you want to view the entire dataset, the <code>View()</code> function in RStudio is a great option.</p>
 <p><br></p>
 </div>
 <div id="subsetting" class="section level4">
 <h4>Subsetting</h4>
-<p>Tibbles are strict on subsetting, remember that a single bracket <code>[</code> will always produce another tibble (many values) and a double bracket <code>[[</code> will produce a single vector.</p>
-<p>One bracket = Multiple Vectors, Two brackets = Single vector.</p>
-<p>Also use the <code>$</code> to pull single vector of information.</p>
-<p>When using $, tibbles are stricter than data.frames, they wont do partial matching.</p>
+<p>Tibbles are more strict on subsetting; remember that a single bracket <code>[</code> will produce another tibble (multiple vectors) and a double bracket <code>[[</code> will produce a single vector.</p>
+<ul>
+<li><code>[</code>= Multiple Vectors</li>
+<li><code>[[</code> = Single Vector</li>
+</ul>
+<p>You can also use the <code>$</code> to pull single vector of information, but only by it’s name.</p>
+<p>When using <code>$</code> within a tibble, don’t expect the partial matching behavior that’s found in data frames.</p>
 <pre class="r"><code>df &lt;- data.frame(abc = 1)
 df$a</code></pre>
 <pre><code>## [1] 1</code></pre>
+<p><br></p>
 <pre class="r"><code>df2 &lt;- tibble(abc = 1)
 df2$a</code></pre>
 <pre><code>## Warning: Unknown or uninitialised column: 'a'.</code></pre>
 <pre><code>## NULL</code></pre>
-<p>if you want to use subsetting in a pipe <code>%&gt;%</code>, you’ll need to use the special character <code>.</code>.</p>
+<p><br></p>
+<p>If you’re a fan of the magrittr pipe like I am, you’ll need to use the special character <code>.</code> to subset the tibble.</p>
 <pre class="r"><code>df &lt;- tibble(
   x = runif(5),
   y = rnorm(5)
 )
 
 df %&gt;% .$x</code></pre>
-<pre><code>## [1] 0.6621400 0.7405862 0.7636446 0.5777622 0.8552852</code></pre>
+<pre><code>## [1] 0.9526915 0.3521208 0.8200712 0.5940581 0.3046462</code></pre>
 <pre class="r"><code>df %&gt;% .[[&quot;x&quot;]]</code></pre>
-<pre><code>## [1] 0.6621400 0.7405862 0.7636446 0.5777622 0.8552852</code></pre>
+<pre><code>## [1] 0.9526915 0.3521208 0.8200712 0.5940581 0.3046462</code></pre>
 <p><br></p>
 </div>
 <div id="recycling" class="section level4">
 <h4>Recycling</h4>
-<p>My favorite upgrade between tibbles and data.frames is the lack of vector recycling. With data.frame a vector of any size is recycled, see this example.</p>
+<p>My favorite from data frames is the lack of vector recycling in tibbles. Within data.frames, if a vector doesn’t fit the structures diminsions it is repeated or “recycled” until it does.</p>
 <pre class="r"><code>data.frame(a = 1:6, b = 1:2)</code></pre>
 <pre><code>##   a b
 ## 1 1 1
@@ -209,49 +222,21 @@ df %&gt;% .$x</code></pre>
 ## 4 4 2
 ## 5 5 1
 ## 6 6 2</code></pre>
+<p><br></p>
+<p>Tibbles don’t recycle vectors, unless they’re of length 1.</p>
 <pre class="r"><code>tibble(a = 1:6, b = 1:2)</code></pre>
 <pre><code>## Error: Column `b` must be length 1 or 6, not 2</code></pre>
-<p>They’ll both let you recycle a lenght 1 vector though, which I think is good.</p>
-<pre class="r"><code>data.frame(a = 1:10, b = 1)</code></pre>
-<pre><code>##     a b
-## 1   1 1
-## 2   2 1
-## 3   3 1
-## 4   4 1
-## 5   5 1
-## 6   6 1
-## 7   7 1
-## 8   8 1
-## 9   9 1
-## 10 10 1</code></pre>
-<pre class="r"><code>tibble(a=1:10, b = 1)</code></pre>
-<pre><code>## # A tibble: 10 x 2
-##        a     b
-##    &lt;int&gt; &lt;dbl&gt;
-##  1     1  1.00
-##  2     2  1.00
-##  3     3  1.00
-##  4     4  1.00
-##  5     5  1.00
-##  6     6  1.00
-##  7     7  1.00
-##  8     8  1.00
-##  9     9  1.00
-## 10    10  1.00</code></pre>
 <p><br></p>
-</div>
-</div>
-<div id="coercing-tibbles" class="section level3">
-<h3>Coercing Tibbles</h3>
-<p>If you’re working with an object that is not a tibble, use <code>as_tibble()</code> to coerce the object into the tibble. <code>as_tibble()</code> has been especially created with speed in mind.</p>
+<p>And that does it for the tibble package! A simple but useful component of the tidyverse that lays a great foundation that the other packages build from. If you’d like additional information on tibbles, check out the additional resources I’ve listed below. Keep an eye out for my next <em>Unpacking the Tidyverse</em> post, forcats.</p>
 <p><br></p>
-<p>A simple but highly effective package, tibble is great. It takes a few hours to make a habbit out of using tibbles, but it’s time wel spent given the benefits of tibbles over data frames.</p>
 <p>Additional Resources -</p>
 <ul>
 <li><a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">CRAN Tibble Documentation</a></li>
 <li><a href="http://r4ds.had.co.nz/tibbles.html">R For Data Science Chapter 10</a></li>
 </ul>
+<p><br></p>
 <p>Until next time, <br /> - Fisher</p>
+</div>
 </div>
 
 
