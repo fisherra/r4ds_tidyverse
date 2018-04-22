@@ -1,55 +1,37 @@
-This is the third installment of a six-part series summarizing the
-concepts of Hadley Wickham's textbook, [R for Data
-Science](http://r4ds.had.co.nz/). In the previous blog [post](link) I
-abridged the book’s chapters that cover importing, parsing, and
-exporting data with readr.
+<br>
 
-In this post, I’ll be focusing on chapter five which covers data
-transformation primarily with the dplyr package. dplyr shares tidyverse
-center stage with ggplot2; unfortunately, dplyr has a steeper learning
-curve than its co-star, ggplot2. I've written a post on data
-visualization with ggplot2 [here](post). When it comes to dplyr and data
-wrangling, it is a topic best learned through hours of practice and
-experience rather than careful explanation. As such, I hope to offer an
-easily understood reference guide in this post, rather than a detailed
-tutorial.
+### Introduction
 
-For more in-depth resources on dplyr, reference these links:
+This is the third of eight installments of my *Unpacking the Tidyverse*
+series. Each installment focuses on one of the eight core packages in
+Hadley Wickham's tidyverse. Instructions given in each post are mainly
+derived from Hadley's textbook, [R for Data
+Science](http://r4ds.had.co.nz/), and CRAN package documentation. This
+installment of *Unpacking the Tidyverse* focuses on the data-wrangling
+package, dplyr. The previous installment focuses on the readr package,
+and can be found [here](link). The next installment focuses on the tidyr
+package, and can be found [here](link).
 
--   [RStudio’s Data Wrangling
-    Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
--   [Data School’s dplyr Tutorial
-    Video](https://www.youtube.com/watch?v=jWjqLW-u3hc)
--   [CRAN Introduction to
-    dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
--   [CRAN dplyr Documentation
-    (long)](https://cran.r-project.org/web/packages/dplyr/dplyr.pdf)
+When it comes to data wrangling, the best teacher is experience. Only
+through hours of using dplyr will you become proficient with it. Many
+professional data scientists report that more than 80% of their time is
+spent data wrangling, so there is endless opportunity to practice with
+dplyr!
 
-<br  />
+dplyr is by far the largest tidyverse package, it contains countless
+functions to help with all of your data wrangling needs. In this post,
+I'll focus on the three families of dplyr functions that I find the most
+useful: the five data-wrangling verbs, six types of data joins, and an
+assortment of helper functions.
 
-#### Libraries
-
-    library('nycflights13')   # example dataset 
     library('tidyverse')      # includes dplyr
-    library('dplyr')          # dplyr specifically
+    library('nycflights13')   # example dataset 
 
-<br  />
+<br>
 
-Some data scientists assert that over 80% of their time is used
-wrangling data; see this as an opportunity and important reason to
-master the art of dplyr. If you're looking to make the most of your data
-analysis routine, it makes sense to streamline the largest portion of
-your work-load before seeking efficiency elsewhere.
+### Dplyr Overview
 
-I've compiled this list of seven primary commands that form the core of
-dplyr's functionality. These are the most influential and called upon
-functions in the dplyr package. Seven second-tier functions follow;
-these commands are commonly useful but not as influential as the primary
-functions listed before them.
-
-<br  />
-
-#### Primary Functions
+#### Data Manipulation Verbs
 
     filter()       # select rows based on value 
     arrange()      # sort rows based on values 
@@ -61,7 +43,18 @@ functions listed before them.
 
 <br  />
 
-#### Secondary Functions
+#### Two-Table Functions
+
+    inner_join()   # 
+    full_join()    # 
+    left_join()    #
+    right_join()   #
+    semi_join()    #
+    anti_join()    #
+
+<br>
+
+#### Data Wrangling Functions
 
     transmute()    # create new variables from existing ones, remove existing variables
     ungroup()      # literally the name
@@ -70,6 +63,16 @@ functions listed before them.
     n()            # number of entries
     lag()          # offset, allows to refer to lagging (-1) value
     lead()         # offset, allows to refer to leading (+1) value
+    starts_with()  # 
+    ends_with()    #
+    contains()     #
+    matches()      #
+    num_range()    #
+    bind_rows()    #
+    bind_cols()    # 
+    rename()       # 
+    select()       # 
+    tally()        # 
 
 <br  />
 
@@ -329,6 +332,104 @@ destinations present in the flights dataset.
     ## 5 B6                1    - 5.00
 
 <br  />
+
+Join functions - inner\_join(x,y,by="") full\_join(x,y,by="")
+left\_join(x,y,by="") right\_join(x,y,by="") semi\_join() - only joings
+things with matches anti\_join() - opposite of semi join, only joins not
+matches
+
+assorted helper functions - Useful with select() starts\_with()
+ends\_with() contains() matches() num\_range("x", 1:5) rename()
+
+Join functions
+
+you can add things together in an arrange arrange(hflights, depdelay +
+arrdelay)
+
+aggregate functions - - - min(), max(), mean(), median(), quantile(x,p),
+sd(), var(), IQR(),
+
+dplyr aggregate functions
+
+first(x) the first element of vector x last(x) the last element nth(x,
+n) the nth element n() the number of rows in the dataframe that
+summarise() describes n\_distinct() number of unique values in vector x
+
+joining data with dplyr - - -
+
+mutating joings- functions that match variables in datasets filtering
+joings - extract rows from combinations best practices, bindrow,
+bindcol, diagnose what can go wrong case study
+
+key is a column that occurs in both tables that you want to join key in
+the first table = primary, second table = secondary, or foreign key
+primary key uniquely ID each row in first dataset acceptable for values
+not to appear at all in secondary key
+
+primary key has to uniquely id all rows! might be more than 1 column
+combined
+
+left\_join is the basic join
+
+left\_join(*primary table*, *secondary table*, by = name of the key to
+join as chr string)
+
+right\_join is kind of useless
+
+inner join returns only the rows from the first that have a match in the
+second, every row must be present in both dataset
+
+full\_join is the most inclusive join, joins everything no matter if
+it's present or not
+
+inner\_join(x,y,by="") full\_join(x,y,by="") left\_join(x,y,by="")
+right\_join(x,y,by="") semi\_join() - only joings things with matches
+anti\_join() - opposite of semi join, only joins not matches
+
+semi\_join provides a concise way to filter data from the first dataset
+based on the second datset. - number of albums in albums dataset that
+were made by a band in the bands dataset -
+
+albums %&gt;% semi\_join(bands, by = "band") %&gt;% nrow()
+
+you really just have to know how the primary and secondary keys work,
+and which join does what.
+
+anti\_joins do the opposite of semi\_join, only returns rows that dont
+have matches
+
+union() provides an easy way to combine two datasets without duplicating
+any values intersect() set operator equivalent for semi-join, what you
+would use if your datasets have the exact same variables.
+
+setdiff() does the same thing as anti\_join() but uses every column as a
+key
+
+setequal() to check if two datasets contain the same rows in any order,
+returns T/F
+
+bind\_rows() - I really dont understand the .id arguement, useful for
+turning lists into one large table or dataframe bind\_cols()
+
+data\_frame() as\_data\_frame() - turns lists into dataframe
+
+dplyr doesnt coerce data, except for factors, but gives warning
+
+rownames\_to\_column(name of dataframe, name of new column to add) -
+might be useful
+
+also colorRampPalette() can be a pretty fun RColorBrewer Tool :)
+
+rename(data, new\_name = old\_data) - very useful
+
+you can use select() to rename columns with an equals
+
+reduce function from purrr
+
+tables &lt;- list(surnames, first, middle) reduce(tables, left\_join, by
+= "name")
+
+tally() counts things
 
 These primary dplyr functions are effortlessly strung together with the
 pipe, %&gt;%, to create a complex and extremely specific inquiry into

@@ -2,7 +2,7 @@
 title: "Unpacking the Tidyverse - Tibble"
 author: "Fisher Ankney"
 date: "April 21, 2018"
-output: html_document
+output: md_document
 ---
 
 <br> 
