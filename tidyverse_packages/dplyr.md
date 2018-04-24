@@ -19,10 +19,12 @@ spent data wrangling, so there is endless opportunity to practice with
 dplyr!
 
 dplyr is by far the largest tidyverse package, it contains countless
-functions to help with all of your data wrangling needs. In this post,
-I'll focus on the three families of dplyr functions that I find the most
+functions to help with all your data wrangling needs. In this post, I'll
+focus on the three families of dplyr functions that I find the most
 useful: the five data-wrangling verbs, six types of data joins, and an
 assortment of helper functions.
+
+<br>
 
     library('tidyverse')      # includes dplyr
     library('nycflights13')   # example dataset 
@@ -31,13 +33,15 @@ assortment of helper functions.
 
 ### Dplyr Overview
 
+<br>
+
 #### Data Manipulation Verbs
 
     filter()       # select rows based on value 
     arrange()      # sort rows based on values 
     select()       # zoom in on specified columns
     mutate()       # create new variables from existing ones 
-    summarize()    # collapse dataframe to single summary
+    summarize()    # collapses a data frame into a single summary
     group_by()     # analyze by specified group, useful for summarize 
     %>%            # connecting pipe, read as "then"
 
@@ -45,12 +49,12 @@ assortment of helper functions.
 
 #### Two-Table Functions
 
-    inner_join()   # 
-    full_join()    # 
-    left_join()    #
-    right_join()   #
-    semi_join()    #
-    anti_join()    #
+    left_join()     # retains all data from left table, includes matching data from right
+    right_join()   # retains all data from right table, includes matching data from left
+    inner_join()   # retains only the data that is present in both tables
+    full_join()    # combines both tables completely 
+    semi_join()    # retains observations in the left table that have a match in the right table
+    anti_join()    # retains observations in the left table that do not have a match in the right table
 
 <br>
 
@@ -59,34 +63,43 @@ assortment of helper functions.
     transmute()    # create new variables from existing ones, remove existing variables
     ungroup()      # literally the name
     desc()         # descending order (large to small, z to a)
-    count()        # simple function counting entries in a variable
-    n()            # number of entries
-    lag()          # offset, allows to refer to lagging (-1) value
-    lead()         # offset, allows to refer to leading (+1) value
-    starts_with()  # 
-    ends_with()    #
-    contains()     #
-    matches()      #
-    num_range()    #
-    bind_rows()    #
-    bind_cols()    # 
-    rename()       # 
-    select()       # 
-    tally()        # 
+    tally()     # sums the number of entries in a dataset
+    count()        # groups then sums the number of entries 
+    n_distinct()            # sums the number of unique values in a dataset
+    starts_with()  # used with select, match entries that start with a string
+    ends_with()    # used with select, match entries that end with a string
+    contains()     # used with select, match entries that contain a string
+    matches()      # used with select, match entries with a regular expression
+    num_range()    # used with select, match a number between defined range
+    bind_rows()    # combines two data frames according to similar rows
+    bind_cols()    # combines two data frames according to similar columns
+    rename()       # renames columns
+    first()        # the first element of vector x
+    last()         # the last element
+    nth()          # the nth element 
 
 <br  />
 
-I'll give specific examples for the first seven of these functions, and
-attempt to include the second seven throughout these examples. Again,
-the goal of this post is to be a quick-reference as to the functionality
-of dplyr, not an in-depth tutorial. The best way to learn data wrangling
-is experience, [R for Data Science Chapter
-5](http://r4ds.had.co.nz/transform.html) has many examples and
-challenges you can work through to solidify your dplyr skills.
+I've broken down this post on dplyr into three distinct sections - data
+manipulation verbs, two-table functions, and data wrangling functions.
+The first section, data manipulation verbs, covers what I believe are
+the six most important functions in dplyr along with "then" pipe. If you
+only read one section of this post, I suggest you make it this section.
+Also of importance are the two-table functions introduced in dplyr.
+These six "join" functions allow the user complete control when
+combining multiple datasets. Finally, the data wrangling functions are
+functions that I've found useful in niche cases while exploring and
+analyzing datasets. This isn't a complete list of data wrangling
+functions in dplyr, they're just functions that I've personally found
+useful in my projects thus far.
 
-<br  />
+To demonstrate the power of dplyr, we'll be working with the flights
+dataset loaded from `library(nycflights13)`. Flights is a large and
+diverse dataset, containing 19 variables and over 335,000 observations.
+Flights gives on-time data for all flights that departed from the three
+airports associated with New York City in 2013.
 
-#### Example Dataset
+<br>
 
     flights
 
@@ -109,14 +122,15 @@ challenges you can work through to solidify your dplyr skills.
 
 <br  />
 
-Flights is a classic dataset that is large and diverse, perfect for
-testing out the primary functions of dpylr. This dataset gives on-time
-data for all flights that departed from New York City in 2013. There are
-19 columns or variables, and 336,776 rows or observations.
-
-<br  />
-
 #### Filter
+
+`filter()` is a simple function that finds, or 'filters' observations
+that match true to a declared condition. In this example `filter()`
+first's argument is the flights dataset, the following arguments declare
+the conditions to be met. Retain observations (rows) with the months
+variable equal to 12, and the day variable equal to 25. The result is a
+data frame with 719 flights that departed New York City on Christmas
+Day, 2013.
 
     filter(flights, month == 12 & day == 25)
 
@@ -139,17 +153,20 @@ data for all flights that departed from New York City in 2013. There are
 
 <br  />
 
-*Filter* is a simple function that finds, or 'filters' observations that
-match true to a declared condition. In this example *filter* first's
-argument is the flights dataset, the following arguments declare the
-conditions to be met. Retain observations (rows) with the months
-variable equal to 12, and the day variable equal to 25. The result is a
-dataframe with 719 flights that departed New York City on Christmas Day,
-2013.
-
-<br  />
-
 #### Arrange
+
+Often observations within a data frame are ordered arbitrarily, or
+unproductively. `arrange()` reorders observations according to its user
+specified arguments. In this example, the flights data frame is called
+upon as the first argument once again; this is common syntax within
+dplyr functions and I won't be referencing it henceforth. The second
+argument is `desc(dep_time)`. `desc()` is one of the secondary functions
+listed previously; it simply transforms a vector into a format that will
+be sorted in descending order. `dep_time` is the flights variable
+departure time, a number from 0000 to 2400, indicating the actual
+departure time of an individual aircraft. The resulting data frame has
+all 336,776 observations sorted from latest (highest) to earliest
+(lowest) departure time.
 
     arrange(flights, desc(dep_time))
 
@@ -172,22 +189,13 @@ dataframe with 719 flights that departed New York City on Christmas Day,
 
 <br  />
 
-Often observations within a dataframe are ordered arbitrarily, or
-unproductively. *Arrange* reorders observations according to its user
-specified arguments. In this example, the flights dataframe is called
-upon as the first argument once again; this is common syntax within
-dplyr functions and I won't be referencing it henceforth. The second
-argument is *desc(dep\_time)*. *desc* is one of the secondary functions
-listed previously; it simply transforms a vector into a format that will
-be sorted in descending order. *dep\_time* is the flights variable
-departure time, a number from 0000 to 2400, indicating the actual
-departure time of an individual aircraft. The resulting dataframe has
-all 336,776 observations sorted from latest (highest) to earliest
-(lowest) departure time.
-
-<br  />
-
 #### Select
+
+In a data frame with numerous variables it's easy become overwhelmed and
+broad with analysis. `select()` reduces the number of variables in a
+data frame, only keeping variables that the user inputs as arguments. In
+this example, flights are reduced from 19 variables to the variables
+year, month and day.
 
     select(flights, year:day)
 
@@ -208,15 +216,15 @@ all 336,776 observations sorted from latest (highest) to earliest
 
 <br  />
 
-In a dataframe with numerous variables it's easy become overwhelmed and
-broad with analysis. *Select* reduces the number of variables in a
-dataframe, only keeping variables that the user inputs as arguments. In
-this example, flights are reduced from 19 variables to the variables
-year, month and day.
-
-<br  />
-
 #### Mutate
+
+`mutate()` allows users to alter current variables and create new ones
+through various vectorized functions. In the above example the variable
+speed is created and is equal to distance divided by air time multiplied
+by 60. The pipe function %&gt;%, is used to move the `mutate()` output
+to `select()`. The new variable, speed, is output by the `select()`
+function, along with each flight's tail number, air time, and travel
+distance.
 
     mutate(flights, speed = distance / air_time * 60) %>%
       select(tailnum, distance, air_time, speed)
@@ -238,16 +246,14 @@ year, month and day.
 
 <br  />
 
-*Mutate* allows users to alter current variables and create new ones
-through various vectorized functions. In the above example the variable
-speed is created and is equal to distance divided by air time multiplied
-by 60. The pipe function %&gt;%, is used to move the *mutate* output to
-*select*. The new variable, speed, is output by the *select* function,
-along with each flight's tail number, air time, and travel distance.
-
-<br  />
-
 #### Summarize
+
+`summarize()` is perhaps the most complicated function in dplyr. Often
+used in conjunction with `group_by()`, `summarize()` collapses many
+values into a single summary. In the above example. `summarize()` finds
+the mean departure delay of all 336,776 observations in the flights
+dataset. As a result, the single value 12.64 (minutes) summarizes the
+mean departure delay.
 
     summarize(flights, delay = mean(dep_delay, na.rm = TRUE))
 
@@ -258,16 +264,24 @@ along with each flight's tail number, air time, and travel distance.
 
 <br  />
 
-*Summarize* is perhaps the most complicated function in dplyr. Often
-used in conjunction with *group\_by*, *summarize* collapses many values
-into a single summary. In the above example. *summarize* finds the mean
-departure delay of all 336,776 observations in the flights dataset. As a
-result, the single value 12.64 (minutes) summarizes the mean departure
-delay.
-
-<br  />
-
 #### Group By
+
+`summarize()` becomes extremely useful when paired with the final
+primary dplyr function, `group_by()`. `group_by()` changes the unit of
+analysis from the complete dataset to an individual group, thus changing
+the scope of summarize. In the above example, the flights dataset is
+grouped by the `dest` variable, destination. Grouping by destination by
+itself does nothing to the data frame, so the then pipe, %&gt;%, is used
+to push the output to the `summarize()` function. Summarize first
+creates a count variable that is equivalent to the function `n()`. `n()`
+is another one of those secondary dplyr functions that often comes in
+handy; `n()` is a function that finds the number of observations in the
+current group. Next, `summarize()` creates a variable named distance
+based off the mean distance travelled by each observation, as grouped by
+destination. Finally, `summarize()` creates a variable named delay,
+based off the mean arrival delay each observation experienced, as
+grouped by destination. The resulting data frame gives excellent insight
+into each of the 105 destinations present in the flights dataset.
 
     group_by(flights, dest) %>%                       
       summarize(count = n(),                          
@@ -292,25 +306,6 @@ delay.
 
 <br  />
 
-*Summarize* becomes extremely useful when paired with the final primary
-dplyr function, *group\_by*. *group\_by* changes the unit of analysis
-from the complete dataset to an individual group, thus changing the
-scope of summarize. In the above example, the flights dataset is grouped
-by the dest variable, destination. Grouping by destination by itself
-does nothing to the dataframe, so the then pipe, %&gt;%, is used to push
-the output to the *summarize* function. Summarize first creates a count
-variable that is equivalent to the function *n( )*. *n( )* is another
-one of those secondary dplyr functions that often comes in handy; *n( )*
-is a function that finds the number of observations in the current
-group. Next, *summarize* creates a variable named distance based off the
-mean distance travelled by each observation, as grouped by destination.
-Finally, *summarize* creates a variable named delay, based off the mean
-arrival delay each observation experienced, as grouped by destination.
-The resulting dataframe gives excellent insight into each of the 105
-destinations present in the flights dataset.
-
-<br  />
-
 #### Complex Inquiries
 
     denver_xmas_delay <- flights %>%                          # create new dataframe, denver_xmas_delay, then
@@ -331,118 +326,305 @@ destinations present in the flights dataset.
     ## 4 F9                2    - 4.00
     ## 5 B6                1    - 5.00
 
-<br  />
+<br> <br>
 
-Join functions - inner\_join(x,y,by="") full\_join(x,y,by="")
-left\_join(x,y,by="") right\_join(x,y,by="") semi\_join() - only joings
-things with matches anti\_join() - opposite of semi join, only joins not
-matches
+### Two-Table Functions
 
-assorted helper functions - Useful with select() starts\_with()
-ends\_with() contains() matches() num\_range("x", 1:5) rename()
+There are two types of two-table joining functions, mutating joins and
+filtering joins. Mutating joins allow you to add new variables from one
+table to matching observations in another table. these functions are
+`left_join()`, `right_join()`, `inner_join()`, and `outter_join()`.
+Filtering Joins filter observations from one table based on matched
+observations in the secondary table; these two functions are
+`semi_join()` and `anti_join()`.
 
-Join functions
+All six of the join functions are structure for the first arguments to
+be `x` and `y`. These are the tables that are combined or filtered; the
+output always takes the same structure as the left table, `x`. The third
+argument, `by` defines the "key", a column that occurs in both tables
+that you want to join. They key in the first table is declared the
+"primary key", the key in the second table is declared the secondary, or
+foreign key. The Primary key must uniquely ID each row in the first
+dataset, but not necessary the second dataset. This means in some cases
+that the primary key is more than one column.
 
-you can add things together in an arrange arrange(hflights, depdelay +
-arrdelay)
+They trick to understanding the six join functions is understanding how
+to use the key values. Let's get started with the most popular function,
+`left_join()`.
 
-aggregate functions - - - min(), max(), mean(), median(), quantile(x,p),
-sd(), var(), IQR(),
+<br>
 
-dplyr aggregate functions
+#### Left Join
 
-first(x) the first element of vector x last(x) the last element nth(x,
-n) the nth element n() the number of rows in the dataframe that
-summarise() describes n\_distinct() number of unique values in vector x
+The `left_join()` function keeps all observations in your left table
+(argument `x`). Your primary table will never lose observations when
+using left join, it will only gain additional observations from the
+right table (argument `y`) based on the defined key.
 
-joining data with dplyr - - -
+Here we'll set up a simple example tibbles -
 
-mutating joings- functions that match variables in datasets filtering
-joings - extract rows from combinations best practices, bindrow,
-bindcol, diagnose what can go wrong case study
+    tib_1 <- tibble(x = 1:2, y = 2:1)
+    tib_1
 
-key is a column that occurs in both tables that you want to join key in
-the first table = primary, second table = secondary, or foreign key
-primary key uniquely ID each row in first dataset acceptable for values
-not to appear at all in secondary key
+    ## # A tibble: 2 x 2
+    ##       x     y
+    ##   <int> <int>
+    ## 1     1     2
+    ## 2     2     1
 
-primary key has to uniquely id all rows! might be more than 1 column
-combined
+    tib_2 <- tibble(x = c(1,3), a = 10, b = "a")
+    tib_2
 
-left\_join is the basic join
+    ## # A tibble: 2 x 3
+    ##       x     a b    
+    ##   <dbl> <dbl> <chr>
+    ## 1  1.00  10.0 a    
+    ## 2  3.00  10.0 a
 
-left\_join(*primary table*, *secondary table*, by = name of the key to
-join as chr string)
+<br>
 
-right\_join is kind of useless
+    left_join(tib_1, tib_2, by = "x")
 
-inner join returns only the rows from the first that have a match in the
-second, every row must be present in both dataset
+    ## # A tibble: 2 x 4
+    ##       x     y     a b    
+    ##   <dbl> <int> <dbl> <chr>
+    ## 1  1.00     2  10.0 a    
+    ## 2  2.00     1  NA   <NA>
 
-full\_join is the most inclusive join, joins everything no matter if
-it's present or not
+<br>
 
-inner\_join(x,y,by="") full\_join(x,y,by="") left\_join(x,y,by="")
-right\_join(x,y,by="") semi\_join() - only joings things with matches
-anti\_join() - opposite of semi join, only joins not matches
+When you don't list a `by` argument, dplyr finds the key columns on its
+own, most of the time it's right, but not always.
 
-semi\_join provides a concise way to filter data from the first dataset
-based on the second datset. - number of albums in albums dataset that
-were made by a band in the bands dataset -
+    left_join(tib_1, tib_2)
 
-albums %&gt;% semi\_join(bands, by = "band") %&gt;% nrow()
+    ## Joining, by = "x"
 
-you really just have to know how the primary and secondary keys work,
-and which join does what.
+    ## # A tibble: 2 x 4
+    ##       x     y     a b    
+    ##   <dbl> <int> <dbl> <chr>
+    ## 1  1.00     2  10.0 a    
+    ## 2  2.00     1  NA   <NA>
 
-anti\_joins do the opposite of semi\_join, only returns rows that dont
-have matches
+<br>
 
-union() provides an easy way to combine two datasets without duplicating
-any values intersect() set operator equivalent for semi-join, what you
-would use if your datasets have the exact same variables.
+#### Right Join
 
-setdiff() does the same thing as anti\_join() but uses every column as a
-key
+The mirror image of `left_join()`, `right_join()` includes all of the
+columns in the `y` table, and adds matching observations from the `x`
+table.
 
-setequal() to check if two datasets contain the same rows in any order,
-returns T/F
+    right_join(tib_1, tib_2)
 
-bind\_rows() - I really dont understand the .id arguement, useful for
-turning lists into one large table or dataframe bind\_cols()
+    ## Joining, by = "x"
 
-data\_frame() as\_data\_frame() - turns lists into dataframe
+    ## # A tibble: 2 x 4
+    ##       x     y     a b    
+    ##   <dbl> <int> <dbl> <chr>
+    ## 1  1.00     2  10.0 a    
+    ## 2  3.00    NA  10.0 a
 
-dplyr doesnt coerce data, except for factors, but gives warning
+<br>
 
-rownames\_to\_column(name of dataframe, name of new column to add) -
-might be useful
+#### Inner Join
 
-also colorRampPalette() can be a pretty fun RColorBrewer Tool :)
+`inner_join()` is simple, it only includes observations that are present
+in both `x` and `y`. Every row must be present in both datasets. With
+the key `by = "x"`, only one row is present in both example tibbles.
 
-rename(data, new\_name = old\_data) - very useful
+    inner_join(tib_1, tib_2, by = "x")
 
-you can use select() to rename columns with an equals
+    ## # A tibble: 1 x 4
+    ##       x     y     a b    
+    ##   <dbl> <int> <dbl> <chr>
+    ## 1  1.00     2  10.0 a
 
-reduce function from purrr
+<br>
 
-tables &lt;- list(surnames, first, middle) reduce(tables, left\_join, by
-= "name")
+#### Full Join
 
-tally() counts things
+The most inclusive join of all, `full_join()` joins every observation
+from both tables, as the name suggests.
 
-These primary dplyr functions are effortlessly strung together with the
-pipe, %&gt;%, to create a complex and extremely specific inquiry into
-the dataframe. Dplyr's advantage over base R resides in its readability
-(largely due to the pipe), as well as it's intuitive use functions. I
-find it's far easier to build a complex inquiry like the example above,
-one step at a time. It's far easier after each step instead of saving it
-for the end.
+    full_join(tib_1, tib_2, by = "x")
 
-Dplyr can often be a frustrating package to work with, but once you've
-become proficient at data wrangling, Hadley Wickham's package becomes
-near indispensable. Hopefully this reference guide can help you on your
-journey to mastering dplyr and data wrangling with R. Stay tuned for
-part four of the six part R4DS summary series, tidy data with tidyr.
+    ## # A tibble: 3 x 4
+    ##       x     y     a b    
+    ##   <dbl> <int> <dbl> <chr>
+    ## 1  1.00     2  10.0 a    
+    ## 2  2.00     1  NA   <NA> 
+    ## 3  3.00    NA  10.0 a
+
+<br>
+
+#### Semi Join
+
+The first of two filter joins, `semi_join()`, keeps all observations in
+the `x` argument that have a match in the `y` argument. In this example,
+the key is the "x" column of `tib_1`; the only row that matches in
+`tib_2` is the observation x = 1. Thus, the resulting semi\_join only
+has one observation filtered from `tib_1`.
+
+    semi_join(tib_1, tib_2, by = "x")
+
+    ## # A tibble: 1 x 2
+    ##       x     y
+    ##   <int> <int>
+    ## 1     1     2
+
+<br>
+
+#### Anti Join
+
+`anti_join()` is the antithesis of `semi_join()`, the function only
+returns observations that are not present in the `y` dataset.
+
+    anti_join(tib_1, tib_2)
+
+    ## Joining, by = "x"
+
+    ## # A tibble: 1 x 2
+    ##       x     y
+    ##   <int> <int>
+    ## 1     2     1
+
+<br>
+
+### Data Wrangling Functions
+
+<br>
+
+#### `transmute()`
+
+Technically a data manipulation verb, transmute adds a new variable to
+the data structure, just like mutate. The difference between transmute
+and mutate is that mutate preserves the pre-existing variables while
+transmute drops them. Usage arguments are the same as mutate.
+
+#### `ungroup()`
+
+After using the function `group_by()` data operations are performed on
+the groups defined by this functions output. Ungroup will undo the
+effects of `group_by()`, allowing for verbs like `summarize()` to once
+again be conducted on the entire dataset.
+
+#### `desc()`
+
+When using the data wrangling verb `arrange()`, dplyr automatically
+sorts a datasets observations alphanumerically. If, for instance, you
+wanted to arrange a set of values from highest to lowest, you must use
+the `desc()` function inside arrange. I exemplify `desc()` in the
+`arrange()` example code above.
+
+#### `tally()`
+
+`tally()` is short hand for the function `summarize()`. The function
+simply calls the `n()` function, which defines the number of entries in
+your `x` argument. If you're calling `tally()` multiple times for a
+single dataset, it will call `sum(n)`, and create a cumulative tally.
+`tally()` will takes an `x` argument and optionally a `wt` and `sort`
+argument. `x` is the table to count, `wt` allows for a weighted tally
+through the defined variable `wt`, and `sort` will sort the output in
+descending order of n if left as TRUE.
+
+#### `count()`
+
+A very similar function to `tally()`, `count()` calls `group_by()`
+before performing the tally, then calls `ungroup()` once it's complete.
+
+#### `n_distinct()`
+
+number of unique values in vector x
+
+#### `starts_with()`
+
+Useful with the `select()` data wrangling verb, `starts_with()` allows
+you to select data entries that start with a defined prefix. The first
+argument is a string that you want to match within the dataset; the
+second argument is `ignore.case` which defaults to TRUE.
+
+#### `ends_with()`
+
+Similar to `starts_with()`, this verb allows you to select entries from
+a dataset that end with a defined string.
+
+#### `contains()`
+
+Allows you to `select()` data entries that contain a defined literal
+string anywhere within them.
+
+#### `matches()`
+
+Allows you to `select()` data entries that match a regular expression
+anywhere within them.
+
+#### `num_range()`
+
+Allows you to `select()` data entries that contain a defined range of
+numbers given as the first argument in `num_range()`.
+
+#### `bind_rows()`
+
+An efficient implementation of base R's `rbind()` function,
+`bind_rows()` takes data frames as arguments and combines the rows, or
+observations, according to the columns they have in common.
+
+#### `bind_cols()`
+
+`bind_rows()` counterpart, `bind_cols()` also takes data frames as
+arguments and combines them column-wise according to their common
+observations.
+
+#### `rename()`
+
+`rename()` does exactly what it's name suggest, taking a dataset as its
+first argument, and an expression defining the new names based on the
+old names as its second argument. for example, to rename multiple
+columns you would write a statement like
+`rename(data, c(new_name_1, new_name_2) = c(old_name_1, old_name_2))`.
+
+#### `first()`
+
+A simple wrapper that will select and return the value that occupies the
+first slot in a data structure. The first and only argument defines the
+data structure.
+
+#### `last()`
+
+A simple wrapper that will select and return the value that occupies the
+last slot in a data structure. The first and only argument defines the
+data structure.
+
+#### `nth()`
+
+A simple wrapper than will select and return the value that occupies the
+nth slot in a data structure. The first argument defines the data
+structure and the second argument defines the nth slot.
+
+<br>
+
+### Additional Resources
+
+-   [R For Data Science Chapter 5](http://r4ds.had.co.nz/transform.html)
+-   [R For Data Science Chapter
+    13](http://r4ds.had.co.nz/relational-data.html)
+-   [CRAN Dplyr
+    Documentation](https://cran.r-project.org/web/packages/dplyr/dplyr.pdf)
+-   [CRAN Introduction to
+    Dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+-   [CRAN Two Table
+    Verbs](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html)
+-   [R Studio Data Wrangling Cheat
+    Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+
+<br>
+
+Data Wrangling can sometimes be a frustrating process, and it often
+takes up so much time that the task seems endless. dplyr makes the task
+easier, but not simple. It takes hours of practice to get “good” at data
+wrangling, I'm certainly not there yet. Hopefully this short reference
+guide exposed you to an interesting function, or clarified how to use a
+wrangling verb for you. Stay tuned for part four of this eight part
+series, *Unpacking the Tidyverse - tidyr*.
 
 Until next time, <br  /> - Fisher
