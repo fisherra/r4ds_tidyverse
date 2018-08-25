@@ -5,11 +5,13 @@ date: "8/24/2018"
 output: html_document
 ---
 
+<br>
+
 ## Introduction 
 
 This is the sixth of eight installments of my *Unpacking the Tidyverse* series. Each installment focuses on one of the eight core packages in Hadley Wickham's tidyverse. Instructions given in each post are mainly derived from Hadley's textbook, [R for Data Science](http://r4ds.had.co.nz/), and CRAN package documentation. This installment of *Unpacking the Tidyverse* focuses on the string manipulation package, stringr. The previous installment focuses on the tibble package, and can be found [here](link). The next installment focuses on the forcats package, and can be found [here](link). 
 
-Strings are arrays of characters, typically words within a dataset. Stringr uses functions that utilize regular expressions, regexps, to manipulate strings in your dataset. 
+Strings are simply arrays of characters in your dataset. Strings can contain numbers, letters, special symbols; really anything you decide to stick between two quotation marks. The tidyverse's stringr function allows you to manipulate these strings with the help of regular expressions. While I won't be explaning regular expressions in this post, I'll link to some useful resources to help you learn to use them. But before we do anything, we have to load the ever-useful tidyverse. 
 
 <br>
 
@@ -24,24 +26,15 @@ library('tidyverse')
 
 <br>
 
-To learn how to manipulate strings, let's make a few!
+Let's quickly cover how to make strings, before we learn how to manipulate them. 
+
 ```{r}
 string_a <- "this is how you make a string"
 string_b <- 'double or single quotes work'
-string_c <- "wow, strings are so much fun"
+string_c_d <- c("what if I want quotes you ask?",
+                "easy! put a \ before your quotes")
+strings <- c(string_a, string_b, string_c_d)
 ```
-
-<br> 
-
-You can store multiple strings in a single character vector:
-
-```{r}
-strings <- c(string_a, string_b, string_c, "opps, I made another one!")
-```
-
-<br> 
-
-If you want to include quotes within your string, put a backslash before each of them `\"like so\"`. Now that we've got strings to work with, let's jump into stringr. 
 
 <br>
 
@@ -54,7 +47,6 @@ All stringr functions start with `str_`, so if you've forgot the name of the str
 The easiest stringr function is `str_length()`. `str_length()` measures the number of characters in the it's primary arguement. There are 23 letters and 6 spaces, making a total of 29 characters in `string_a`. 
 
 ```{r}
-string_a
 str_length(string_a)
 ```
 
@@ -63,7 +55,6 @@ str_length(string_a)
 If you give the function a vector of strings, it will measure the length of each individual element. 
 
 ```{r}
-strings
 str_length(strings)
 ```
 
@@ -72,16 +63,24 @@ str_length(strings)
 Now that we can count them, let's concatenate them! `str_c` is a function that tacks one string onto the end of another, given a defined separator.
 
 ```{r}
-string_a
-string_b
 str_c(string_a, string_b, sep=", ")
 ```
 
 <br>
 
-The final fun-and-easy function I'll cover is `str_sort`. String sort alphabetically sorts strings in a character vector. It has several useful options allowing for reverse alphabetical sorting, different languages, and NA values. 
+Another potentially useful function is substrings, `str_sub`. Substrings extracts and replaces substrings from a character vector, typically taking 3 input arguements. The first is your character vector, the second is where to start the substitution, and the third arguement is where to end the substitution.  
+
 ```{r}
-str_sort(strings) 
+str_sub(strings, 10) <- " ...PSYCH!"
+strings
+```
+
+<br>
+
+The final fun-and-easy function I'll cover is `str_sort`. String sort alphabetically sorts strings in a character vector. It has several useful options allowing for reverse alphabetical sorting, different languages, and NA values.
+
+```{r}
+str_sort(strings)
 ```
 
 <br>
@@ -91,53 +90,131 @@ str_sort(strings)
 
 <br> 
 
-This is where stringr really becomes handy. Combining stringr functions with regular expressions allows the functions to sort through lengthy datasets, manipulating them exactly as you command. These tables, copied from RStudio's stringr [cheatsheet](link) provides an excellent overview of regular expressions and how to use them.  
-
-<br> 
-
-INSERT TABLE
+Stringr really becomes useful when you use regular expressions to help it sort throgh massive amounts of character vectors. RStudio's stringr [cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/strings.pdf) has an excellent secton on RegEx's on its second page. If you're still not sure on how regular expressions work, check out [this](https://stringr.tidyverse.org/articles/regular-expressions.html) arcticle on the stringr website. 
 
 <br>
 
-INSERT ALTERNATES AND ANCHORS TABLE
+### Pattern Matching with Stringr
 
-<br> 
+The vignette associated with stringr has wonderful examples on how to use stringrs pattern matching functions; [check it out](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html) for great examples of all the pattern matching functions and more. 
 
-If you're still not sure on how regular expressions work, check out [this](https://stringr.tidyverse.org/articles/regular-expressions.html) arcticle on the stringr website. 
+The pattern matching functions all work in a similar way, so I won't be giving examples for each of them. All of the functions take a targeted character vector as their first arguement. The regular expression that describes the pattern you're searching for is the second arguement. Things like separators and other options come last. Here's an overview of the pattern matching functions and what they do.
 
 <br>
 
-### Stringr Using RegEx
+#### Stringr Pattern Matching Functions 
+```
+str_detect()      - returns T/F if pattern is found
+str_subset()      - returns the elements that match pattern
+str_count()       - counts the number of pattern matches
+str_locate()      - returns the location of the first pattern match
+str_locate_all()  - returns the location of all pattern matches
+str_extract()     - extracts the first pattern match
+str_extract_all() - extracts all pattern matches
+str_replace()     - replaces the first pattern match 
+str_replace_all() - replaces all pattern matches
+str_split()       - splits pattern matches into individual elements
+```
+<br> 
 
-str_sub() extracts part of the string based on it's location
+In order to demonstrate two of my favorite pattern matching functions, I'll create some data to sift through. This data comes from the stringr vinette. 
 
-str_sub(string_in_question, start with this num, end at this num) 
-can also use negative to count backwards
+```{r}
+# Create some strings that include phone numbers
+strings <- c(
+  "Ralph", 
+  "970 313 8955", 
+  "989-344-6480", 
+  "Work: 822-541-1234; Home: 543.355.3679"
+)
 
-str_sub(string_in_question, -3) - returns last three characters in string
+# Create a regular expression that identifies phone numbers
+phone <- "([2-9][0-9]{2})[- .]([0-9]{3})[- .]([0-9]{4})"
+```
 
-Hunting for matches
+<br>
 
-str_detect(object, pattern to match)
+String count, `str_count` is a simple function that tells you how pattern matches are in each string:
+```{r}
+str_count(strings, phone)
+```
 
-can save str_detect to a variable, because it returns T/F, then subset original object with T/F to return those that matched TRUE. you could skip that trouble by using str_subset()
+<br> 
 
-str_subset() does the same thing as str_detect but it automatically subsets the original object for the TRUE matches
+String replace all has obvious uses; it's important to note that `str_replace_all` takes a third arguement defining the replacement string. 
+```{r}
+str_replace_all(strings, phone, "XXX-XXX-XXXX")
+```
 
+<br> 
 
-str_count() counts the number of occurances
+The rest of the pattern matching functions work in a similiar fashion. Sometimes stringr's usefulness is not very obvious, but that's what makes programming fun - finding creative ways to impliment what you thought was a useless function to solve a useful problem. 
 
-str_split() splits things according to the separator! fixed(" ") defines the separator, which is weird, idk what the fixed does. also simplify makes a matrix if you set it to true. if its default false, then it returns a list. 
+<br>
 
+### Whitespace Manipulation
 
-str_replace(object, "pattern", "replacement")
-str_replace_all(object, "pattern", "replacement")
+Lastly, I'll cover what I find to be the most useful family of functions in stringr, the three whitespace manipulation functions.
 
+You can add white space using `str_pad`, remove whitespace using `str_trim`, and manipulate existing whitespace using `str_wrap`.
 
-really dont get the point of fixed("") on pattern declare
+String pad will "pad" vectors that are shorter than your desirable length with whitespace either side of the string. If your string is already greater than or equal to the desired length, it remains uneffected. `str_pad` will never shorten a vector. 
 
-str_split() important to use simplify = T, and n = num of columns
+```{r}
+# create example strings
+ws_example <- c("abc", "abcdefghij")
 
+# ensure strings are 10 chr long
+ws_example <- str_pad(ws_example, 10, side = "right")
+ws_example
+# Now ensure the strings are 20 chr long
+ws_example <- str_pad(ws_example, 20, side = "left")
+ws_example
+```
 
+<br>
 
+String trim will remove the whitespace we've just added, returning the strings to their original characters. 
+
+```{r}
+# trim the whitespace returning the strings to orginal size
+ws_example <- str_trim(ws_example, side = "both")
+ws_example
+```
+
+<br> 
+
+This example is directly from the stringr vinette - we've got one long string telling a jabberwocky story. We want to retain the story as one string, but break it into multiple similiar-length lines to increase accessibility. `str_wrap` to the rescue. 
+
+```{r}
+# create jabberwocky example story
+jabberwocky <- str_c(
+  "`Twas brillig, and the slithy toves ",
+  "did gyre and gimble in the wabe: ",
+  "All mimsy were the borogoves, ",
+  "and the mome raths outgrabe. "
+)
+
+# view the string wrap of jabberwocky, line width of 40 chr
+cat(str_wrap(jabberwocky, width = 40))
+```
+
+<br> 
+
+And that's it for Unpacking the Tidyverse - stringr! There's a lot more to stringr and regular expressions, but it's probably best to learn the nitty-gritty when you actually need it. While strings arn't the most glamorous, they're prolific in many dataset and it's useful to know how to manipulate them.
+
+If you'd like additional information on stringr, check out the additional resources I've listed below. Keep an eye out for my next *Unpacking the Tidyverse* post, forcats. 
+
+<br> 
+
+### Additional Resources
+- [Stringr chapter R4DS](http://r4ds.had.co.nz/strings.html)
+- [Stringr website tutorial](https://stringr.tidyverse.org/articles/regular-expressions.html)
+- [Stringr Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/master/strings.pdf)
+- [Stringr Vinette](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html)
+
+<br>
+
+Until next time, <br  />
+\- Fisher 
 

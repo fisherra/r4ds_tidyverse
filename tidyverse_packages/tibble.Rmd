@@ -115,7 +115,7 @@ tibble(a = 1:6, b = 1:2)
 
 <br> 
 
-And that does it for the tibble package! A simple but useful component of the tidyverse that lays a great foundation that the other packages build from. If you'd like additional information on tibbles, check out the additional resources I've listed below. Keep an eye out for my next *Unpacking the Tidyverse* post, forcats. 
+And that does it for the tibble package! A simple but useful component of the tidyverse that lays a great foundation that the other packages build from. If you'd like additional information on tibbles, check out the additional resources I've listed below. Keep an eye out for my next *Unpacking the Tidyverse* post, stringr. 
 
 <br> 
 

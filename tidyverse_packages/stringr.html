@@ -125,25 +125,23 @@ $(document).ready(function () {
 </div>
 
 
+<p><br></p>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>This is the sixth of eight installments of my <em>Unpacking the Tidyverse</em> series. Each installment focuses on one of the eight core packages in Hadley Wickham’s tidyverse. Instructions given in each post are mainly derived from Hadley’s textbook, <a href="http://r4ds.had.co.nz/">R for Data Science</a>, and CRAN package documentation. This installment of <em>Unpacking the Tidyverse</em> focuses on the string manipulation package, stringr. The previous installment focuses on the tibble package, and can be found <a href="link">here</a>. The next installment focuses on the forcats package, and can be found <a href="link">here</a>.</p>
-<p>Strings are arrays of characters, typically words within a dataset. Stringr uses functions that utilize regular expressions, regexps, to manipulate strings in your dataset.</p>
+<p>Strings are simply arrays of characters in your dataset. Strings can contain numbers, letters, special symbols; really anything you decide to stick between two quotation marks. The tidyverse’s stringr function allows you to manipulate these strings with the help of regular expressions. While I won’t be explaning regular expressions in this post, I’ll link to some useful resources to help you learn to use them. But before we do anything, we have to load the ever-useful tidyverse.</p>
 <p><br></p>
 <pre class="r"><code>library('tidyverse')</code></pre>
 <p><br></p>
 <div id="creating-strings" class="section level3">
 <h3>Creating Strings</h3>
 <p><br></p>
-<p>To learn how to manipulate strings, let’s make a few!</p>
+<p>Let’s quickly cover how to make strings, before we learn how to manipulate them.</p>
 <pre class="r"><code>string_a &lt;- &quot;this is how you make a string&quot;
 string_b &lt;- 'double or single quotes work'
-string_c &lt;- &quot;wow, strings are so much fun&quot;</code></pre>
-<p><br></p>
-<p>You can store multiple strings in a single character vector:</p>
-<pre class="r"><code>strings &lt;- c(string_a, string_b, string_c, &quot;opps, I made another one!&quot;)</code></pre>
-<p><br></p>
-<p>If you want to include quotes within your string, put a backslash before each of them <code>\&quot;like so\&quot;</code>. Now that we’ve got strings to work with, let’s jump into stringr.</p>
+string_c_d &lt;- c(&quot;what if I want quotes you ask?&quot;,
+                &quot;easy! put a \ before your quotes&quot;)
+strings &lt;- c(string_a, string_b, string_c_d)</code></pre>
 <p><br></p>
 </div>
 <div id="simple-stringr-functions" class="section level3">
@@ -151,46 +149,133 @@ string_c &lt;- &quot;wow, strings are so much fun&quot;</code></pre>
 <p><br></p>
 <p>All stringr functions start with <code>str_</code>, so if you’ve forgot the name of the stringr function you’re looking for, RStudio will provide you with all of the functions in it’s autocomplete for <code>str_</code>.</p>
 <p>The easiest stringr function is <code>str_length()</code>. <code>str_length()</code> measures the number of characters in the it’s primary arguement. There are 23 letters and 6 spaces, making a total of 29 characters in <code>string_a</code>.</p>
-<pre class="r"><code>string_a</code></pre>
-<pre><code>## [1] &quot;this is how you make a string&quot;</code></pre>
 <pre class="r"><code>str_length(string_a)</code></pre>
 <pre><code>## [1] 29</code></pre>
 <p><br></p>
 <p>If you give the function a vector of strings, it will measure the length of each individual element.</p>
-<pre class="r"><code>strings</code></pre>
-<pre><code>## [1] &quot;this is how you make a string&quot; &quot;double or single quotes work&quot; 
-## [3] &quot;wow, strings are so much fun&quot;  &quot;opps, I made another one!&quot;</code></pre>
 <pre class="r"><code>str_length(strings)</code></pre>
-<pre><code>## [1] 29 28 28 25</code></pre>
+<pre><code>## [1] 29 28 30 31</code></pre>
 <p><br></p>
 <p>Now that we can count them, let’s concatenate them! <code>str_c</code> is a function that tacks one string onto the end of another, given a defined separator.</p>
-<pre class="r"><code>string_a</code></pre>
-<pre><code>## [1] &quot;this is how you make a string&quot;</code></pre>
-<pre class="r"><code>string_b</code></pre>
-<pre><code>## [1] &quot;double or single quotes work&quot;</code></pre>
 <pre class="r"><code>str_c(string_a, string_b, sep=&quot;, &quot;)</code></pre>
 <pre><code>## [1] &quot;this is how you make a string, double or single quotes work&quot;</code></pre>
 <p><br></p>
+<p>Another potentially useful function is substrings, <code>str_sub</code>. Substrings extracts and replaces substrings from a character vector, typically taking 3 input arguements. The first is your character vector, the second is where to start the substitution, and the third arguement is where to end the substitution.</p>
+<pre class="r"><code>str_sub(strings, 10) &lt;- &quot; ...PSYCH!&quot;
+strings</code></pre>
+<pre><code>## [1] &quot;this is h ...PSYCH!&quot; &quot;double or ...PSYCH!&quot; &quot;what if I ...PSYCH!&quot;
+## [4] &quot;easy! put ...PSYCH!&quot;</code></pre>
+<p><br></p>
 <p>The final fun-and-easy function I’ll cover is <code>str_sort</code>. String sort alphabetically sorts strings in a character vector. It has several useful options allowing for reverse alphabetical sorting, different languages, and NA values.</p>
-<pre class="r"><code>str_sort(strings) </code></pre>
-<pre><code>## [1] &quot;double or single quotes work&quot;  &quot;opps, I made another one!&quot;    
-## [3] &quot;this is how you make a string&quot; &quot;wow, strings are so much fun&quot;</code></pre>
+<pre class="r"><code>str_sort(strings)</code></pre>
+<pre><code>## [1] &quot;double or ...PSYCH!&quot; &quot;easy! put ...PSYCH!&quot; &quot;this is h ...PSYCH!&quot;
+## [4] &quot;what if I ...PSYCH!&quot;</code></pre>
+<p><br></p>
 </div>
-<div id="stringr-with-regular-expressions" class="section level3">
-<h3>Stringr With Regular Expressions</h3>
-<p>This is where stringr really becomes handy. Combining stringr functions with regular expressions allows the functions to sort through lengthy datasets, manipulating them exactly as you command.</p>
-<p>str_sub() extracts part of the string based on it’s location</p>
-<p>str_sub(string_in_question, start with this num, end at this num) can also use negative to count backwards</p>
-<p>str_sub(string_in_question, -3) - returns last three characters in string</p>
-<p>Hunting for matches</p>
-<p>str_detect(object, pattern to match)</p>
-<p>can save str_detect to a variable, because it returns T/F, then subset original object with T/F to return those that matched TRUE. you could skip that trouble by using str_subset()</p>
-<p>str_subset() does the same thing as str_detect but it automatically subsets the original object for the TRUE matches</p>
-<p>str_count() counts the number of occurances</p>
-<p>str_split() splits things according to the separator! fixed(&quot; “) defines the separator, which is weird, idk what the fixed does. also simplify makes a matrix if you set it to true. if its default false, then it returns a list.</p>
-<p>str_replace(object, “pattern”, “replacement”) str_replace_all(object, “pattern”, “replacement”)</p>
-<p>really dont get the point of fixed(“”) on pattern declare</p>
-<p>str_split() important to use simplify = T, and n = num of columns</p>
+<div id="regular-expression-resources" class="section level3">
+<h3>Regular Expression Resources</h3>
+<p><br></p>
+<p>Stringr really becomes useful when you use regular expressions to help it sort throgh massive amounts of character vectors. RStudio’s stringr <a href="https://github.com/rstudio/cheatsheets/blob/master/strings.pdf">cheatsheet</a> has an excellent secton on RegEx’s on its second page. If you’re still not sure on how regular expressions work, check out <a href="https://stringr.tidyverse.org/articles/regular-expressions.html">this</a> arcticle on the stringr website.</p>
+<p><br></p>
+</div>
+<div id="pattern-matching-with-stringr" class="section level3">
+<h3>Pattern Matching with Stringr</h3>
+<p>The vignette associated with stringr has wonderful examples on how to use stringrs pattern matching functions; <a href="https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html">check it out</a> for great examples of all the pattern matching functions and more.</p>
+<p>The pattern matching functions all work in a similar way, so I won’t be giving examples for each of them. All of the functions take a targeted character vector as their first arguement. The regular expression that describes the pattern you’re searching for is the second arguement. Things like separators and other options come last. Here’s an overview of the pattern matching functions and what they do.</p>
+<p><br></p>
+<div id="stringr-pattern-matching-functions" class="section level4">
+<h4>Stringr Pattern Matching Functions</h4>
+<pre><code>str_detect()      - returns T/F if pattern is found
+str_subset()      - returns the elements that match pattern
+str_count()       - counts the number of pattern matches
+str_locate()      - returns the location of the first pattern match
+str_locate_all()  - returns the location of all pattern matches
+str_extract()     - extracts the first pattern match
+str_extract_all() - extracts all pattern matches
+str_replace()     - replaces the first pattern match 
+str_replace_all() - replaces all pattern matches
+str_split()       - splits pattern matches into individual elements</code></pre>
+<p><br></p>
+<p>In order to demonstrate two of my favorite pattern matching functions, I’ll create some data to sift through. This data comes from the stringr vinette.</p>
+<pre class="r"><code># Create some strings that include phone numbers
+strings &lt;- c(
+  &quot;Ralph&quot;, 
+  &quot;970 313 8955&quot;, 
+  &quot;989-344-6480&quot;, 
+  &quot;Work: 822-541-1234; Home: 543.355.3679&quot;
+)
+
+# Create a regular expression that identifies phone numbers
+phone &lt;- &quot;([2-9][0-9]{2})[- .]([0-9]{3})[- .]([0-9]{4})&quot;</code></pre>
+<p><br></p>
+<p>String count, <code>str_count</code> is a simple function that tells you how pattern matches are in each string:</p>
+<pre class="r"><code>str_count(strings, phone)</code></pre>
+<pre><code>## [1] 0 1 1 2</code></pre>
+<p><br></p>
+<p>String replace all has obvious uses; it’s important to note that <code>str_replace_all</code> takes a third arguement defining the replacement string.</p>
+<pre class="r"><code>str_replace_all(strings, phone, &quot;XXX-XXX-XXXX&quot;)</code></pre>
+<pre><code>## [1] &quot;Ralph&quot;                                 
+## [2] &quot;XXX-XXX-XXXX&quot;                          
+## [3] &quot;XXX-XXX-XXXX&quot;                          
+## [4] &quot;Work: XXX-XXX-XXXX; Home: XXX-XXX-XXXX&quot;</code></pre>
+<p><br></p>
+<p>The rest of the pattern matching functions work in a similiar fashion. Sometimes stringr’s usefulness is not very obvious, but that’s what makes programming fun - finding creative ways to impliment what you thought was a useless function to solve a useful problem.</p>
+<p><br></p>
+</div>
+</div>
+<div id="whitespace-manipulation" class="section level3">
+<h3>Whitespace Manipulation</h3>
+<p>Lastly, I’ll cover what I find to be the most useful family of functions in stringr, the three whitespace manipulation functions.</p>
+<p>You can add white space using <code>str_pad</code>, remove whitespace using <code>str_trim</code>, and manipulate existing whitespace using <code>str_wrap</code>.</p>
+<p>String pad will “pad” vectors that are shorter than your desirable length with whitespace either side of the string. If your string is already greater than or equal to the desired length, it remains uneffected. <code>str_pad</code> will never shorten a vector.</p>
+<pre class="r"><code># create example strings
+ws_example &lt;- c(&quot;abc&quot;, &quot;abcdefghij&quot;)
+
+# ensure strings are 10 chr long
+ws_example &lt;- str_pad(ws_example, 10, side = &quot;right&quot;)
+ws_example</code></pre>
+<pre><code>## [1] &quot;abc       &quot; &quot;abcdefghij&quot;</code></pre>
+<pre class="r"><code># Now ensure the strings are 20 chr long
+ws_example &lt;- str_pad(ws_example, 20, side = &quot;left&quot;)
+ws_example</code></pre>
+<pre><code>## [1] &quot;          abc       &quot; &quot;          abcdefghij&quot;</code></pre>
+<p><br></p>
+<p>String trim will remove the whitespace we’ve just added, returning the strings to their original characters.</p>
+<pre class="r"><code># trim the whitespace returning the strings to orginal size
+ws_example &lt;- str_trim(ws_example, side = &quot;both&quot;)
+ws_example</code></pre>
+<pre><code>## [1] &quot;abc&quot;        &quot;abcdefghij&quot;</code></pre>
+<p><br></p>
+<p>This example is directly from the stringr vinette - we’ve got one long string telling a jabberwocky story. We want to retain the story as one string, but break it into multiple similiar-length lines to increase accessibility. <code>str_wrap</code> to the rescue.</p>
+<pre class="r"><code># create jabberwocky example story
+jabberwocky &lt;- str_c(
+  &quot;`Twas brillig, and the slithy toves &quot;,
+  &quot;did gyre and gimble in the wabe: &quot;,
+  &quot;All mimsy were the borogoves, &quot;,
+  &quot;and the mome raths outgrabe. &quot;
+)
+
+# view the string wrap of jabberwocky, line width of 40 chr
+cat(str_wrap(jabberwocky, width = 40))</code></pre>
+<pre><code>## `Twas brillig, and the slithy toves did
+## gyre and gimble in the wabe: All mimsy
+## were the borogoves, and the mome raths
+## outgrabe.</code></pre>
+<p><br></p>
+<p>And that’s it for Unpacking the Tidyverse - stringr! There’s a lot more to stringr and regular expressions, but it’s probably best to learn the nitty-gritty when you actually need it. While strings arn’t the most glamorous, they’re prolific in many dataset and it’s useful to know how to manipulate them.</p>
+<p>If you’d like additional information on stringr, check out the additional resources I’ve listed below. Keep an eye out for my next <em>Unpacking the Tidyverse</em> post, forcats.</p>
+<p><br></p>
+</div>
+<div id="additional-resources" class="section level3">
+<h3>Additional Resources</h3>
+<ul>
+<li><a href="http://r4ds.had.co.nz/strings.html">Stringr chapter R4DS</a></li>
+<li><a href="https://stringr.tidyverse.org/articles/regular-expressions.html">Stringr website tutorial</a></li>
+<li><a href="https://github.com/rstudio/cheatsheets/blob/master/strings.pdf">Stringr Cheat Sheet</a></li>
+<li><a href="https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html">Stringr Vinette</a></li>
+</ul>
+<p><br></p>
+<p>Until next time, <br /> - Fisher</p>
 </div>
 </div>
 
