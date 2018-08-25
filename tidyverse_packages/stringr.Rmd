@@ -2,7 +2,7 @@
 title: "Unpacking the Tidyverse - stringr"
 author: "Fisher Ankney"
 date: "8/24/2018"
-output: html_document
+output: md_document
 ---
 
 <br>
@@ -11,7 +11,7 @@ output: html_document
 
 This is the sixth of eight installments of my *Unpacking the Tidyverse* series. Each installment focuses on one of the eight core packages in Hadley Wickham's tidyverse. Instructions given in each post are mainly derived from Hadley's textbook, [R for Data Science](http://r4ds.had.co.nz/), and CRAN package documentation. This installment of *Unpacking the Tidyverse* focuses on the string manipulation package, stringr. The previous installment focuses on the tibble package, and can be found [here](link). The next installment focuses on the forcats package, and can be found [here](link). 
 
-Strings are simply arrays of characters in your dataset. Strings can contain numbers, letters, special symbols; really anything you decide to stick between two quotation marks. The tidyverse's stringr function allows you to manipulate these strings with the help of regular expressions. While I won't be explaning regular expressions in this post, I'll link to some useful resources to help you learn to use them. But before we do anything, we have to load the ever-useful tidyverse. 
+Strings are simply arrays of characters in your dataset. Strings can contain numbers, letters, special symbols; really anything you decide to stick between two quotation marks. The tidyverse's stringr function allows you to manipulate these strings with the help of regular expressions. While I won't be explaining regular expressions in this post, I'll link to some useful resources to help you learn to use them. But before we do anything, we must load the ever-useful tidyverse. 
 
 <br>
 
@@ -42,9 +42,9 @@ strings <- c(string_a, string_b, string_c_d)
 
 <br>
 
-All stringr functions start with `str_`, so if you've forgot the name of the stringr function you're looking for, RStudio will provide you with all of the functions in it's autocomplete for `str_`. 
+All stringr functions start with `str_`, so if you've forgot the name of the stringr function you're looking for, RStudio will provide you with all the functions in its autocomplete for `str_`. 
 
-The easiest stringr function is `str_length()`. `str_length()` measures the number of characters in the it's primary arguement. There are 23 letters and 6 spaces, making a total of 29 characters in `string_a`. 
+The easiest stringr function is `str_length()`. `str_length()` measures the number of characters in the its primary argument. There are 23 letters and 6 spaces, making a total of 29 characters in `string_a`. 
 
 ```{r}
 str_length(string_a)
@@ -68,7 +68,7 @@ str_c(string_a, string_b, sep=", ")
 
 <br>
 
-Another potentially useful function is substrings, `str_sub`. Substrings extracts and replaces substrings from a character vector, typically taking 3 input arguements. The first is your character vector, the second is where to start the substitution, and the third arguement is where to end the substitution.  
+Another potentially useful function is substrings, `str_sub`. Substrings extracts and replaces substrings from a character vector, typically taking 3 input arguments. The first is your character vector, the second is where to start the substitution, and the third argument is where to end the substitution.  
 
 ```{r}
 str_sub(strings, 10) <- " ...PSYCH!"
@@ -90,15 +90,15 @@ str_sort(strings)
 
 <br> 
 
-Stringr really becomes useful when you use regular expressions to help it sort throgh massive amounts of character vectors. RStudio's stringr [cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/strings.pdf) has an excellent secton on RegEx's on its second page. If you're still not sure on how regular expressions work, check out [this](https://stringr.tidyverse.org/articles/regular-expressions.html) arcticle on the stringr website. 
+Stringr really becomes useful when you use regular expressions to help it sort through massive amounts of character vectors. RStudio's stringr [cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/strings.pdf) has an excellent section on RegEx's on its second page. If you're still not sure on how regular expressions work, check out [this](https://stringr.tidyverse.org/articles/regular-expressions.html) article on the stringr website. 
 
 <br>
 
 ### Pattern Matching with Stringr
 
-The vignette associated with stringr has wonderful examples on how to use stringrs pattern matching functions; [check it out](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html) for great examples of all the pattern matching functions and more. 
+The vignette associated with stringr has wonderful examples on how to use stringr’s pattern matching functions; [check it out](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html) for great examples of all the pattern matching functions and more. 
 
-The pattern matching functions all work in a similar way, so I won't be giving examples for each of them. All of the functions take a targeted character vector as their first arguement. The regular expression that describes the pattern you're searching for is the second arguement. Things like separators and other options come last. Here's an overview of the pattern matching functions and what they do.
+The pattern matching functions all work in a similar way, so I won't be giving examples for each of them. All the functions take a targeted character vector as their first argument. The regular expression that describes the pattern you're searching for is the second argument. Things like separators and other options come last. Here's an overview of the pattern matching functions and what they do.
 
 <br>
 
@@ -117,7 +117,7 @@ str_split()       - splits pattern matches into individual elements
 ```
 <br> 
 
-In order to demonstrate two of my favorite pattern matching functions, I'll create some data to sift through. This data comes from the stringr vinette. 
+To demonstrate two of my favorite pattern matching functions, I'll create some data to sift through. This data comes from the stringr vignette. 
 
 ```{r}
 # Create some strings that include phone numbers
@@ -141,14 +141,14 @@ str_count(strings, phone)
 
 <br> 
 
-String replace all has obvious uses; it's important to note that `str_replace_all` takes a third arguement defining the replacement string. 
+String replace all has obvious uses; it's important to note that `str_replace_all` takes a third argument defining the replacement string. 
 ```{r}
 str_replace_all(strings, phone, "XXX-XXX-XXXX")
 ```
 
 <br> 
 
-The rest of the pattern matching functions work in a similiar fashion. Sometimes stringr's usefulness is not very obvious, but that's what makes programming fun - finding creative ways to impliment what you thought was a useless function to solve a useful problem. 
+The rest of the pattern matching functions work in a similar fashion. Sometimes stringr's usefulness is not obvious, but that's what makes programming fun - finding creative ways to implement what you thought was a useless function to solve a useful problem. 
 
 <br>
 
@@ -158,7 +158,7 @@ Lastly, I'll cover what I find to be the most useful family of functions in stri
 
 You can add white space using `str_pad`, remove whitespace using `str_trim`, and manipulate existing whitespace using `str_wrap`.
 
-String pad will "pad" vectors that are shorter than your desirable length with whitespace either side of the string. If your string is already greater than or equal to the desired length, it remains uneffected. `str_pad` will never shorten a vector. 
+String pad will "pad" vectors that are shorter than your desirable length with whitespace either side of the string. If your string is already greater than or equal to the desired length, it remains unaffected. `str_pad` will never shorten a vector. 
 
 ```{r}
 # create example strings
@@ -177,14 +177,14 @@ ws_example
 String trim will remove the whitespace we've just added, returning the strings to their original characters. 
 
 ```{r}
-# trim the whitespace returning the strings to orginal size
+# trim the whitespace returning the strings to original size
 ws_example <- str_trim(ws_example, side = "both")
 ws_example
 ```
 
 <br> 
 
-This example is directly from the stringr vinette - we've got one long string telling a jabberwocky story. We want to retain the story as one string, but break it into multiple similiar-length lines to increase accessibility. `str_wrap` to the rescue. 
+This example is directly from the stringr vignette - we've got one long string telling a jabberwocky story. We want to retain the story as one string, but break it into multiple similar-length lines to increase accessibility. `str_wrap` to the rescue. 
 
 ```{r}
 # create jabberwocky example story
@@ -201,7 +201,7 @@ cat(str_wrap(jabberwocky, width = 40))
 
 <br> 
 
-And that's it for Unpacking the Tidyverse - stringr! There's a lot more to stringr and regular expressions, but it's probably best to learn the nitty-gritty when you actually need it. While strings arn't the most glamorous, they're prolific in many dataset and it's useful to know how to manipulate them.
+And that's it for Unpacking the Tidyverse - stringr! There's a lot more to stringr and regular expressions, but it's probably best to learn the nitty-gritty when you need it. While strings aren't the most glamorous, they're prolific in many dataset and it's useful to know how to manipulate them.
 
 If you'd like additional information on stringr, check out the additional resources I've listed below. Keep an eye out for my next *Unpacking the Tidyverse* post, forcats. 
 
@@ -217,4 +217,5 @@ If you'd like additional information on stringr, check out the additional resour
 
 Until next time, <br  />
 \- Fisher 
+
 
