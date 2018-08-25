@@ -11,6 +11,7 @@ This is the sixth of eight installments of my *Unpacking the Tidyverse* series. 
 
 Strings are arrays of characters, typically words within a dataset. Stringr uses functions that utilize regular expressions, regexps, to manipulate strings in your dataset. 
 
+<br>
 
 ```{r, message=F}
 library('tidyverse')
@@ -20,6 +21,8 @@ library('tidyverse')
 
 
 ### Creating Strings 
+
+<br>
 
 To learn how to manipulate strings, let's make a few!
 ```{r}
@@ -40,15 +43,15 @@ strings <- c(string_a, string_b, string_c, "opps, I made another one!")
 
 If you want to include quotes within your string, put a backslash before each of them `\"like so\"`. Now that we've got strings to work with, let's jump into stringr. 
 
-
-All stringr functions start with `str_`
-
+<br>
 
 ### Simple Stringr Functions
 
+<br>
+
 All stringr functions start with `str_`, so if you've forgot the name of the stringr function you're looking for, RStudio will provide you with all of the functions in it's autocomplete for `str_`. 
 
-The easiest stringr function is `str_length()`. `str_length()` measures the number of characters in the it's primary arguement.
+The easiest stringr function is `str_length()`. `str_length()` measures the number of characters in the it's primary arguement. There are 23 letters and 6 spaces, making a total of 29 characters in `string_a`. 
 
 ```{r}
 string_a
@@ -56,8 +59,6 @@ str_length(string_a)
 ```
 
 <br> 
-
-There are 23 letters and 6 spaces, making a total of 29 characters in `string_a`. 
 
 If you give the function a vector of strings, it will measure the length of each individual element. 
 
@@ -69,6 +70,7 @@ str_length(strings)
 <br> 
 
 Now that we can count them, let's concatenate them! `str_c` is a function that tacks one string onto the end of another, given a defined separator.
+
 ```{r}
 string_a
 string_b
@@ -82,12 +84,30 @@ The final fun-and-easy function I'll cover is `str_sort`. String sort alphabetic
 str_sort(strings) 
 ```
 
+<br>
 
 
+### Regular Expression Resources
 
-### Stringr With Regular Expressions
+<br> 
 
-This is where stringr really gets handy. 
+This is where stringr really becomes handy. Combining stringr functions with regular expressions allows the functions to sort through lengthy datasets, manipulating them exactly as you command. These tables, copied from RStudio's stringr [cheatsheet](link) provides an excellent overview of regular expressions and how to use them.  
+
+<br> 
+
+INSERT TABLE
+
+<br>
+
+INSERT ALTERNATES AND ANCHORS TABLE
+
+<br> 
+
+If you're still not sure on how regular expressions work, check out [this](https://stringr.tidyverse.org/articles/regular-expressions.html) arcticle on the stringr website. 
+
+<br>
+
+### Stringr Using RegEx
 
 str_sub() extracts part of the string based on it's location
 

@@ -129,15 +129,56 @@ $(document).ready(function () {
 <h2>Introduction</h2>
 <p>This is the sixth of eight installments of my <em>Unpacking the Tidyverse</em> series. Each installment focuses on one of the eight core packages in Hadley Wickham’s tidyverse. Instructions given in each post are mainly derived from Hadley’s textbook, <a href="http://r4ds.had.co.nz/">R for Data Science</a>, and CRAN package documentation. This installment of <em>Unpacking the Tidyverse</em> focuses on the string manipulation package, stringr. The previous installment focuses on the tibble package, and can be found <a href="link">here</a>. The next installment focuses on the forcats package, and can be found <a href="link">here</a>.</p>
 <p>Strings are arrays of characters, typically words within a dataset. Stringr uses functions that utilize regular expressions, regexps, to manipulate strings in your dataset.</p>
+<p><br></p>
 <pre class="r"><code>library('tidyverse')</code></pre>
-<p>All stringr functions start with <code>str_</code></p>
+<p><br></p>
+<div id="creating-strings" class="section level3">
+<h3>Creating Strings</h3>
+<p><br></p>
 <p>To learn how to manipulate strings, let’s make a few!</p>
-<pre class="r"><code>string_a &lt;- &quot;This is how you make a string&quot;
+<pre class="r"><code>string_a &lt;- &quot;this is how you make a string&quot;
 string_b &lt;- 'double or single quotes work'
 string_c &lt;- &quot;wow, strings are so much fun&quot;</code></pre>
 <p><br></p>
-<p>str_c() is similiar to paste, defaults sep = “”, also contains the collapse arguement, doesnt convert NA into the string “NA” like base R does</p>
-<p>str_length() counts the length of a string! ofc</p>
+<p>You can store multiple strings in a single character vector:</p>
+<pre class="r"><code>strings &lt;- c(string_a, string_b, string_c, &quot;opps, I made another one!&quot;)</code></pre>
+<p><br></p>
+<p>If you want to include quotes within your string, put a backslash before each of them <code>\&quot;like so\&quot;</code>. Now that we’ve got strings to work with, let’s jump into stringr.</p>
+<p><br></p>
+</div>
+<div id="simple-stringr-functions" class="section level3">
+<h3>Simple Stringr Functions</h3>
+<p><br></p>
+<p>All stringr functions start with <code>str_</code>, so if you’ve forgot the name of the stringr function you’re looking for, RStudio will provide you with all of the functions in it’s autocomplete for <code>str_</code>.</p>
+<p>The easiest stringr function is <code>str_length()</code>. <code>str_length()</code> measures the number of characters in the it’s primary arguement. There are 23 letters and 6 spaces, making a total of 29 characters in <code>string_a</code>.</p>
+<pre class="r"><code>string_a</code></pre>
+<pre><code>## [1] &quot;this is how you make a string&quot;</code></pre>
+<pre class="r"><code>str_length(string_a)</code></pre>
+<pre><code>## [1] 29</code></pre>
+<p><br></p>
+<p>If you give the function a vector of strings, it will measure the length of each individual element.</p>
+<pre class="r"><code>strings</code></pre>
+<pre><code>## [1] &quot;this is how you make a string&quot; &quot;double or single quotes work&quot; 
+## [3] &quot;wow, strings are so much fun&quot;  &quot;opps, I made another one!&quot;</code></pre>
+<pre class="r"><code>str_length(strings)</code></pre>
+<pre><code>## [1] 29 28 28 25</code></pre>
+<p><br></p>
+<p>Now that we can count them, let’s concatenate them! <code>str_c</code> is a function that tacks one string onto the end of another, given a defined separator.</p>
+<pre class="r"><code>string_a</code></pre>
+<pre><code>## [1] &quot;this is how you make a string&quot;</code></pre>
+<pre class="r"><code>string_b</code></pre>
+<pre><code>## [1] &quot;double or single quotes work&quot;</code></pre>
+<pre class="r"><code>str_c(string_a, string_b, sep=&quot;, &quot;)</code></pre>
+<pre><code>## [1] &quot;this is how you make a string, double or single quotes work&quot;</code></pre>
+<p><br></p>
+<p>The final fun-and-easy function I’ll cover is <code>str_sort</code>. String sort alphabetically sorts strings in a character vector. It has several useful options allowing for reverse alphabetical sorting, different languages, and NA values.</p>
+<pre class="r"><code>str_sort(strings) </code></pre>
+<pre><code>## [1] &quot;double or single quotes work&quot;  &quot;opps, I made another one!&quot;    
+## [3] &quot;this is how you make a string&quot; &quot;wow, strings are so much fun&quot;</code></pre>
+</div>
+<div id="stringr-with-regular-expressions" class="section level3">
+<h3>Stringr With Regular Expressions</h3>
+<p>This is where stringr really becomes handy. Combining stringr functions with regular expressions allows the functions to sort through lengthy datasets, manipulating them exactly as you command.</p>
 <p>str_sub() extracts part of the string based on it’s location</p>
 <p>str_sub(string_in_question, start with this num, end at this num) can also use negative to count backwards</p>
 <p>str_sub(string_in_question, -3) - returns last three characters in string</p>
@@ -147,33 +188,10 @@ string_c &lt;- &quot;wow, strings are so much fun&quot;</code></pre>
 <p>str_subset() does the same thing as str_detect but it automatically subsets the original object for the TRUE matches</p>
 <p>str_count() counts the number of occurances</p>
 <p>str_split() splits things according to the separator! fixed(&quot; “) defines the separator, which is weird, idk what the fixed does. also simplify makes a matrix if you set it to true. if its default false, then it returns a list.</p>
-<p>length()</p>
-<p>str_length()</p>
 <p>str_replace(object, “pattern”, “replacement”) str_replace_all(object, “pattern”, “replacement”)</p>
 <p>really dont get the point of fixed(“”) on pattern declare</p>
 <p>str_split() important to use simplify = T, and n = num of columns</p>
-<p>Regular Expressions - - -</p>
-<p>Library(rebus)</p>
 </div>
-<div id="match-the-strings-that-start-with-co" class="section level1">
-<h1>Match the strings that start with “co”</h1>
-<p>str_view(x, pattern = START %R% “co”)</p>
-</div>
-<div id="match-the-strings-that-end-with-at" class="section level1">
-<h1>Match the strings that end with “at”</h1>
-<p>str_view(x, pattern = “at” %R% END)</p>
-</div>
-<div id="match-any-character-followed-by-a-t" class="section level1">
-<h1>Match any character followed by a “t”</h1>
-<p>str_view(x, pattern = ANY_CHAR %R% “t”)</p>
-</div>
-<div id="match-two-characters" class="section level1">
-<h1>Match two characters</h1>
-<p>str_view(x, pattern = ANY_CHAR %R% ANY_CHAR)</p>
-</div>
-<div id="match-a-string-with-exactly-three-characters" class="section level1">
-<h1>Match a string with exactly three characters</h1>
-<p>str_view(x, pattern = START %R% ANY_CHAR %R% ANY_CHAR %R% ANY_CHAR %R% END)</p>
 </div>
 
 
