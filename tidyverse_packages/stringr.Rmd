@@ -1,20 +1,93 @@
 ---
 title: "Unpacking the Tidyverse - stringr"
 author: "Fisher Ankney"
-date: "3/5/2018"
+date: "8/24/2018"
 output: html_document
 ---
 
-# StringR Datacamp course
-writeLines() is base R, separates the strings with a new
-format() also base R, digits = 1, scientific = T/F, justify = r/l/c
-paste() base R, arguements, if vectors not the same size, then repeat, sep = "", collapse = "", 
+## Introduction 
 
-all stringr functions start with str_ 
+This is the sixth of eight installments of my *Unpacking the Tidyverse* series. Each installment focuses on one of the eight core packages in Hadley Wickham's tidyverse. Instructions given in each post are mainly derived from Hadley's textbook, [R for Data Science](http://r4ds.had.co.nz/), and CRAN package documentation. This installment of *Unpacking the Tidyverse* focuses on the string manipulation package, stringr. The previous installment focuses on the tibble package, and can be found [here](link). The next installment focuses on the forcats package, and can be found [here](link). 
 
-str_c() is similiar to paste, defaults sep = "", also contains the collapse arguement, doesnt convert NA into the string "NA" like base R does 
+Strings are arrays of characters, typically words within a dataset. Stringr uses functions that utilize regular expressions, regexps, to manipulate strings in your dataset. 
 
-str_length() counts the length of a string! ofc 
+
+```{r, message=F}
+library('tidyverse')
+```
+
+<br> 
+
+
+### Creating Strings 
+
+To learn how to manipulate strings, let's make a few!
+```{r}
+string_a <- "this is how you make a string"
+string_b <- 'double or single quotes work'
+string_c <- "wow, strings are so much fun"
+```
+
+<br> 
+
+You can store multiple strings in a single character vector:
+
+```{r}
+strings <- c(string_a, string_b, string_c, "opps, I made another one!")
+```
+
+<br> 
+
+If you want to include quotes within your string, put a backslash before each of them `\"like so\"`. Now that we've got strings to work with, let's jump into stringr. 
+
+
+All stringr functions start with `str_`
+
+
+### Simple Stringr Functions
+
+All stringr functions start with `str_`, so if you've forgot the name of the stringr function you're looking for, RStudio will provide you with all of the functions in it's autocomplete for `str_`. 
+
+The easiest stringr function is `str_length()`. `str_length()` measures the number of characters in the it's primary arguement.
+
+```{r}
+string_a
+str_length(string_a)
+```
+
+<br> 
+
+There are 23 letters and 6 spaces, making a total of 29 characters in `string_a`. 
+
+If you give the function a vector of strings, it will measure the length of each individual element. 
+
+```{r}
+strings
+str_length(strings)
+```
+
+<br> 
+
+Now that we can count them, let's concatenate them! `str_c` is a function that tacks one string onto the end of another, given a defined separator.
+```{r}
+string_a
+string_b
+str_c(string_a, string_b, sep=", ")
+```
+
+<br>
+
+The final fun-and-easy function I'll cover is `str_sort`. String sort alphabetically sorts strings in a character vector. It has several useful options allowing for reverse alphabetical sorting, different languages, and NA values. 
+```{r}
+str_sort(strings) 
+```
+
+
+
+
+### Stringr With Regular Expressions
+
+This is where stringr really gets handy. 
 
 str_sub() extracts part of the string based on it's location
 
@@ -36,9 +109,6 @@ str_count() counts the number of occurances
 
 str_split() splits things according to the separator! fixed(" ") defines the separator, which is weird, idk what the fixed does. also simplify makes a matrix if you set it to true. if its default false, then it returns a list. 
 
-length()
-
-str_length()
 
 str_replace(object, "pattern", "replacement")
 str_replace_all(object, "pattern", "replacement")
@@ -50,22 +120,4 @@ str_split() important to use simplify = T, and n = num of columns
 
 
 
-Regular Expressions - - - 
-
-Library(rebus)
-
-# Match the strings that start with "co" 
-str_view(x, pattern = START %R% "co")
-
-# Match the strings that end with "at"
-str_view(x, pattern = "at" %R% END)
-
-# Match any character followed by a "t"
-str_view(x, pattern = ANY_CHAR %R% "t")
-
-# Match two characters
-str_view(x, pattern = ANY_CHAR %R% ANY_CHAR)
-
-# Match a string with exactly three characters
-str_view(x, pattern = START %R% ANY_CHAR %R% ANY_CHAR %R% ANY_CHAR %R% END)
 
