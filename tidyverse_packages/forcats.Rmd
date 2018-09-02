@@ -77,91 +77,144 @@ income_prediction: <=50k, >50k
 Now let's learn some forcats!
 
 
+Can view categorical data by using the count function (dplyr)
+```{r}
+income_predict_data %>%
+  count(race)
+```
+
+<br> 
+
+Can view data by visualization (ggplot2)
+```{r}
+income_predict_data %>%
+  ggplot(aes(education)) + 
+  geom_bar()
 
 ```
-gss_cat %>% 
-count(race)
-```
 
-```
-ggplot(gss_cat, aes(race)) + 
+
+Education data is sorted alpha numerically, that doesn't make sense. give this factor some levels! 
+
+add levels to the education data because it's ordered categorical data (base R)
+```{r}
+# view possible categories
+unique(income_predict_data$education)
+
+# order categories
+education_levels <- c("Preschool", "1st-4th", "5th-6th", "7th-8th", "9th", "10th", "11th", "12th", "HS-grad", "Some-college", "Assoc-acdm", "Assoc-voc", "Bachelors", "Masters", "Prof-school", "Doctorate")
+
+income_predict_data$education <- factor(income_predict_data$education, levels=education_levels)
+
+income_predict_data %>%
+  ggplot(aes(education)) + 
   geom_bar()
 ```
 
+<br> 
 
-Modify Factor order
+That makes more sense. 
 
+how do we do that for a numeric factor?
+```{r}
+# view possible categories
+unique(income_predict_data$hours_per_week)
+
+# order categories
+sorted_hours <- sort(unique(income_predict_data$hours_per_week))
+
+sorted_hours 
 ```
-relig_summary <- gss_cat %>%
-  group_by(relig) %>%
+
+```{r}
+# create average hours worked variable (by education level)
+education_hours_summary <- income_predict_data %>%
+  group_by(education) %>%
   summarise(
-    age = mean(age, na.rm = TRUE),
-    tvhours = mean(tvhours, na.rm = TRUE),
-    n = n()
+    avg_hours_worked = mean(hours_per_week, na.rm = TRUE)
   )
 
-ggplot(relig_summary, aes(tvhours, relig)) + geom_point()
+# plot average hours worked vs education level 
+ggplot(education_hours_summary) + 
+  geom_point(aes(avg_hours_worked, education)) + 
+  theme_minimal()
+
 ```
 
-
-```
-ggplot(relig_summary, aes(tvhours, fct_reorder(relig, tvhours))) +
+well lets try reordering them according to their average hours worked now using fct_reorder (forcats)
+```{r}
+education_hours_summary %>%
+  mutate(education = fct_reorder(education, avg_hours_worked)) %>%
+  ggplot(aes(avg_hours_worked, education)) + 
   geom_point()
 ```
 
+easy peasy 
 
-if youre getting complicated, used mutate()
-```
-relig_summary %>%
-  mutate(relig = fct_reorder(relig, tvhours)) %>%
-  ggplot(aes(tvhours, relig)) +
-    geom_point()
-```
-
-
-```
-rincome_summary <- gss_cat %>%
-  group_by(rincome) %>%
-  summarise(
-    age = mean(age, na.rm = TRUE),
-    tvhours = mean(tvhours, na.rm = TRUE),
-    n = n()
-  )
-
-ggplot(rincome_summary, aes(age, fct_reorder(rincome, age))) + geom_point()
+reorder the factor according to frequency fct_rev reverses order small to large
+```{r}
+income_predict_data %>%
+  mutate(education = education %>% fct_infreq() %>% fct_rev()) %>%
+  ggplot(aes(education)) + 
+  geom_bar()
 ```
 
+Dont like the name of the categories? factor recode
 
-```
-ggplot(rincome_summary, aes(age, fct_relevel(rincome, "Not applicable"))) +
-  geom_point()
-```
-
-
-```
-by_age <- gss_cat %>%
-  filter(!is.na(age)) %>%
-  count(age, marital) %>%
-  group_by(age) %>%
-  mutate(prop = n / sum(n))
-
-ggplot(by_age, aes(age, prop, colour = marital)) +
-  geom_line(na.rm = TRUE)
-
-ggplot(by_age, aes(age, prop, colour = fct_reorder2(marital, age, prop))) +
-  geom_line() +
-  labs(colour = "marital")
+```{r}
+income_predict_data %>%
+  mutate(education = fct_recode(education, 
+         "Associates" = "Assoc-acdm",
+         "Vocational" = "Assoc-voc",
+         "Professional" = "Prof-school"
+         )) %>%
+  count(education)
 ```
 
 
 
 
+
+Don't like all those categories and want to lump some? a few choices
+
+```{r}
+# lump the smallest groups together to other, num big groups = 5
+income_predict_data %>%
+  mutate(education = fct_lump(education, n = 5)) %>%
+  count(education)
 ```
-gss_cat %>%
-  mutate(marital = marital %>% fct_infreq() %>% fct_rev()) %>%
-  ggplot(aes(marital)) +
-    geom_bar()
+
+
+```{r}
+income_predict_data %>%
+  mutate(education = fct_collapse(education,
+        advanced_degree = c("Assoc-acdm","Bachelors", "Masters",
+                            "Doctorate", "Prof-school")
+  )) %>%
+  ggplot(aes(education)) + 
+  geom_bar()
 ```
+
+  or use factor recode to put multiple categories into a new category 
+```{r}
+income_predict_data %>%
+mutate(education = fct_recode(education,
+      "drop_out" = "Preschool",
+      "drop_out" = "1st-4th",
+      "drop_out" = "5th-6th",
+      "drop_out" = "7th-8th", 
+      "drop_out" = "9th",
+      "drop_out" = "10th", 
+      "drop_out" = "11th",
+      "drop_out" = "12th")
+      ) %>%
+ggplot(aes(education)) + 
+geom_bar()
   
-  
-  
+```
+
+and that's the useful forcats!
+
+till next time, 
+
+fisher
