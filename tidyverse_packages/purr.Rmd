@@ -1,0 +1,150 @@
+---
+title: "Unpacking the Tidyverse - purrr"
+author: "Fisher Ankney"
+date: "September 24, 2018"
+output: html_document
+---
+
+<br>
+
+This is the final installments in my *Unpacking the Tidyverse* series. Each of the eight posts focus on one of the core packages in Hadley Wickham's tidyverse. Instructions given in each post are mainly derived from Hadley's textbook, [R for Data Science](http://r4ds.had.co.nz/) and CRAN package documentation. This installment of *Unpacking the Tidyverse* focuses on iteration. We'll learn what for loops are, and how they work. Then we'll learn how to perform these same operations with purrr functions. The previous installment focuses on the categorical data manipulation package, [forcats]({{ site.baseurl }}/r4ds-forcats).
+
+To use purrr, we must first download the tidyverse. 
+
+### Library
+```{r, message=F}
+library('tidyverse')
+```
+
+<br> 
+
+### Iteration By Hand
+
+Iteration allows you to conduct the same operation on multiple inputs without tediously copying-and-pasting code. Here's a simple example of a for-loop.
+
+First we'll create a dataframe with 4 variables: a, b, c, and d. Each of these variables will contian 10 randomly generated numbers from the normal distribution using the function `rnorm`. 
+
+```{r}
+df <- tibble(
+a = rnorm(10),
+b = rnorm(10), 
+c = rnorm(10),
+d = rnorm(10)
+)
+
+df
+```
+
+<br>
+
+Now let's try to compute the mean of each variable
+```{r error=T}
+mean(df)
+```
+
+<br> 
+
+well that doesn't work. I guess we'll have to specify each variable. 
+```{r}
+mean(df$a)
+mean(df$b)
+mean(df$c)
+mean(df$d)
+```
+
+<br> 
+
+Imagine we have 100 variables that we want to calculate the mean of. That wouldn't be very fun. That's where for loops come in. 
+
+<br.
+
+### For Loops
+
+Let's make a for loop, and use it to calculate the mean of each of these variables. 
+```{r}
+# Step 1 
+output_vector <- vector("double", ncol(df))
+
+# Step 2 
+for (i in seq_along((df))) {
+
+# Step 3 
+  output_vector[[i]] <- mean(df[[i]])
+}
+
+output_vector
+```
+
+<br> 
+
+We've succefully created a for loop to iterate through the variables! Each for loop is broken down into three steps. 
+
+The first step, you must create an output vector to store your results. It's easy to create an empty vector of the correct size using the `vector()` function. In the first arguement of `vector()` you specify what kind of vector to create. This could be specified as any of the data structures i.e. integer, logical, character, etc. The second argumenet of `vector()` is the length of the vector. Clever use of `ncol()`, `nrow()`, or `length()` will give you the proper length for your output vector. 
+
+The second step of a for loop is to define the sequence. Here we determine what to loop over using base R's `seq_along()` function. Create the variable `i` as a counter variable. 
+
+The third and most complicated step of creating a for loop is in the body of the sequence. Here we describe to R exactly what we want to do as we loop through our defined dataframe. Sometimes we simply want to take the mean of each variable, and store that number into our output vector. Other times we may want to insert a series of if then statements, of generate graphics of the data we're looping over. The possibilities are endless. 
+
+Let's take our iteration discussion to the third and final level. Purrr functions. 
+
+<br> 
+
+### Purrr Functions
+
+In our quest to find the mean of each of the four variables in `df`, can use the most basic purrr function `map()`. 
+
+```{r}
+df %>% 
+  map(mean)
+```
+
+<br> 
+
+The function `map` takes two main arguements, a target to iterate over, and a function to apply during that iteration. `map` Returns a list of values, but if you don't want a generic list you can the varients of the `map` function. 
+
+- `map_lgl()` returns a logical vector. 
+- `map_int()` returns an integer vector. 
+- `map_dbl()` returns a double vector. 
+- `map_chr()` returns a character vector.
+
+Here's what `map_dbl()` looks like when applied to our favorite iteration-situation. 
+
+```{r}
+df %>%
+  map_dbl(mean)
+
+df
+```
+
+<br> 
+
+That's smooooth. 
+
+#### map_chr
+#### map_lgl
+
+#### mapping over multiple arguements 
+```{r}
+mu <- list(5, 10, -3)
+
+mu %>%
+  map(rnorm, n=5)
+```
+
+#### mapping over two vectors in parallel
+
+
+```
+
+mu  <- list(5,10,-3)
+sigma <- list(1,5,10)
+
+map2_dbl(mu, sigma, rnorm, n=5)
+
+```
+
+
+```
+pmap{}
+
+```
