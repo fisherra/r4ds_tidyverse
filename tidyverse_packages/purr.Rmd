@@ -112,19 +112,105 @@ Here's what `map_dbl()` looks like when applied to our favorite iteration-situat
 ```{r}
 df %>%
   map_dbl(mean)
-
-df
 ```
 
 <br> 
 
 That's smooooth. 
 
-#### map_chr
-#### map_lgl
+So let's make it more complex! How about we create our own function and test out the `map_chr` function. I want to run through a dataframe of arbitrary size, and return the words "positve", "negative", or "zero", if the elements are as such.
+
+First lets make the custom function!
+
+```{r}
+# name the function 'classify_chr' with input = 'input'
+classify_chr <- function(input) {
+
+# set a counter equal to 1 
+i <- 1
+
+# create a save vector of input length
+save_vect <- vector("character", length(input))
+
+# main while loop, while counter is less than or equal
+# to input length, classify the elements and put that
+# character classification into the save vector. 
+# Then, add one to the counter to move on to the next 
+# element. 
+while (i <= length(input))
+  {
+    if (input[[i]] > 0) {
+      save_vect[[i]] = "positive"
+    }
+    if (input[[i]] < 0) {
+      save_vect[[i]] = "negative"
+    }
+    if (input[[i]] == 0) {
+      save_vect[[i]] = "zero"
+    }
+  i <- i + 1
+  }
+
+# When the save vector is full of output, collapse the
+# results and separate them by a space. Finally, print
+# the resulting output vector.
+output <- str_c(save_vect, collapse=" ")
+print(output)
+}
+```
+
+<br>
+
+Alright. That function was relatively easy to create! Let's test it out. 
+```{r}
+classify_chr(-1)
+classify_chr(0)
+classify_chr(1)
+```
+
+<br> 
+
+Single entries are working as expected. Let's give the custom function a concantenated list of numbers and see what it does. 
+
+```{r}
+a <- c(-1,0,1)
+
+classify_chr(a)
+```
+
+<br> 
+
+Looking good, how about we step it up to the final level of complexity! Running through a tibble that has lists of numbers as it's variables.
+
+```{r error=T}
+test_tib <- tibble(
+  a = sample(-10:10,10, replace = T),
+  b = sample(1:10,10, replace = T),
+  c = 0
+)
+
+test_tib
+
+
+classify(test_tib)
+```
+
+<br> 
+
+An Error! Oh no! Wait, that's exactly why we went through all of this. Thats where purrr comes in! Let's give it a shot.
+
+```{r}
+test_tib %>%
+  map_chr(classify_chr)
+```
+
+<br> 
+
+Alright! Not the prettiest of outputs, but it does what it's designed to do. And it's a great illustration of when we need to use the map function. 
+
 
 #### mapping over multiple arguements 
-```{r}
+```
 mu <- list(5, 10, -3)
 
 mu %>%
@@ -135,7 +221,6 @@ mu %>%
 
 
 ```
-
 mu  <- list(5,10,-3)
 sigma <- list(1,5,10)
 

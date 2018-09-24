@@ -150,18 +150,18 @@ d = rnorm(10)
 
 df</code></pre>
 <pre><code>## # A tibble: 10 x 4
-##         a       b       c      d
-##     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-##  1  2.62  -2.87   -0.977  -0.253
-##  2 -0.898 -2.12   -2.63    0.505
-##  3  2.09   0.371   0.980   0.579
-##  4 -0.145  0.284  -1.07    0.710
-##  5  0.479  0.0526 -1.16    2.15 
-##  6  0.727  0.0108 -0.0784 -1.89 
-##  7 -0.131 -0.441   0.820  -1.44 
-##  8  2.30  -1.09    0.297   1.33 
-##  9 -1.29  -0.931  -1.26    0.615
-## 10  0.730 -1.53   -0.244  -0.779</code></pre>
+##          a      b      c      d
+##      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1  0.652   1.29  -1.19   0.534
+##  2  0.0996 -1.40   0.738 -0.868
+##  3 -0.0587  1.22   0.846  1.06 
+##  4 -1.40    0.140  0.189 -0.634
+##  5  0.518  -0.249 -0.625 -0.800
+##  6 -0.434   1.70   0.695 -0.432
+##  7  0.391  -0.445  0.677 -0.587
+##  8  2.20    0.524 -1.36  -1.32 
+##  9  0.611   0.292 -1.07   0.822
+## 10 -0.207   0.647 -1.13  -1.36</code></pre>
 <p><br></p>
 <p>Now let’s try to compute the mean of each variable</p>
 <pre class="r"><code>mean(df)</code></pre>
@@ -171,13 +171,13 @@ df</code></pre>
 <p><br></p>
 <p>well that doesn’t work. I guess we’ll have to specify each variable.</p>
 <pre class="r"><code>mean(df$a)</code></pre>
-<pre><code>## [1] 0.6477292</code></pre>
+<pre><code>## [1] 0.2369284</code></pre>
 <pre class="r"><code>mean(df$b)</code></pre>
-<pre><code>## [1] -0.8259368</code></pre>
+<pre><code>## [1] 0.3720339</code></pre>
 <pre class="r"><code>mean(df$c)</code></pre>
-<pre><code>## [1] -0.5329972</code></pre>
+<pre><code>## [1] -0.2220784</code></pre>
 <pre class="r"><code>mean(df$d)</code></pre>
-<pre><code>## [1] 0.1520353</code></pre>
+<pre><code>## [1] -0.3581975</code></pre>
 <p><br></p>
 <p>Imagine we have 100 variables that we want to calculate the mean of. That wouldn’t be very fun. That’s where for loops come in.</p>
 <p>&lt;br.</p>
@@ -196,7 +196,7 @@ for (i in seq_along((df))) {
 }
 
 output_vector</code></pre>
-<pre><code>## [1]  0.6477292 -0.8259368 -0.5329972  0.1520353</code></pre>
+<pre><code>## [1]  0.2369284  0.3720339 -0.2220784 -0.3581975</code></pre>
 <p><br></p>
 <p>We’ve succefully created a for loop to iterate through the variables! Each for loop is broken down into three steps.</p>
 <p>The first step, you must create an output vector to store your results. It’s easy to create an empty vector of the correct size using the <code>vector()</code> function. In the first arguement of <code>vector()</code> you specify what kind of vector to create. This could be specified as any of the data structures i.e. integer, logical, character, etc. The second argumenet of <code>vector()</code> is the length of the vector. Clever use of <code>ncol()</code>, <code>nrow()</code>, or <code>length()</code> will give you the proper length for your output vector.</p>
@@ -211,16 +211,16 @@ output_vector</code></pre>
 <pre class="r"><code>df %&gt;% 
   map(mean)</code></pre>
 <pre><code>## $a
-## [1] 0.6477292
+## [1] 0.2369284
 ## 
 ## $b
-## [1] -0.8259368
+## [1] 0.3720339
 ## 
 ## $c
-## [1] -0.5329972
+## [1] -0.2220784
 ## 
 ## $d
-## [1] 0.1520353</code></pre>
+## [1] -0.3581975</code></pre>
 <p><br></p>
 <p>The function <code>map</code> takes two main arguements, a target to iterate over, and a function to apply during that iteration. <code>map</code> Returns a list of values, but if you don’t want a generic list you can the varients of the <code>map</code> function.</p>
 <ul>
@@ -233,41 +233,46 @@ output_vector</code></pre>
 <pre class="r"><code>df %&gt;%
   map_dbl(mean)</code></pre>
 <pre><code>##          a          b          c          d 
-##  0.6477292 -0.8259368 -0.5329972  0.1520353</code></pre>
+##  0.2369284  0.3720339 -0.2220784 -0.3581975</code></pre>
 <pre class="r"><code>df</code></pre>
 <pre><code>## # A tibble: 10 x 4
-##         a       b       c      d
-##     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-##  1  2.62  -2.87   -0.977  -0.253
-##  2 -0.898 -2.12   -2.63    0.505
-##  3  2.09   0.371   0.980   0.579
-##  4 -0.145  0.284  -1.07    0.710
-##  5  0.479  0.0526 -1.16    2.15 
-##  6  0.727  0.0108 -0.0784 -1.89 
-##  7 -0.131 -0.441   0.820  -1.44 
-##  8  2.30  -1.09    0.297   1.33 
-##  9 -1.29  -0.931  -1.26    0.615
-## 10  0.730 -1.53   -0.244  -0.779</code></pre>
+##          a      b      c      d
+##      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1  0.652   1.29  -1.19   0.534
+##  2  0.0996 -1.40   0.738 -0.868
+##  3 -0.0587  1.22   0.846  1.06 
+##  4 -1.40    0.140  0.189 -0.634
+##  5  0.518  -0.249 -0.625 -0.800
+##  6 -0.434   1.70   0.695 -0.432
+##  7  0.391  -0.445  0.677 -0.587
+##  8  2.20    0.524 -1.36  -1.32 
+##  9  0.611   0.292 -1.07   0.822
+## 10 -0.207   0.647 -1.13  -1.36</code></pre>
 <p><br></p>
 <p>That’s smooooth.</p>
-<p>So smooth that I want to do it again. But this time, let’s find the standard deviation of each of the variables in df.</p>
-<pre class="r"><code>df %&gt;%
-  map_dbl(sd)</code></pre>
-<pre><code>##        a        b        c        d 
-## 1.339139 1.090793 1.101623 1.245002</code></pre>
-<p><br></p>
-<p>If only there was something that would let me iterate over the dataframe <code>df</code> to find the mean and the standard deviation of each variable at the same time.. Something like <code>map2</code>.</p>
-<pre class="r"><code>df %&gt;% 
-  map2_dbl(mean, std)</code></pre>
-<pre><code>## Error in as_mapper(.f, ...): object 'std' not found</code></pre>
-<pre class="r"><code>mu &lt;- list(5,10,-3)
-mu %&gt;% 
-  map(rnorm, n=5) %&gt;%
-  str()</code></pre>
-<pre><code>## List of 3
-##  $ : num [1:5] 5.86 4.39 4.69 5.32 5.35
-##  $ : num [1:5] 9.64 9.68 11.7 10.01 10.37
-##  $ : num [1:5] -2.48 -1.84 -2.06 -3.32 -3.14</code></pre>
+<div id="map_chr" class="section level4">
+<h4>map_chr</h4>
+</div>
+<div id="map_lgl" class="section level4">
+<h4>map_lgl</h4>
+</div>
+<div id="mapping-over-multiple-arguements" class="section level4">
+<h4>mapping over multiple arguements</h4>
+<pre><code>mu &lt;- list(5, 10, -3)
+
+mu %&gt;%
+  map(rnorm, n=5)</code></pre>
+</div>
+<div id="mapping-over-two-vectors-in-parallel" class="section level4">
+<h4>mapping over two vectors in parallel</h4>
+<pre><code>mu  &lt;- list(5,10,-3)
+sigma &lt;- list(1,5,10)
+
+map2_dbl(mu, sigma, rnorm, n=5)
+</code></pre>
+<pre><code>pmap{}
+</code></pre>
+</div>
 </div>
 
 
